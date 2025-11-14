@@ -1,0 +1,147 @@
+[gd_scene load_steps=4 format=3 uid="uid://fsodmskwkkkk"]
+
+[ext_resource type="Script" uid="uid://bmgpsk2dcdkx8" path="res://Scripts/class_definitions/animated_control.gd" id="1_28flt"]
+[ext_resource type="Script" uid="uid://c4t6hl74qp5q8" path="res://Scripts/main_menu.gd" id="1_48xlc"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_48xlc"]
+bg_color = Color(0, 0.521569, 0.807843, 0.784314)
+border_width_left = 20
+border_width_top = 20
+border_width_right = 20
+border_width_bottom = 20
+border_color = Color(0, 0, 0, 0.196078)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+expand_margin_left = 25.0
+expand_margin_top = 25.0
+expand_margin_right = 25.0
+expand_margin_bottom = 25.0
+shadow_color = Color(0, 0, 0, 0.0588235)
+shadow_size = 1
+shadow_offset = Vector2(-40, 30)
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_48xlc")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_48xlc")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Levels" type="Button" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Levels"
+
+[node name="AnimatedControl" type="Node" parent="PanelContainer/VBoxContainer/Levels"]
+script = ExtResource("1_28flt")
+enter_animation = true
+hover_position = Vector2(10, 0)
+hover_size = Vector2(160, 50)
+entrance_delay = 0.75
+entrance_transition = 7
+entrance_easing = 2
+entrance_rotation = 10.0
+entrance_size = Vector2(160, 50)
+metadata/_custom_type_script = "uid://bmgpsk2dcdkx8"
+
+[node name="Settings" type="Button" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Settings"
+
+[node name="AnimatedControl" type="Node" parent="PanelContainer/VBoxContainer/Settings" node_paths=PackedStringArray("wait_for")]
+script = ExtResource("1_28flt")
+enter_animation = true
+hover_position = Vector2(10, 0)
+hover_size = Vector2(160, 50)
+wait_for = NodePath("../../Levels/AnimatedControl")
+entrance_transition = 7
+entrance_easing = 2
+entrance_rotation = 10.0
+entrance_size = Vector2(160, 50)
+metadata/_custom_type_script = "uid://bmgpsk2dcdkx8"
+
+[node name="Build" type="Button" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Build"
+
+[node name="AnimatedControl" type="Node" parent="PanelContainer/VBoxContainer/Build" node_paths=PackedStringArray("wait_for")]
+script = ExtResource("1_28flt")
+enter_animation = true
+hover_position = Vector2(10, 0)
+hover_size = Vector2(160, 50)
+wait_for = NodePath("../../Settings/AnimatedControl")
+entrance_transition = 7
+entrance_easing = 2
+entrance_rotation = 10.0
+entrance_size = Vector2(160, 50)
+metadata/_custom_type_script = "uid://bmgpsk2dcdkx8"
+
+[node name="Exit" type="Button" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Exit"
+
+[node name="AnimatedControl" type="Node" parent="PanelContainer/VBoxContainer/Exit" node_paths=PackedStringArray("wait_for")]
+script = ExtResource("1_28flt")
+enter_animation = true
+hover_position = Vector2(10, 0)
+hover_size = Vector2(160, 50)
+wait_for = NodePath("../../Build/AnimatedControl")
+entrance_transition = 7
+entrance_easing = 2
+entrance_rotation = 10.0
+entrance_size = Vector2(160, 50)
+metadata/_custom_type_script = "uid://bmgpsk2dcdkx8"
+
+[node name="BackgroundResetTimer" type="Timer" parent="."]
+wait_time = 10.0
+
+[node name="Label" type="Label" parent="."]
+custom_minimum_size = Vector2(0, 250)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -138.0
+offset_right = 138.0
+offset_bottom = 83.0
+grow_horizontal = 2
+mouse_filter = 1
+theme_override_font_sizes/font_size = 60
+text = "Conway's
+Game of War"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[connection signal="pressed" from="PanelContainer/VBoxContainer/Levels" to="." method="_on_levels_pressed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/Settings" to="." method="_on_settings_pressed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/Build" to="." method="_on_build_pressed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/Exit" to="." method="_on_exit_pressed"]
+[connection signal="timeout" from="BackgroundResetTimer" to="." method="_on_background_reset_timer_timeout"]

@@ -1,0 +1,50 @@
+[gd_scene load_steps=10 format=3 uid="uid://43wu14oo2txe"]
+
+[ext_resource type="Script" uid="uid://b7wmx1vkun2bp" path="res://Scripts/world.gd" id="1_go701"]
+[ext_resource type="Script" uid="uid://c8v1d7jx6ajim" path="res://Scripts/Game_camera.gd" id="2_5a7ea"]
+[ext_resource type="PackedScene" uid="uid://fsodmskwkkkk" path="res://Scenes/Menus/main_menu.tscn" id="3_5a7ea"]
+[ext_resource type="PackedScene" uid="uid://bw10bjlpo0fwl" path="res://Scenes/Menus/GUI_Standard.tscn" id="3_5ukr8"]
+[ext_resource type="PackedScene" uid="uid://hpbibvj47tnf" path="res://Scenes/Menus/levels_menu.tscn" id="4_8j60k"]
+[ext_resource type="PackedScene" uid="uid://bp8sew4hg4ws3" path="res://Scenes/Menus/settings.tscn" id="5_fo5ed"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fj7yv"]
+shading_mode = 0
+vertex_color_use_as_albedo = true
+
+[sub_resource type="QuadMesh" id="QuadMesh_tlwt5"]
+material = SubResource("StandardMaterial3D_fj7yv")
+size = Vector2(10, 10)
+
+[sub_resource type="MultiMesh" id="MultiMesh_aqk2v"]
+use_colors = true
+mesh = SubResource("QuadMesh_tlwt5")
+
+[node name="World" type="Node2D"]
+script = ExtResource("1_go701")
+
+[node name="Grid" type="MultiMeshInstance2D" parent="."]
+multimesh = SubResource("MultiMesh_aqk2v")
+
+[node name="Game_Camera" type="Camera2D" parent="."]
+position = Vector2(10, 10)
+zoom = Vector2(20, 20)
+script = ExtResource("2_5a7ea")
+
+[node name="Rot_Parent" type="Node2D" parent="."]
+
+[node name="Menu_Camera" type="Camera2D" parent="Rot_Parent"]
+position = Vector2(30, 0)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="GUI_Standard" parent="CanvasLayer" instance=ExtResource("3_5ukr8")]
+
+[node name="MainMenu" parent="CanvasLayer" instance=ExtResource("3_5a7ea")]
+mouse_filter = 1
+
+[node name="Levels_Menu" parent="CanvasLayer" instance=ExtResource("4_8j60k")]
+visible = false
+
+[node name="Settings" parent="CanvasLayer" instance=ExtResource("5_fo5ed")]
+visible = false
+mouse_filter = 1

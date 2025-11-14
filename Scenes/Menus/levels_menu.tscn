@@ -1,0 +1,412 @@
+[gd_scene load_steps=5 format=3 uid="uid://hpbibvj47tnf"]
+
+[ext_resource type="Script" uid="uid://uo7k5msg0rg6" path="res://Scripts/levels_menu.gd" id="1_7de7r"]
+[ext_resource type="Script" uid="uid://bmgpsk2dcdkx8" path="res://Scripts/class_definitions/animated_control.gd" id="1_b7idg"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7de7r"]
+bg_color = Color(0, 0.521569, 0.807843, 0.784314)
+border_width_left = 20
+border_width_top = 20
+border_width_right = 20
+border_width_bottom = 20
+border_color = Color(0, 0, 0, 0.196078)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+expand_margin_left = 25.0
+expand_margin_top = 25.0
+expand_margin_right = 25.0
+expand_margin_bottom = 25.0
+shadow_color = Color(0, 0, 0, 0.0588235)
+shadow_size = 1
+shadow_offset = Vector2(-40, 30)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b7idg"]
+bg_color = Color(0, 0, 0, 0.392157)
+border_width_left = 10
+border_width_top = 10
+border_width_right = 10
+border_width_bottom = 10
+border_color = Color(1, 0.643137, 0, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+anti_aliasing = false
+
+[node name="Levels_Menu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("1_7de7r")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -359.0
+offset_top = -257.5
+offset_right = 359.0
+offset_bottom = 257.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_7de7r")
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="ScrollContainer" type="ScrollContainer" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(600, 400)
+layout_mode = 2
+follow_focus = true
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 4
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="GridContainer" type="GridContainer" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer"]
+custom_minimum_size = Vector2(660, 150)
+layout_mode = 2
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 20
+columns = 4
+
+[node name="Example_Level_Card" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer"]
+visible = false
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+focus_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_b7idg")
+metadata/level_id = ""
+
+[node name="AnimatedControl" type="Node" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Example_Level_Card"]
+script = ExtResource("1_b7idg")
+ignore_position = true
+hover_transition = 7
+hover_easing = 2
+hover_scale = Vector2(1.1, 1.1)
+metadata/_custom_type_script = "uid://bmgpsk2dcdkx8"
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Example_Level_Card"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Example_Level_Card/MarginContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Name" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Example_Level_Card/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Level N"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Rating" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Example_Level_Card/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 45
+text = "★☆☆"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Lock" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Example_Level_Card"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 80
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Blank_Level" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+focus_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_b7idg")
+metadata/level_id = "blank50"
+
+[node name="AnimatedControl" type="Node" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Blank_Level"]
+script = ExtResource("1_b7idg")
+ignore_position = true
+hover_transition = 7
+hover_easing = 2
+hover_scale = Vector2(1.1, 1.1)
+metadata/_custom_type_script = "uid://bmgpsk2dcdkx8"
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Blank_Level"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Blank_Level/MarginContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Name" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Blank_Level/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Level 0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Rating" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Blank_Level/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 45
+text = "★★★"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Lock" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Blank_Level"]
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 80
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Level1" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+focus_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_b7idg")
+metadata/level_id = "level_1"
+
+[node name="AnimatedControl" type="Node" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Level1"]
+script = ExtResource("1_b7idg")
+ignore_position = true
+hover_transition = 7
+hover_easing = 2
+hover_scale = Vector2(1.1, 1.1)
+metadata/_custom_type_script = "uid://bmgpsk2dcdkx8"
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Level1"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Level1/MarginContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Name" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Level1/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Level 1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Rating" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Level1/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 45
+text = "☆☆☆"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Lock" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Level1"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 80
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Level2" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+focus_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_b7idg")
+metadata/level_id = "level_2"
+
+[node name="AnimatedControl" type="Node" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Level2"]
+script = ExtResource("1_b7idg")
+ignore_position = true
+hover_transition = 7
+hover_easing = 2
+hover_scale = Vector2(1.1, 1.1)
+metadata/_custom_type_script = "uid://bmgpsk2dcdkx8"
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Level2"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Level2/MarginContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Name" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Level2/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Level 2"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Rating" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Level2/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 45
+text = "☆☆☆"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Lock" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Level2"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 80
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Level3" type="PanelContainer" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+focus_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_b7idg")
+metadata/level_id = "level_3"
+
+[node name="AnimatedControl" type="Node" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Level3"]
+script = ExtResource("1_b7idg")
+ignore_position = true
+hover_transition = 7
+hover_easing = 2
+hover_scale = Vector2(1.1, 1.1)
+metadata/_custom_type_script = "uid://bmgpsk2dcdkx8"
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Level3"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Level3/MarginContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Name" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Level3/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Level 3"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Rating" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Level3/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 45
+text = "☆☆☆"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Lock" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Level3"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 80
+text = "🔒"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="Play" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+disabled = true
+text = "Play"
+
+[node name="AnimatedControl" type="Node" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer/Play"]
+script = ExtResource("1_b7idg")
+hover_position = Vector2(0, -10)
+hover_transition = 7
+hover_easing = 2
+metadata/_custom_type_script = "uid://bmgpsk2dcdkx8"
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="Level_Name" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer2"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Level_Rating" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer2"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Level_Description" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer2"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Back" type="Button" parent="."]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -27.0
+offset_bottom = 50.0
+grow_horizontal = 0
+size_flags_horizontal = 8
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 30
+text = "X"
+
+[node name="Label" type="Label" parent="."]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -138.0
+offset_right = 138.0
+offset_bottom = 83.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 60
+text = "LEVEL SELECTION"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer/Play" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="Back" to="." method="_on_back_pressed"]

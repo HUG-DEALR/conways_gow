@@ -1,0 +1,142 @@
+[gd_scene load_steps=3 format=3 uid="uid://bw10bjlpo0fwl"]
+
+[ext_resource type="Script" uid="uid://47xelxsr5td0" path="res://Scripts/GUI_Standard.gd" id="1_fxpxh"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_go701"]
+bg_color = Color(0, 0, 0, 0)
+
+[node name="GUI_Standard" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("1_fxpxh")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -70.0
+offset_bottom = 190.0
+grow_horizontal = 0
+mouse_filter = 0
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Auto_Play_Container" type="PanelContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+focus_mode = 1
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBoxFlat_go701")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/Auto_Play_Container"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Play_Generations" type="Button" parent="MarginContainer/VBoxContainer/Auto_Play_Container/VBoxContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+tooltip_text = "Auto Play Generations"
+focus_mode = 1
+mouse_filter = 1
+theme_override_font_sizes/font_size = 30
+text = "❯❯"
+
+[node name="GenerationTimer" type="Timer" parent="MarginContainer/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations"]
+wait_time = 0.1
+
+[node name="Speed_Slider" type="VSlider" parent="MarginContainer/VBoxContainer/Auto_Play_Container/VBoxContainer"]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "Generation Speed"
+focus_mode = 1
+mouse_filter = 1
+min_value = 1.0
+max_value = 25.0
+value = 10.0
+
+[node name="Step_Generation" type="Button" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+tooltip_text = "Step 1 Generation"
+focus_mode = 1
+mouse_filter = 1
+theme_override_font_sizes/font_size = 30
+text = "▶"
+
+[node name="Restart" type="Button" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+tooltip_text = "Reset"
+focus_mode = 1
+mouse_filter = 1
+theme_override_font_sizes/font_size = 30
+text = "↻"
+
+[node name="Control" type="Control" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Control"]
+layout_direction = 3
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 50.0
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="Decrease_zoom" type="Button" parent="MarginContainer/VBoxContainer/Control/HBoxContainer"]
+custom_minimum_size = Vector2(20, 50)
+layout_mode = 2
+tooltip_text = "Zoom Out"
+focus_mode = 1
+mouse_filter = 1
+text = "-"
+
+[node name="Zoom_Slider" type="HSlider" parent="MarginContainer/VBoxContainer/Control/HBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+size_flags_vertical = 4
+tooltip_text = "Zoom Slider"
+focus_mode = 1
+mouse_filter = 1
+min_value = 0.1
+max_value = 10.0
+step = 0.1
+value = 2.0
+scrollable = false
+
+[node name="Increase_zoom" type="Button" parent="MarginContainer/VBoxContainer/Control/HBoxContainer"]
+custom_minimum_size = Vector2(20, 50)
+layout_mode = 2
+tooltip_text = "Zoom In"
+focus_mode = 1
+mouse_filter = 1
+text = "+"
+
+[connection signal="mouse_exited" from="MarginContainer" to="." method="_on_left_GUI_container_mouse_exited"]
+[connection signal="mouse_entered" from="MarginContainer/VBoxContainer/Auto_Play_Container" to="." method="_on_auto_play_container_mouse_entered"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations" to="." method="_on_play_generations_pressed"]
+[connection signal="timeout" from="MarginContainer/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations/GenerationTimer" to="." method="_on_generation_timer_timeout"]
+[connection signal="value_changed" from="MarginContainer/VBoxContainer/Auto_Play_Container/VBoxContainer/Speed_Slider" to="." method="_on_speed_slider_value_changed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Step_Generation" to="." method="_on_step_generation_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Restart" to="." method="_on_restart_pressed"]
+[connection signal="mouse_entered" from="MarginContainer/VBoxContainer/Control/HBoxContainer" to="." method="_on_zoom_options_container_mouse_entered"]
+[connection signal="mouse_exited" from="MarginContainer/VBoxContainer/Control/HBoxContainer" to="." method="_on_zoom_options_container_mouse_exited"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Control/HBoxContainer/Decrease_zoom" to="." method="_on_decrease_zoom_pressed"]
+[connection signal="value_changed" from="MarginContainer/VBoxContainer/Control/HBoxContainer/Zoom_Slider" to="." method="_on_zoom_slider_value_changed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Control/HBoxContainer/Increase_zoom" to="." method="_on_increase_zoom_pressed"]

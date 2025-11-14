@@ -1,0 +1,123 @@
+[gd_scene load_steps=3 format=3 uid="uid://bp8sew4hg4ws3"]
+
+[ext_resource type="Script" uid="uid://cvem0e60ni1cf" path="res://Scripts/settings.gd" id="1_4geyq"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_eyi13"]
+bg_color = Color(0, 0.521569, 0.807843, 0.784314)
+border_width_left = 20
+border_width_top = 20
+border_width_right = 20
+border_width_bottom = 20
+border_color = Color(0, 0, 0, 0.196078)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+expand_margin_left = 25.0
+expand_margin_top = 25.0
+expand_margin_right = 25.0
+expand_margin_bottom = 25.0
+shadow_color = Color(0, 0, 0, 0.0588235)
+shadow_size = 1
+shadow_offset = Vector2(-40, 30)
+
+[node name="Settings" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_4geyq")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -50.0
+offset_right = 50.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_eyi13")
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="TabContainer" type="TabContainer" parent="PanelContainer/MarginContainer"]
+custom_minimum_size = Vector2(400, 400)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+current_tab = 0
+
+[node name="Video" type="VBoxContainer" parent="PanelContainer/MarginContainer/TabContainer"]
+layout_mode = 2
+alignment = 1
+metadata/_tab_index = 0
+
+[node name="Label" type="Label" parent="PanelContainer/MarginContainer/TabContainer/Video"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "WIP"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Audio" type="VBoxContainer" parent="PanelContainer/MarginContainer/TabContainer"]
+visible = false
+layout_mode = 2
+alignment = 1
+metadata/_tab_index = 1
+
+[node name="Label" type="Label" parent="PanelContainer/MarginContainer/TabContainer/Audio"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "WIP"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Misc" type="VBoxContainer" parent="PanelContainer/MarginContainer/TabContainer"]
+visible = false
+layout_mode = 2
+alignment = 1
+metadata/_tab_index = 2
+
+[node name="Label" type="Label" parent="PanelContainer/MarginContainer/TabContainer/Misc"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "WIP"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Back" type="Button" parent="PanelContainer/MarginContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 30
+text = "X"
+
+[node name="Label" type="Label" parent="."]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -138.0
+offset_right = 138.0
+offset_bottom = 83.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 60
+text = "SETTINGS"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[connection signal="pressed" from="PanelContainer/MarginContainer/Back" to="." method="_on_back_pressed"]
