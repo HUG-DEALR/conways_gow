@@ -6,6 +6,11 @@ extends Control
 @onready var play_generations: Button = $Right_GUI_Root/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations
 @onready var step_generation: Button = $Right_GUI_Root/VBoxContainer/Step_Generation
 @onready var restart: Button = $Right_GUI_Root/VBoxContainer/Restart
+@onready var save_as_button: Button = $"Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window/Save As"
+@onready var save_button: Button = $Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window/Save
+@onready var open_button: Button = $Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window/Open
+@onready var new_file_button: Button = $Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window/New_File
+@onready var file_name_label: Label = $Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window/File_name
 
 @onready var add_item_panel: PanelContainer = $Left_GUI_Root/VBoxContainer/Add_Item/Add_item_window/Add_item_panel
 @onready var add_item_window: HBoxContainer = $Left_GUI_Root/VBoxContainer/Add_Item/Add_item_window
@@ -18,6 +23,7 @@ var file_options_window_tween: Tween
 var playing_generations: bool = false
 var mouse_over_speed_options: bool = false
 var mouse_over_zoom_options: bool = false
+var active_directory: String = ""
 
 func _ready() -> void:
 	speed_slider.visible = false
@@ -106,6 +112,30 @@ func toggle_expand_file_options_window(set_to_expand: bool) -> void:
 		await file_options_window_tween.finished
 		file_options_window.visible = false
 
+func save_level(level_data: Dictionary) -> void:
+	if active_directory:
+		Global.save_to_file(level_data, active_directory)
+	else:
+		save_level_as(level_data)
+
+func save_level_as(level_data: Dictionary) -> void:
+	active_directory = await Global.prompt_user_for_file_path()
+	var extension: String = active_directory.get_extension()
+	if extension != "cgow":
+		active_directory += ".cgow"
+	Global.save_to_file(level_data, active_directory)
+
+func open_level_from_local() -> void:
+	var open_from_directory: String = await Global.prompt_user_for_file_path("Open", "", "", ["*.cgow"], false)
+	var loaded_file = Global.load_from_file(open_from_directory)
+	if loaded_file:
+		active_directory = open_from_directory
+		file_name_label.text = active_directory.get_file()
+	else:
+		print("Could not open file: " + open_from_directory + "\n" + loaded_file)
+		return
+	Global.world_scene.populate_cells(Vector2i(50,50), loaded_file, true)
+
 func _on_speed_slider_value_changed(value: float) -> void:
 	generation_timer.wait_time = 1.0 / speed_slider.value
 
@@ -172,3 +202,9 @@ func _on_file_options_pressed() -> void:
 
 func _on_file_options_window_mouse_exited() -> void:
 	toggle_expand_file_options_window(false)
+
+func _on_open_file_pressed() -> void:
+	open_level_from_local()
+
+func _on_save_pressed() -> void:
+	save_level(Global.world_scene.live_cells_dict)

@@ -10,6 +10,7 @@ extends Node2D
 	"Main_menu": $CanvasLayer/MainMenu,
 	"Levels_menu": $CanvasLayer/Levels_Menu,
 	"Settings_menu": $CanvasLayer/Settings,
+	"Build_menu": $CanvasLayer/GUI_Standard2,
 }
 
 const cell_size: float = 10.0
@@ -158,8 +159,8 @@ func handle_cell_clicked(cell_index: int) -> void:
 				set_cell_type(cell_index, "alive")
 			"alive": # Black
 				set_cell_type(cell_index, "dead")
-	else:
-		print("invalid cell index passed to handle_cell_clicked()")
+#	else:
+#		print("invalid cell index passed to handle_cell_clicked()")
 
 func clear_grid() -> void:
 	for key in live_cells_dict.keys():
@@ -240,8 +241,15 @@ func button_signal(singal_name: String) -> void:
 			current_sub_menu = "settings"
 			switch_to_menu("Settings_menu")
 		"build":
-			pass
-	#		current_sub_menu = "build"
+			current_sub_menu = "build"
+			switch_to_menu("Build_menu")
+			menus.get("GUI").set_play_pause(false)
+			populate_cells(Vector2i(50,50), {}, true)
+			game_camera.position = Vector2.ZERO
+			game_camera.zoom = Vector2.ONE * 2.0
+	#		var grid_real_size = current_grid_dimensions * (cell_size + cell_margin)
+	#		game_camera.set_bounds(Rect2(Vector2(0,0),grid_real_size))
+			game_camera.make_current()
 		"exit":
 			current_sub_menu = "exit"
 			get_tree().paused = true
@@ -253,8 +261,8 @@ func button_signal(singal_name: String) -> void:
 			menus.get("GUI").set_play_pause(false)
 			game_camera.position = Vector2.ZERO
 			game_camera.zoom = Vector2.ONE * 2.0
-			var grid_real_size = current_grid_dimensions * (cell_size + cell_margin)
-			game_camera.set_bounds(Rect2(Vector2(0,0),grid_real_size))
+	#		var grid_real_size = current_grid_dimensions * (cell_size + cell_margin)
+	#		game_camera.set_bounds(Rect2(Vector2(0,0),grid_real_size))
 			game_camera.make_current()
 
 # Misc functions

@@ -17,7 +17,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			var mouse_pos_before_zoom: Vector2 = get_global_mouse_position()
 			set_zoom_clamped(1.0/1.1,true)
 			move_after_zoom(mouse_pos_before_zoom)
-			print(global_position)
 
 func _process(delta: float) -> void:
 	var input_direction: Vector2 = Input.get_vector("ui_left","ui_right","ui_up","ui_down")

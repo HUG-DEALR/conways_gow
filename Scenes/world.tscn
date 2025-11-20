@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://43wu14oo2txe"]
+[gd_scene load_steps=11 format=3 uid="uid://43wu14oo2txe"]
 
 [ext_resource type="Script" uid="uid://b7wmx1vkun2bp" path="res://Scripts/world.gd" id="1_go701"]
 [ext_resource type="Script" uid="uid://c8v1d7jx6ajim" path="res://Scripts/Game_camera.gd" id="2_5a7ea"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://bw10bjlpo0fwl" path="res://Scenes/Menus/GUI_Standard.tscn" id="3_5ukr8"]
 [ext_resource type="PackedScene" uid="uid://hpbibvj47tnf" path="res://Scenes/Menus/levels_menu.tscn" id="4_8j60k"]
 [ext_resource type="PackedScene" uid="uid://bp8sew4hg4ws3" path="res://Scenes/Menus/settings.tscn" id="5_fo5ed"]
+[ext_resource type="PackedScene" uid="uid://8kbmirp7geg7" path="res://Scenes/Menus/GUI_Build.tscn" id="7_o06y3"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fj7yv"]
 shading_mode = 0
@@ -48,3 +49,6 @@ visible = false
 [node name="Settings" parent="CanvasLayer" instance=ExtResource("5_fo5ed")]
 visible = false
 mouse_filter = 1
+
+[node name="GUI_Standard2" parent="CanvasLayer" instance=ExtResource("7_o06y3")]
+visible = false

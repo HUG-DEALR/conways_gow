@@ -330,5 +330,7 @@ wip"
 [connection signal="pressed" from="Right_GUI_Root/VBoxContainer/Control/Zoom_Options_Container/Increase_zoom" to="." method="_on_increase_zoom_pressed"]
 [connection signal="pressed" from="Left_GUI_Root/VBoxContainer/File_Options" to="." method="_on_file_options_pressed"]
 [connection signal="mouse_exited" from="Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window" to="." method="_on_file_options_window_mouse_exited"]
+[connection signal="pressed" from="Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window/Save" to="." method="_on_save_pressed"]
+[connection signal="pressed" from="Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window/Open" to="." method="_on_open_file_pressed"]
 [connection signal="pressed" from="Left_GUI_Root/VBoxContainer/Add_Item" to="." method="_on_add_item_pressed"]
 [connection signal="mouse_exited" from="Left_GUI_Root/VBoxContainer/Add_Item/Add_item_window" to="." method="_on_add_item_window_mouse_exited"]
