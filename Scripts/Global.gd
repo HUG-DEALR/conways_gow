@@ -1,7 +1,11 @@
 extends Node
 
-const alive_colour: Color = Color(0.0,0.5,0.7,1.0)
-const dead_colour: Color = Color(0.1,0.1,0.1,1.0) # Dark Grey
+var alive_colour: Color = Color(0.0,0.5,0.7,1.0)
+var dead_colour: Color = Color(0.1,0.1,0.1,1.0)
+var enemy_colour: Color = Color(0.7,0.2,0.0,1.0)
+var ally_colour: Color = Color(0.0,0.7,0.5,1.0)
+var static_alive_colour: Color = Color(0.0,0.2,0.3,1.0)
+var static_dead_colour: Color = Color(0.0,0.0,0.0,1.0)
 
 var world_scene: Node2D
 var menu_camera: Camera2D

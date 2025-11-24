@@ -46,6 +46,7 @@ func toggle_expand_zoom_slider(set_to_expand: bool) -> void:
 	zoom_slider_tween.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_CUBIC)
 	if set_to_expand:
 		zoom_slider_tween.tween_property(zoom_slider, "custom_minimum_size", Vector2(100.0,50.0), 0.1)
+		zoom_slider.value = Global.game_camera.zoom.x
 		zoom_slider.visible = true
 		zoom_slider_tween.play()
 	else:

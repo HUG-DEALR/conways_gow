@@ -6,28 +6,31 @@ extends Control
 @onready var play_generations: Button = $Right_GUI_Root/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations
 @onready var step_generation: Button = $Right_GUI_Root/VBoxContainer/Step_Generation
 @onready var restart: Button = $Right_GUI_Root/VBoxContainer/Restart
-@onready var save_as_button: Button = $"Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window/Save As"
-@onready var save_button: Button = $Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window/Save
-@onready var open_button: Button = $Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window/Open
-@onready var new_file_button: Button = $Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window/New_File
 @onready var file_name_label: Label = $Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window/File_name
+@onready var reset_options_container: HBoxContainer = $Right_GUI_Root/VBoxContainer/Restart/Reset_Options_Container
 
 @onready var add_item_panel: PanelContainer = $Left_GUI_Root/VBoxContainer/Add_Item/Add_item_window/Add_item_panel
 @onready var add_item_window: HBoxContainer = $Left_GUI_Root/VBoxContainer/Add_Item/Add_item_window
 @onready var file_options_window: HBoxContainer = $Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window
+@onready var generic_zone = preload("res://Scenes/Props/zone.tscn")
 
 var speed_slider_tween: Tween
 var zoom_slider_tween: Tween
+var reset_options_tween: Tween
 var new_item_window_tween: Tween
 var file_options_window_tween: Tween
 var playing_generations: bool = false
 var mouse_over_speed_options: bool = false
 var mouse_over_zoom_options: bool = false
+var mouse_over_reset_options: bool = false
 var active_directory: String = ""
+var zones_dict: Dictionary = {}
 
 func _ready() -> void:
 	speed_slider.visible = false
 	zoom_slider.visible = false
+	reset_options_container.visible = false
+	reset_options_container.scale.x = 0.0
 	add_item_window.visible = false
 	file_options_window.visible = false
 
@@ -58,6 +61,7 @@ func toggle_expand_zoom_slider(set_to_expand: bool) -> void:
 	zoom_slider_tween.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_CUBIC)
 	if set_to_expand:
 		zoom_slider_tween.tween_property(zoom_slider, "custom_minimum_size", Vector2(100.0,50.0), 0.1)
+		zoom_slider.value = Global.game_camera.zoom.x
 		zoom_slider.visible = true
 		zoom_slider_tween.play()
 	else:
@@ -65,6 +69,23 @@ func toggle_expand_zoom_slider(set_to_expand: bool) -> void:
 		zoom_slider_tween.play()
 		await zoom_slider_tween.finished
 		zoom_slider.visible = false
+
+func toggle_expand_reset_options(set_to_expand: bool) -> void:
+	if reset_options_tween:
+		reset_options_tween.kill()
+	reset_options_tween = get_tree().create_tween()
+	reset_options_tween.pause()
+	reset_options_tween.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_CUBIC)
+	if set_to_expand:
+	#	reset_options_tween.tween_property(reset_options_container, "scale", Vector2(0.0,1.0), 0.0)
+		reset_options_tween.tween_property(reset_options_container, "scale", Vector2.ONE, 0.15)
+		reset_options_container.visible = true
+		reset_options_tween.play()
+	else:
+		reset_options_tween.tween_property(reset_options_container, "scale", Vector2(0.0,1.0), 0.15)
+		reset_options_tween.play()
+		await reset_options_tween.finished
+		reset_options_container.visible = false
 
 func set_play_pause(set_to_play: bool) -> void:
 	if set_to_play:
@@ -155,9 +176,10 @@ func _on_auto_play_container_mouse_entered() -> void:
 
 func _on_left_GUI_container_mouse_exited() -> void:
 	mouse_over_speed_options = false
-	if not mouse_over_zoom_options:
+	if not mouse_over_zoom_options and not mouse_over_reset_options:
 		toggle_expand_speed_slider(false)
 		toggle_expand_zoom_slider(false)
+		toggle_expand_reset_options(false)
 		var focus_owner = get_viewport().gui_get_focus_owner()
 		if focus_owner:
 			focus_owner.release_focus()
@@ -168,9 +190,10 @@ func _on_zoom_options_container_mouse_entered() -> void:
 
 func _on_zoom_options_container_mouse_exited() -> void:
 	mouse_over_zoom_options = false
-	if not mouse_over_speed_options:
+	if not mouse_over_speed_options and not mouse_over_reset_options:
 		toggle_expand_speed_slider(false)
 		toggle_expand_zoom_slider(false)
+		toggle_expand_reset_options(false)
 		var focus_owner = get_viewport().gui_get_focus_owner()
 		if focus_owner:
 			focus_owner.release_focus()
@@ -185,10 +208,6 @@ func _on_decrease_zoom_pressed() -> void:
 
 func _on_zoom_slider_value_changed(value: float) -> void:
 	Global.game_camera.set_zoom_clamped(value, false)
-
-func _on_restart_pressed() -> void:
-	Global.world_scene.clear_grid()
-	set_play_pause(false)
 
 func _on_add_item_pressed() -> void:
 	toggle_expand_new_item_window(!add_item_window.visible)
@@ -208,3 +227,34 @@ func _on_open_file_pressed() -> void:
 
 func _on_save_pressed() -> void:
 	save_level(Global.world_scene.live_cells_dict)
+
+func _on_new_file_pressed() -> void:
+	Global.world_scene.clear_grid()
+	set_play_pause(false)
+	file_name_label.text = "new_level.cgow"
+	active_directory = ""
+
+func _on_reset_build_to_clear_mouse_entered() -> void:
+	toggle_expand_reset_options(true)
+	mouse_over_reset_options = true
+
+func _on_reset_options_container_mouse_exited() -> void:
+	mouse_over_reset_options = false
+	if not mouse_over_speed_options and not mouse_over_zoom_options:
+		toggle_expand_speed_slider(false)
+		toggle_expand_zoom_slider(false)
+		toggle_expand_reset_options(false)
+		var focus_owner = get_viewport().gui_get_focus_owner()
+		if focus_owner:
+			focus_owner.release_focus()
+
+func _on_reset_to_clear_pressed() -> void:
+	Global.world_scene.clear_grid()
+	set_play_pause(false)
+
+func _on_new_zone_button_pressed() -> void:
+	var new_zone = generic_zone.instantiate()
+	Global.world_scene.add_child(new_zone)
+	zones_dict[new_zone] = []
+	new_zone.visible = true
+	new_zone.global_position = Global.game_camera.global_position

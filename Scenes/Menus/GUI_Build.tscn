@@ -1,9 +1,18 @@
-[gd_scene load_steps=4 format=3 uid="uid://8kbmirp7geg7"]
+[gd_scene load_steps=5 format=3 uid="uid://8kbmirp7geg7"]
 
 [ext_resource type="Script" uid="uid://dqmrmfmv2jixh" path="res://Scripts/GUI_Build.gd" id="1_7v46b"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_go701"]
 bg_color = Color(0, 0, 0, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7v46b"]
+content_margin_left = 15.0
+content_margin_right = 15.0
+bg_color = Color(1, 1, 1, 0.5)
+corner_radius_top_left = 25
+corner_radius_top_right = 25
+corner_radius_bottom_right = 25
+corner_radius_bottom_left = 25
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_57d56"]
 content_margin_left = 10.0
@@ -93,11 +102,47 @@ text = "▶"
 [node name="Restart" type="Button" parent="Right_GUI_Root/VBoxContainer"]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
-tooltip_text = "Reset"
 focus_mode = 1
 mouse_filter = 1
 theme_override_font_sizes/font_size = 30
 text = "↻"
+
+[node name="Reset_Options_Container" type="HBoxContainer" parent="Right_GUI_Root/VBoxContainer/Restart"]
+show_behind_parent = true
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -280.0
+offset_bottom = 50.0
+grow_horizontal = 0
+pivot_offset = Vector2(280, 0)
+theme_override_constants/separation = 10
+
+[node name="Reset_To_Clear" type="Button" parent="Right_GUI_Root/VBoxContainer/Restart/Reset_Options_Container"]
+show_behind_parent = true
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+tooltip_text = "Reset the built level to the last saved state"
+focus_mode = 1
+mouse_filter = 1
+theme_override_font_sizes/font_size = 20
+text = "Clear All"
+
+[node name="Reset_To_Saved" type="Button" parent="Right_GUI_Root/VBoxContainer/Restart/Reset_Options_Container"]
+show_behind_parent = true
+custom_minimum_size = Vector2(170, 0)
+layout_mode = 2
+tooltip_text = "Reset the built level to the last saved state"
+focus_mode = 1
+mouse_filter = 1
+theme_override_font_sizes/font_size = 20
+text = "Reset to Saved"
+
+[node name="Gap_Enforcer" type="Control" parent="Right_GUI_Root/VBoxContainer/Restart/Reset_Options_Container"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+mouse_filter = 1
 
 [node name="Control" type="Control" parent="Right_GUI_Root/VBoxContainer"]
 custom_minimum_size = Vector2(50, 50)
@@ -128,8 +173,10 @@ size_flags_vertical = 4
 tooltip_text = "Zoom Slider"
 focus_mode = 1
 mouse_filter = 1
-min_value = 1.0
-value = 20.0
+min_value = 0.1
+max_value = 10.0
+step = 0.1
+value = 2.0
 scrollable = false
 
 [node name="Increase_zoom" type="Button" parent="Right_GUI_Root/VBoxContainer/Control/Zoom_Options_Container"]
@@ -175,11 +222,11 @@ custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 mouse_filter = 1
 
-[node name="Save As" type="Button" parent="Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window"]
+[node name="Save_As" type="Button" parent="Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window"]
 show_behind_parent = true
 custom_minimum_size = Vector2(100, 50)
 layout_mode = 2
-tooltip_text = "File"
+tooltip_text = "Save current build to local file"
 focus_mode = 1
 mouse_filter = 1
 theme_override_font_sizes/font_size = 20
@@ -189,7 +236,7 @@ text = "Save As"
 show_behind_parent = true
 custom_minimum_size = Vector2(70, 50)
 layout_mode = 2
-tooltip_text = "File"
+tooltip_text = "Save current build to local file"
 focus_mode = 1
 mouse_filter = 1
 theme_override_font_sizes/font_size = 20
@@ -199,7 +246,7 @@ text = "Save"
 show_behind_parent = true
 custom_minimum_size = Vector2(80, 50)
 layout_mode = 2
-tooltip_text = "File"
+tooltip_text = "Open build from file"
 focus_mode = 1
 mouse_filter = 1
 theme_override_font_sizes/font_size = 20
@@ -209,7 +256,7 @@ text = "Open"
 show_behind_parent = true
 custom_minimum_size = Vector2(70, 50)
 layout_mode = 2
-tooltip_text = "File"
+tooltip_text = "Create new blank build"
 focus_mode = 1
 mouse_filter = 1
 theme_override_font_sizes/font_size = 20
@@ -217,15 +264,19 @@ text = "New"
 
 [node name="File_name" type="Label" parent="Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window"]
 layout_mode = 2
+tooltip_text = "Build name"
+mouse_filter = 1
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 30
-text = "File_Name.cgow"
+theme_override_styles/normal = SubResource("StyleBoxFlat_7v46b")
+text = "new_level.cgow"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Level_Settings" type="Button" parent="Left_GUI_Root/VBoxContainer"]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
-tooltip_text = "File"
+tooltip_text = "Settings"
 focus_mode = 1
 mouse_filter = 1
 theme_override_font_sizes/font_size = 30
@@ -276,45 +327,13 @@ theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
 columns = 4
 
-[node name="New_Build_Zone_Button" type="Button" parent="Left_GUI_Root/VBoxContainer/Add_Item/Add_item_window/Add_item_panel/add_item_scroll_container/MarginContainer/GridContainer"]
+[node name="New_Zone_Button" type="Button" parent="Left_GUI_Root/VBoxContainer/Add_Item/Add_item_window/Add_item_panel/add_item_scroll_container/MarginContainer/GridContainer"]
 custom_minimum_size = Vector2(100, 100)
 layout_mode = 2
 tooltip_text = "Create a build zone"
 mouse_filter = 1
-theme_override_font_sizes/font_size = 20
-text = "Build
-Zone
-wip"
-
-[node name="New_No_Build_Zone_Button" type="Button" parent="Left_GUI_Root/VBoxContainer/Add_Item/Add_item_window/Add_item_panel/add_item_scroll_container/MarginContainer/GridContainer"]
-custom_minimum_size = Vector2(100, 100)
-layout_mode = 2
-tooltip_text = "Create a build zone"
-mouse_filter = 1
-theme_override_font_sizes/font_size = 20
-text = "No Build
-Zone
-wip"
-
-[node name="New_Victory_Condition" type="Button" parent="Left_GUI_Root/VBoxContainer/Add_Item/Add_item_window/Add_item_panel/add_item_scroll_container/MarginContainer/GridContainer"]
-custom_minimum_size = Vector2(100, 100)
-layout_mode = 2
-tooltip_text = "Create a build zone"
-mouse_filter = 1
-theme_override_font_sizes/font_size = 18
-text = "Victory
-Condition
-wip"
-
-[node name="New_Victory_Condition2" type="Button" parent="Left_GUI_Root/VBoxContainer/Add_Item/Add_item_window/Add_item_panel/add_item_scroll_container/MarginContainer/GridContainer"]
-custom_minimum_size = Vector2(100, 100)
-layout_mode = 2
-tooltip_text = "Create a build zone"
-mouse_filter = 1
-theme_override_font_sizes/font_size = 18
-text = "Failure
-Condition
-wip"
+theme_override_font_sizes/font_size = 30
+text = "Zone"
 
 [connection signal="mouse_exited" from="Right_GUI_Root" to="." method="_on_left_GUI_container_mouse_exited"]
 [connection signal="mouse_entered" from="Right_GUI_Root/VBoxContainer/Auto_Play_Container" to="." method="_on_auto_play_container_mouse_entered"]
@@ -322,7 +341,9 @@ wip"
 [connection signal="timeout" from="Right_GUI_Root/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations/GenerationTimer" to="." method="_on_generation_timer_timeout"]
 [connection signal="value_changed" from="Right_GUI_Root/VBoxContainer/Auto_Play_Container/VBoxContainer/Speed_Slider" to="." method="_on_speed_slider_value_changed"]
 [connection signal="pressed" from="Right_GUI_Root/VBoxContainer/Step_Generation" to="." method="_on_step_generation_pressed"]
-[connection signal="pressed" from="Right_GUI_Root/VBoxContainer/Restart" to="." method="_on_restart_pressed"]
+[connection signal="mouse_entered" from="Right_GUI_Root/VBoxContainer/Restart" to="." method="_on_reset_build_to_clear_mouse_entered"]
+[connection signal="mouse_exited" from="Right_GUI_Root/VBoxContainer/Restart/Reset_Options_Container" to="." method="_on_reset_options_container_mouse_exited"]
+[connection signal="pressed" from="Right_GUI_Root/VBoxContainer/Restart/Reset_Options_Container/Reset_To_Clear" to="." method="_on_reset_to_clear_pressed"]
 [connection signal="mouse_entered" from="Right_GUI_Root/VBoxContainer/Control/Zoom_Options_Container" to="." method="_on_zoom_options_container_mouse_entered"]
 [connection signal="mouse_exited" from="Right_GUI_Root/VBoxContainer/Control/Zoom_Options_Container" to="." method="_on_zoom_options_container_mouse_exited"]
 [connection signal="pressed" from="Right_GUI_Root/VBoxContainer/Control/Zoom_Options_Container/Decrease_zoom" to="." method="_on_decrease_zoom_pressed"]
@@ -332,5 +353,7 @@ wip"
 [connection signal="mouse_exited" from="Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window" to="." method="_on_file_options_window_mouse_exited"]
 [connection signal="pressed" from="Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window/Save" to="." method="_on_save_pressed"]
 [connection signal="pressed" from="Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window/Open" to="." method="_on_open_file_pressed"]
+[connection signal="pressed" from="Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window/New_File" to="." method="_on_new_file_pressed"]
 [connection signal="pressed" from="Left_GUI_Root/VBoxContainer/Add_Item" to="." method="_on_add_item_pressed"]
 [connection signal="mouse_exited" from="Left_GUI_Root/VBoxContainer/Add_Item/Add_item_window" to="." method="_on_add_item_window_mouse_exited"]
+[connection signal="pressed" from="Left_GUI_Root/VBoxContainer/Add_Item/Add_item_window/Add_item_panel/add_item_scroll_container/MarginContainer/GridContainer/New_Zone_Button" to="." method="_on_new_zone_button_pressed"]

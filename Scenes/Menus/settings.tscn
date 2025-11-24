@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://bp8sew4hg4ws3"]
+[gd_scene load_steps=4 format=3 uid="uid://bp8sew4hg4ws3"]
 
 [ext_resource type="Script" uid="uid://cvem0e60ni1cf" path="res://Scripts/settings.gd" id="1_4geyq"]
 
@@ -21,6 +21,15 @@ shadow_color = Color(0, 0, 0, 0.0588235)
 shadow_size = 1
 shadow_offset = Vector2(-40, 30)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mfqmm"]
+content_margin_left = 15.0
+content_margin_right = 15.0
+bg_color = Color(1, 1, 1, 0.5)
+corner_radius_top_left = 25
+corner_radius_top_right = 25
+corner_radius_bottom_right = 25
+corner_radius_bottom_left = 25
+
 [node name="Settings" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -31,7 +40,7 @@ grow_vertical = 2
 script = ExtResource("1_4geyq")
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
-custom_minimum_size = Vector2(100, 100)
+custom_minimum_size = Vector2(600, 450)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -57,19 +66,62 @@ theme_override_constants/margin_bottom = 5
 custom_minimum_size = Vector2(400, 400)
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
-current_tab = 0
+current_tab = 2
 
 [node name="Video" type="VBoxContainer" parent="PanelContainer/MarginContainer/TabContainer"]
+visible = false
 layout_mode = 2
 alignment = 1
 metadata/_tab_index = 0
 
-[node name="Label" type="Label" parent="PanelContainer/MarginContainer/TabContainer/Video"]
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/TabContainer/Video"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Label" type="Label" parent="PanelContainer/MarginContainer/TabContainer/Video/HBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
-text = "WIP"
+text = "Resolution"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="xResolution" type="LineEdit" parent="PanelContainer/MarginContainer/TabContainer/Video/HBoxContainer"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "1600"
+placeholder_text = "X pixels"
+alignment = 1
+max_length = 5
+emoji_menu_enabled = false
+
+[node name="Label2" type="Label" parent="PanelContainer/MarginContainer/TabContainer/Video/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "x"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="yResolution" type="LineEdit" parent="PanelContainer/MarginContainer/TabContainer/Video/HBoxContainer"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "900"
+placeholder_text = "Y pixels"
+alignment = 1
+max_length = 5
+emoji_menu_enabled = false
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="PanelContainer/MarginContainer/TabContainer/Video"]
+layout_mode = 2
+alignment = 1
+
+[node name="Apply_Video" type="Button" parent="PanelContainer/MarginContainer/TabContainer/Video/HBoxContainer2"]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Apply"
 
 [node name="Audio" type="VBoxContainer" parent="PanelContainer/MarginContainer/TabContainer"]
 visible = false
@@ -85,17 +137,203 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Misc" type="VBoxContainer" parent="PanelContainer/MarginContainer/TabContainer"]
-visible = false
 layout_mode = 2
+theme_override_constants/separation = 10
 alignment = 1
 metadata/_tab_index = 2
 
-[node name="Label" type="Label" parent="PanelContainer/MarginContainer/TabContainer/Misc"]
+[node name="GridContainer" type="GridContainer" parent="PanelContainer/MarginContainer/TabContainer/Misc"]
 layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/h_separation = -5
+theme_override_constants/v_separation = -5
+columns = 3
+
+[node name="Dead" type="ColorPickerButton" parent="PanelContainer/MarginContainer/TabContainer/Misc/GridContainer"]
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+theme_override_constants/outline_size = 10
 theme_override_font_sizes/font_size = 30
-text = "WIP"
+color = Color(0.1, 0.1, 0.1, 1)
+edit_alpha = false
+
+[node name="Label" type="Label" parent="PanelContainer/MarginContainer/TabContainer/Misc/GridContainer/Dead"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -25.0
+offset_right = 50.0
+offset_bottom = 25.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 25
+theme_override_styles/normal = SubResource("StyleBoxFlat_mfqmm")
+text = "Empty"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="Alive" type="ColorPickerButton" parent="PanelContainer/MarginContainer/TabContainer/Misc/GridContainer"]
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 30
+color = Color(0, 0.5, 0.7, 1)
+edit_alpha = false
+
+[node name="Label" type="Label" parent="PanelContainer/MarginContainer/TabContainer/Misc/GridContainer/Alive"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -53.5
+offset_top = -25.0
+offset_right = 53.5
+offset_bottom = 25.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 25
+theme_override_styles/normal = SubResource("StyleBoxFlat_mfqmm")
+text = "Alive"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Enemy" type="ColorPickerButton" parent="PanelContainer/MarginContainer/TabContainer/Misc/GridContainer"]
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 30
+color = Color(0.7, 0.2, 0, 1)
+edit_alpha = false
+
+[node name="Label" type="Label" parent="PanelContainer/MarginContainer/TabContainer/Misc/GridContainer/Enemy"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -53.5
+offset_top = -25.0
+offset_right = 53.5
+offset_bottom = 25.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 25
+theme_override_styles/normal = SubResource("StyleBoxFlat_mfqmm")
+text = "Target"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Static_Dead" type="ColorPickerButton" parent="PanelContainer/MarginContainer/TabContainer/Misc/GridContainer"]
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 30
+edit_alpha = false
+
+[node name="Label" type="Label" parent="PanelContainer/MarginContainer/TabContainer/Misc/GridContainer/Static_Dead"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -42.5
+offset_top = -25.0
+offset_right = 42.5
+offset_bottom = 25.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 25
+theme_override_styles/normal = SubResource("StyleBoxFlat_mfqmm")
+text = "Hole"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Static_Alive" type="ColorPickerButton" parent="PanelContainer/MarginContainer/TabContainer/Misc/GridContainer"]
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 30
+color = Color(0, 0.2, 0.3, 1)
+edit_alpha = false
+
+[node name="Label" type="Label" parent="PanelContainer/MarginContainer/TabContainer/Misc/GridContainer/Static_Alive"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -41.0
+offset_top = -25.0
+offset_right = 41.0
+offset_bottom = 25.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 25
+theme_override_styles/normal = SubResource("StyleBoxFlat_mfqmm")
+text = "Pole"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Ally" type="ColorPickerButton" parent="PanelContainer/MarginContainer/TabContainer/Misc/GridContainer"]
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 30
+color = Color(0, 0.7, 0.5, 1)
+edit_alpha = false
+
+[node name="Label" type="Label" parent="PanelContainer/MarginContainer/TabContainer/Misc/GridContainer/Ally"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -42.5
+offset_top = -25.0
+offset_right = 42.5
+offset_bottom = 25.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 25
+theme_override_styles/normal = SubResource("StyleBoxFlat_mfqmm")
+text = "Ally"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Apply_Misc" type="Button" parent="PanelContainer/MarginContainer/TabContainer/Misc"]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 30
+text = "Apply"
 
 [node name="Back" type="Button" parent="PanelContainer/MarginContainer"]
 custom_minimum_size = Vector2(50, 50)

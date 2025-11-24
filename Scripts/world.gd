@@ -5,6 +5,7 @@ extends Node2D
 @onready var game_camera: Camera2D = $Game_Camera
 @onready var menu_camera: Camera2D = $Rot_Parent/Menu_Camera
 @onready var rot_parent_menu_camera: Node2D = $Rot_Parent
+@onready var canvas_layer: CanvasLayer = $CanvasLayer
 @onready var menus: Dictionary = {
 	"GUI": $CanvasLayer/GUI_Standard,
 	"Main_menu": $CanvasLayer/MainMenu,
