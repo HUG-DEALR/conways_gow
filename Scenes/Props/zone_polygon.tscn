@@ -1,0 +1,44 @@
+[gd_scene load_steps=3 format=3 uid="uid://qnanrg2te133"]
+
+[ext_resource type="Script" uid="uid://dmbc3gojlglpe" path="res://Scripts/zone_polygon.gd" id="1_ca12x"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_q4kkf"]
+size = Vector2(5, 5)
+
+[node name="ZonePolygon" type="Polygon2D"]
+color = Color(0, 0.5, 0.7, 0.2)
+polygon = PackedVector2Array(0, 0, 10, 0, 10, 10, 0, 10)
+script = ExtResource("1_ca12x")
+
+[node name="Top_Left_Area2D" type="Area2D" parent="."]
+position = Vector2(2.5, 2.5)
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Top_Left_Area2D"]
+shape = SubResource("RectangleShape2D_q4kkf")
+
+[node name="Top_Right_Area2D" type="Area2D" parent="."]
+position = Vector2(7.5, 2.5)
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Top_Right_Area2D"]
+shape = SubResource("RectangleShape2D_q4kkf")
+
+[node name="Bottom_Right_Area2D" type="Area2D" parent="."]
+position = Vector2(7.5, 7.5)
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bottom_Right_Area2D"]
+shape = SubResource("RectangleShape2D_q4kkf")
+
+[node name="Bottom_Left_Area2D" type="Area2D" parent="."]
+position = Vector2(2.5, 7.5)
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bottom_Left_Area2D"]
+shape = SubResource("RectangleShape2D_q4kkf")
+
+[connection signal="input_event" from="Top_Left_Area2D" to="." method="_on_top_left_area_2d_input_event"]
+[connection signal="input_event" from="Top_Right_Area2D" to="." method="_on_top_right_area_2d_input_event"]
+[connection signal="input_event" from="Bottom_Right_Area2D" to="." method="_on_bottom_right_area_2d_input_event"]
+[connection signal="input_event" from="Bottom_Left_Area2D" to="." method="_on_bottom_left_area_2d_input_event"]
