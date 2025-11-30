@@ -130,6 +130,9 @@ func _update_corner_positions() -> void:
 	central_area_2d.position = (polygon[0] + polygon[2])/2.0
 	central_collision_shape_2d.shape.size = abs(polygon[2] - polygon[0]) - min_dimensions
 
+func get_rect() -> Rect2:
+	return Rect2(global_position, polygon[0]-polygon[2])
+
 func set_zone_type(type: String) -> void:
 	match type:
 		"can build here":
@@ -151,7 +154,7 @@ func toggle_zone_menu_visible(make_visible: bool) -> void:
 	menu_tween = get_tree().create_tween()
 	menu_tween.pause()
 	menu_tween.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_CUBIC)
-	gui_parent.pivot_offset = get_viewport().get_canvas_transform() * (global_position)
+	gui_parent.pivot_offset = get_viewport().get_canvas_transform() * (global_position) - gui_parent.position
 	if make_visible:
 		update_zone_options()
 		menu_tween.tween_property(gui_parent, "scale", Vector2.ZERO, 0.0)

@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://qnanrg2te133"]
+[gd_scene load_steps=7 format=3 uid="uid://qnanrg2te133"]
 
 [ext_resource type="Script" uid="uid://dmbc3gojlglpe" path="res://Scripts/zone_polygon.gd" id="1_ca12x"]
+[ext_resource type="Script" uid="uid://txtuki7uwirm" path="res://Scripts/zone_options_menu.gd" id="2_2eug0"]
 [ext_resource type="StyleBox" uid="uid://bvp8auwdu5u7l" path="res://Resources/general_menu_stylebox.tres" id="2_q4kkf"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_q4kkf"]
@@ -85,6 +86,23 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
+script = ExtResource("2_2eug0")
+
+[node name="Drag_Button" type="Button" parent="GUI_Parent"]
+modulate = Color(1, 1, 1, 0)
+custom_minimum_size = Vector2(685, 400)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -342.5
+offset_top = -200.0
+offset_right = 342.5
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+mouse_filter = 1
 
 [node name="PanelContainer" type="PanelContainer" parent="GUI_Parent"]
 layout_mode = 1
@@ -93,10 +111,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
-offset_bottom = 20.0
+offset_left = -320.0
+offset_top = -176.0
+offset_right = 320.0
+offset_bottom = 176.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = ExtResource("2_q4kkf")
@@ -409,5 +427,7 @@ text = "Cancel"
 [connection signal="input_event" from="Bottom_Right_Area2D" to="." method="_on_bottom_right_area_2d_input_event"]
 [connection signal="input_event" from="Bottom_Left_Area2D" to="." method="_on_bottom_left_area_2d_input_event"]
 [connection signal="input_event" from="Central_Area2D" to="." method="_on_central_area_2d_input_event"]
+[connection signal="button_down" from="GUI_Parent/Drag_Button" to="GUI_Parent" method="_on_drag_button_button_down"]
+[connection signal="button_up" from="GUI_Parent/Drag_Button" to="GUI_Parent" method="_on_drag_button_button_up"]
 [connection signal="pressed" from="GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer/Apply" to="." method="_on_apply_zone_options_pressed"]
 [connection signal="pressed" from="GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer/Cancel" to="." method="_on_cancel_pressed"]

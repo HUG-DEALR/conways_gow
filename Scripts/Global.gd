@@ -106,3 +106,18 @@ func prompt_user_for_file_path(
 	
 	dialog.queue_free()
 	return result
+
+func get_offset_to_be_fully_visible(control: Control) -> Vector2:
+	var rect: Rect2 = control.get_global_rect()
+	var viewport_size: Vector2 = control.get_viewport_rect().size
+	var offset: Vector2 = Vector2.ZERO
+	# Check left and top overflow (negative position)
+	if rect.position.x < 0:
+		offset.x = -rect.position.x
+	elif rect.position.x + rect.size.x > viewport_size.x:
+		offset.x = viewport_size.x - (rect.position.x + rect.size.x)
+	if rect.position.y < 0:
+		offset.y = -rect.position.y
+	elif rect.position.y + rect.size.y > viewport_size.y:
+		offset.y = viewport_size.y - (rect.position.y + rect.size.y)
+	return offset
