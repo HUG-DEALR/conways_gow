@@ -218,9 +218,12 @@ func switch_to_menu(menu_name: String, instant_transition: bool = false) -> void
 		menu_transition_tween = get_tree().root.create_tween()
 		menu_transition_tween.pause()
 		menu_transition_tween.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_CUBIC)
-		menu_transition_tween.tween_property(current_menu, "position", Vector2(get_viewport().size.x + current_menu.size.x, 0.0), 0.5)
+		var max_screen_vector: Vector2 = Vector2((get_viewport().size.x + new_menu.size.x),(get_viewport().size.y + new_menu.size.y))
+		var transition_vector: Vector2 = [Vector2(-1,-1),Vector2(-1,0),Vector2(-1,1),Vector2(0,-1),Vector2(0,1),Vector2(1,-1),Vector2(1,0),Vector2(1,1)].pick_random()
+		transition_vector = Vector2(max_screen_vector.x * transition_vector.x,max_screen_vector.y * transition_vector.y)
+		menu_transition_tween.tween_property(current_menu, "position", transition_vector, 0.5)
 		
-		new_menu.position.x = -1 * (get_viewport().size.x + new_menu.size.x)
+		new_menu.position = -1 * transition_vector
 		new_menu.visible = true
 		menu_transition_tween.parallel().tween_property(new_menu, "position", Vector2.ZERO, 0.5)
 		
