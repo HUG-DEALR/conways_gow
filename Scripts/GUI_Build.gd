@@ -12,7 +12,7 @@ extends Control
 @onready var add_item_panel: PanelContainer = $Left_GUI_Root/VBoxContainer/Add_Item/Add_item_window/Add_item_panel
 @onready var add_item_window: HBoxContainer = $Left_GUI_Root/VBoxContainer/Add_Item/Add_item_window
 @onready var file_options_window: HBoxContainer = $Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window
-@onready var generic_zone = preload("res://Scenes/Props/zone.tscn")
+@onready var generic_zone = preload("res://Scenes/Props/zone_polygon.tscn")
 
 var speed_slider_tween: Tween
 var zoom_slider_tween: Tween
