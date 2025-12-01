@@ -7,6 +7,10 @@ extends Polygon2D
 @onready var gui_parent: Control = $GUI_Parent
 @onready var tab_container: TabContainer = $GUI_Parent/PanelContainer/VBoxContainer/TabContainer
 @onready var zone_name_line_edit: LineEdit = $GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer/Zone_Name_LineEdit
+@onready var can_build_zone_option_filter: OptionButton = $GUI_Parent/PanelContainer/VBoxContainer/TabContainer/Can_Build_Here/VBoxContainer/HBoxContainer/OptionButton2
+@onready var no_build_zone_option_filter: OptionButton = $GUI_Parent/PanelContainer/VBoxContainer/TabContainer/No_Build_Here/VBoxContainer/HBoxContainer/OptionButton2
+@onready var trigger_zone_option_gate: OptionButton = $GUI_Parent/PanelContainer/VBoxContainer/TabContainer/Trigger/VBoxContainer/HBoxContainer/OptionButton
+@onready var trigger_zone_option_filter: OptionButton = $GUI_Parent/PanelContainer/VBoxContainer/TabContainer/Trigger/VBoxContainer/HBoxContainer/OptionButton2
 @onready var central_area_2d: Area2D = $Central_Area2D
 @onready var central_collision_shape_2d: CollisionShape2D = $Central_Area2D/Central_CollisionShape2D
 @onready var corner_indicators: Array[Node] = [
@@ -44,6 +48,7 @@ func _ready() -> void:
 	snap_to_grid(single_cell_grid_rect)
 	if Global.world_scene:
 		gui_parent.reparent(Global.world_scene.canvas_layer)
+		Global.world_scene.update_or_add_zone_info(self)
 	else:
 		print("World scene not found through Global, option window failed to reparent for node:" + "\n" + str(self))
 	
@@ -131,7 +136,7 @@ func _update_corner_positions() -> void:
 	central_collision_shape_2d.shape.size = abs(polygon[2] - polygon[0]) - min_dimensions
 
 func get_rect() -> Rect2:
-	return Rect2(global_position, polygon[0]-polygon[2])
+	return Rect2(polygon[0], abs(polygon[0]-polygon[2]))
 
 func set_zone_type(type: String) -> void:
 	match type:
@@ -147,6 +152,19 @@ func set_zone_type(type: String) -> void:
 
 func get_zone_type() -> String:
 	return zone_type
+
+func get_zone_info() -> Array:
+	var zone_info: Array = [""]
+	match zone_type:
+		"can build here":
+			zone_info[0] = can_build_zone_option_filter.get_item_text(can_build_zone_option_filter.selected)
+		"no build here":
+			zone_info[0] = no_build_zone_option_filter.get_item_text(no_build_zone_option_filter.selected)
+		"trigger":
+			zone_info.resize(2)
+			zone_info[0] = trigger_zone_option_gate.get_item_text(trigger_zone_option_gate.selected)
+			zone_info[1] = trigger_zone_option_filter.get_item_text(trigger_zone_option_filter.selected)
+	return zone_info
 
 func toggle_zone_menu_visible(make_visible: bool) -> void:
 	if menu_tween:
@@ -218,20 +236,24 @@ func snap_to_grid(grid_rect: Rect2) -> void:
 	_update_corner_positions()
 
 func apply_zone_options() -> void:
+	var target_type: String = ""
 	match tab_container.current_tab:
 		0: # Can build here
-			set_zone_type("can build here")
+			target_type = "can build here"
 		1: # No build here
-			set_zone_type("no build here")
+			target_type = "no build here"
 		2: # Trigger
-			set_zone_type("trigger")
+			target_type = "trigger"
 		3: # Delete
-			toggle_zone_menu_visible(false)
-			await gui_parent.visibility_changed
-			gui_parent.queue_free()
-			self.queue_free()
+			self_destruct()
+			return
 	
 	zone_name = zone_name_line_edit.text
+	
+	if target_type != zone_type:
+		Global.world_scene.remove_zone_from_lists(self)
+	set_zone_type(target_type)
+	Global.world_scene.update_or_add_zone_info(self)
 
 func update_zone_options() -> void:
 	match zone_type:
@@ -243,6 +265,15 @@ func update_zone_options() -> void:
 			tab_container.current_tab = 2
 	
 	zone_name_line_edit.text = zone_name
+
+func self_destruct() -> void:
+	toggle_zone_menu_visible(false)
+	if gui_parent.visible:
+		await gui_parent.visibility_changed
+	gui_parent.queue_free()
+	Global.world_scene.remove_zone_from_lists(self)
+	menu_tween.kill()
+	self.queue_free()
 
 func _on_top_left_area_2d_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 	_handle_corner_input(top_left_area_2d, event)

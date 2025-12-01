@@ -20,8 +20,10 @@ const cell_margin: float = 0.0
 var current_grid_dimensions: Vector2i
 var current_cell_count: int
 var last_click_location: Vector2 = Vector2.ZERO
-var live_cells_dict: Dictionary = {} # format is index: ["type", live neighbours]
-var buildable_rects: Array[Rect2i] = []
+var live_cells_dict: Dictionary = {} # format is index: ["cell type", live neighbours]
+var can_build_zones_dict: Dictionary = {} # format is node: ["filter"]
+var no_build_zones_dict: Dictionary = {} # format is node: ["filter"]
+var trigger_zones_dict: Dictionary = {} # format is node: ["logic gate", "filter"] # Filter types are: All, Empty, Alive, Target, Hole, Pole, Ally
 var current_menu: Control
 var current_sub_menu: String = "main"
 var menu_transition_tween: Tween
@@ -152,7 +154,7 @@ func get_clicked_cell_index(world_pos: Vector2) -> int:
 func handle_cell_clicked(cell_index: int) -> void:
 	if cell_index >= 0 and cell_index < current_cell_count:
 		
-		if not is_index_in_buildable_zones(cell_index):
+		if not is_index_buildable(cell_index):
 			return
 		
 		match get_cell_type(cell_index):
@@ -160,13 +162,19 @@ func handle_cell_clicked(cell_index: int) -> void:
 				set_cell_type(cell_index, "alive")
 			"alive": # Black
 				set_cell_type(cell_index, "dead")
-#	else:
-#		print("invalid cell index passed to handle_cell_clicked()")
 
 func clear_grid() -> void:
 	for key in live_cells_dict.keys():
 		grid_multimesh.set_instance_color(key, Global.dead_colour)
 	live_cells_dict.clear()
+
+func clear_zones() -> void:
+	for zone in no_build_zones_dict:
+		zone.self_destruct()
+	for zone in can_build_zones_dict:
+		zone.self_destruct()
+	for zone in trigger_zones_dict:
+		zone.self_destruct()
 
 func get_cell_type(cell_index: int) -> String:
 	if live_cells_dict.has(cell_index):
@@ -187,13 +195,44 @@ func index_to_grid_coords(cell_index: int) -> Vector2i:
 	var grid_width: int = current_grid_dimensions.x
 	return Vector2i(cell_index%grid_width, int(floor(float(cell_index)/float(grid_width))))
 
-func is_index_in_buildable_zones(cell_index: int) -> bool:
-	if buildable_rects.is_empty():
+func is_index_buildable(cell_index: int, cell_type: String = "Alive") -> bool:
+	if no_build_zones_dict.is_empty() and can_build_zones_dict.is_empty():
+		return true # No zones
+	
+	for zone in no_build_zones_dict:
+		var zone_filter: String = no_build_zones_dict.get(zone)[0]
+		if zone_filter == cell_type or zone_filter == "All":
+			if zone.get_rect().has_point(cell_size * index_to_grid_coords(cell_index)):
+				return false # Point is in a no-build zone
+	
+	if can_build_zones_dict.is_empty():
 		return true
-	for rectangle in buildable_rects:
-		if rectangle.has_point(index_to_grid_coords(cell_index)):
-			return true
-	return false
+	else:
+		for zone in can_build_zones_dict:
+			var zone_filter: String = can_build_zones_dict.get(zone)[0]
+			if zone_filter == cell_type or zone_filter == "All":
+				if zone.get_rect().has_point(cell_size * index_to_grid_coords(cell_index)):
+					return true # Is in a can-build zone, no-build zones already checked for
+	
+	return false # In neither type of zone
+
+func remove_zone_from_lists(zone_node: Polygon2D) -> void:
+	match zone_node.get_zone_type():
+		"can build here":
+			can_build_zones_dict.erase(zone_node)
+		"no build here":
+			no_build_zones_dict.erase(zone_node)
+		"trigger":
+			trigger_zones_dict.erase(zone_node)
+
+func update_or_add_zone_info(zone_node: Polygon2D) -> void:
+	match zone_node.get_zone_type():
+		"can build here":
+			can_build_zones_dict[zone_node] = zone_node.get_zone_info()
+		"no build here":
+			no_build_zones_dict[zone_node] = zone_node.get_zone_info()
+		"trigger":
+			trigger_zones_dict[zone_node] = zone_node.get_zone_info()
 
 func set_play_pause(set_to_play: bool) -> void:
 	menus.get("GUI").set_play_pause(set_to_play)

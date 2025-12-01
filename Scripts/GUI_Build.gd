@@ -230,6 +230,7 @@ func _on_save_pressed() -> void:
 
 func _on_new_file_pressed() -> void:
 	Global.world_scene.clear_grid()
+	Global.world_scene.clear_zones()
 	set_play_pause(false)
 	file_name_label.text = "new_level.cgow"
 	active_directory = ""
