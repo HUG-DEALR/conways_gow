@@ -75,12 +75,6 @@ func _handle_corner_input(corner: Node, event: InputEvent) -> void:
 				dragging_corner = corner
 				drag_offset = corner.position - to_local(get_global_mouse_position())
 				set_process(true)
-#			else:
-#				dragging_corner = null
-#	
-#	elif event is InputEventMouseMotion and dragging_corner == corner:
-#		var new_pos = to_local(get_global_mouse_position()) + drag_offset
-#		_drag_corner(corner, new_pos)
 
 func _drag_corner(corner: Node, new_global_pos: Vector2) -> void:
 	var target_position: Vector2 = to_local(new_global_pos)
@@ -115,11 +109,15 @@ func _drag_corner(corner: Node, new_global_pos: Vector2) -> void:
 		else:
 			y2 = y1 + min_dimensions.y
 	
+	x2 = x2 - x1
+	y2 = y2 - y1
+	
+	global_position += Vector2(x1,y1)
 	polygon = [
-		Vector2(x1, y1),
-		Vector2(x2, y1),
+		Vector2.ZERO,
+		Vector2(x2, 0.0),
 		Vector2(x2, y2),
-		Vector2(x1, y2)
+		Vector2(0.0, y2)
 	]
 	
 	_update_corner_positions()
@@ -136,7 +134,16 @@ func _update_corner_positions() -> void:
 	central_collision_shape_2d.shape.size = abs(polygon[2] - polygon[0]) - min_dimensions
 
 func get_rect() -> Rect2:
-	return Rect2(polygon[0], abs(polygon[0]-polygon[2]))
+	return Rect2(global_position, abs(polygon[2]-polygon[0]))
+
+func set_rect(new_rect: Rect2) -> void:
+	global_position = new_rect.position
+	polygon = [
+		Vector2.ZERO,
+		Vector2(new_rect.size.x, 0.0),
+		new_rect.size,
+		Vector2(0.0, new_rect.size.y),
+	]
 
 func set_zone_type(type: String) -> void:
 	match type:
@@ -154,16 +161,19 @@ func get_zone_type() -> String:
 	return zone_type
 
 func get_zone_info() -> Array:
-	var zone_info: Array = [""]
+	var zone_info: Array = ["",Rect2()]
 	match zone_type:
-		"can build here":
+		"can build here": # format is node: ["filter", Rect2]
 			zone_info[0] = can_build_zone_option_filter.get_item_text(can_build_zone_option_filter.selected)
-		"no build here":
+			zone_info[1] = get_rect()
+		"no build here": # format is node: ["filter", Rect2]
 			zone_info[0] = no_build_zone_option_filter.get_item_text(no_build_zone_option_filter.selected)
-		"trigger":
-			zone_info.resize(2)
-			zone_info[0] = trigger_zone_option_gate.get_item_text(trigger_zone_option_gate.selected)
-			zone_info[1] = trigger_zone_option_filter.get_item_text(trigger_zone_option_filter.selected)
+			zone_info[1] = get_rect()
+		"trigger": # format is node: ["filter", Rect2, "Logic Gate"]
+			zone_info.resize(3)
+			zone_info[0] = trigger_zone_option_filter.get_item_text(trigger_zone_option_filter.selected)
+			zone_info[1] = get_rect()
+			zone_info[2] = trigger_zone_option_gate.get_item_text(trigger_zone_option_gate.selected)
 	return zone_info
 
 func toggle_zone_menu_visible(make_visible: bool) -> void:
@@ -216,24 +226,11 @@ func snap_to_grid(grid_rect: Rect2) -> void:
 	var new_poly: Array[Vector2] = []
 	
 	for vertex in polygon:
-		# Convert local polygon point to global coordinates
-		var global_p = position + vertex
-	
-		# Convert to grid space
-		var grid_position = (global_p - cell_pos) / cell_size
-	
-		# Snap to nearest integer grid point
-		grid_position = grid_position.round()
-	
-		# Convert back to global space
-		var snapped_global = grid_position * cell_size + cell_pos
-	
-		# Convert back to local polygon coordinates
-		var new_local = snapped_global - position
-		new_poly.append(new_local)
+		new_poly.append(((global_position + vertex - cell_pos) / cell_size).round() * cell_size + cell_pos - global_position)
 	
 	polygon = new_poly
 	_update_corner_positions()
+	Global.world_scene.update_or_add_zone_info(self)
 
 func apply_zone_options() -> void:
 	var target_type: String = ""

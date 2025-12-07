@@ -79,6 +79,29 @@ text = "❯❯"
 [node name="GenerationTimer" type="Timer" parent="Right_GUI_Root/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations"]
 wait_time = 0.1
 
+[node name="HBoxContainer" type="HBoxContainer" parent="Right_GUI_Root/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -27.0
+offset_bottom = 50.0
+grow_horizontal = 0
+theme_override_constants/separation = 10
+
+[node name="Generation_Counter" type="Label" parent="Right_GUI_Root/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations/HBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+size_flags_horizontal = 8
+theme_override_font_sizes/font_size = 30
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Gap_Enforcer" type="Control" parent="Right_GUI_Root/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations/HBoxContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+mouse_filter = 1
+
 [node name="Speed_Slider" type="VSlider" parent="Right_GUI_Root/VBoxContainer/Auto_Play_Container/VBoxContainer"]
 custom_minimum_size = Vector2(20, 0)
 layout_mode = 2
@@ -137,6 +160,7 @@ tooltip_text = "Reset the built level to the last saved state"
 focus_mode = 1
 mouse_filter = 1
 theme_override_font_sizes/font_size = 20
+disabled = true
 text = "Reset to Saved"
 
 [node name="Gap_Enforcer" type="Control" parent="Right_GUI_Root/VBoxContainer/Restart/Reset_Options_Container"]
@@ -280,7 +304,6 @@ tooltip_text = "Build Settings"
 focus_mode = 1
 mouse_filter = 1
 theme_override_font_sizes/font_size = 30
-disabled = true
 text = "🌣"
 
 [node name="Logic_Option" type="Button" parent="Left_GUI_Root/VBoxContainer"]
@@ -347,6 +370,88 @@ mouse_filter = 1
 theme_override_font_sizes/font_size = 30
 text = "Zone"
 
+[node name="Level_Settings_Root" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 10.0
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_57d56")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Level_Settings_Root"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="Level_Settings_Root/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Level Settings"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Resize_Grid_HBoxContainer" type="HBoxContainer" parent="Level_Settings_Root/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Label" type="Label" parent="Level_Settings_Root/VBoxContainer/Resize_Grid_HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Resize Grid"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Grid_Width_Line_Edit" type="LineEdit" parent="Level_Settings_Root/VBoxContainer/Resize_Grid_HBoxContainer"]
+custom_minimum_size = Vector2(120, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+placeholder_text = "Width"
+alignment = 1
+max_length = 5
+virtual_keyboard_type = 2
+
+[node name="Grid_Height_Line_Edit" type="LineEdit" parent="Level_Settings_Root/VBoxContainer/Resize_Grid_HBoxContainer"]
+custom_minimum_size = Vector2(120, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+placeholder_text = "Height"
+alignment = 1
+max_length = 5
+virtual_keyboard_type = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Level_Settings_Root/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Apply_Level_Settings" type="Button" parent="Level_Settings_Root/VBoxContainer/HBoxContainer"]
+show_behind_parent = true
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+tooltip_text = "Save current build to local file"
+focus_mode = 1
+mouse_filter = 1
+theme_override_font_sizes/font_size = 20
+text = "Apply
+"
+
+[node name="Cancel_Level_Settings" type="Button" parent="Level_Settings_Root/VBoxContainer/HBoxContainer"]
+show_behind_parent = true
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+tooltip_text = "Save current build to local file"
+focus_mode = 1
+mouse_filter = 1
+theme_override_font_sizes/font_size = 20
+text = "Cancel"
+
 [connection signal="mouse_exited" from="Right_GUI_Root" to="." method="_on_left_GUI_container_mouse_exited"]
 [connection signal="mouse_entered" from="Right_GUI_Root/VBoxContainer/Auto_Play_Container" to="." method="_on_auto_play_container_mouse_entered"]
 [connection signal="pressed" from="Right_GUI_Root/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations" to="." method="_on_play_generations_pressed"]
@@ -356,6 +461,7 @@ text = "Zone"
 [connection signal="mouse_entered" from="Right_GUI_Root/VBoxContainer/Restart" to="." method="_on_reset_build_to_clear_mouse_entered"]
 [connection signal="mouse_exited" from="Right_GUI_Root/VBoxContainer/Restart/Reset_Options_Container" to="." method="_on_reset_options_container_mouse_exited"]
 [connection signal="pressed" from="Right_GUI_Root/VBoxContainer/Restart/Reset_Options_Container/Reset_To_Clear" to="." method="_on_reset_to_clear_pressed"]
+[connection signal="pressed" from="Right_GUI_Root/VBoxContainer/Restart/Reset_Options_Container/Reset_To_Saved" to="." method="_on_reset_to_saved_pressed"]
 [connection signal="mouse_entered" from="Right_GUI_Root/VBoxContainer/Control/Zoom_Options_Container" to="." method="_on_zoom_options_container_mouse_entered"]
 [connection signal="mouse_exited" from="Right_GUI_Root/VBoxContainer/Control/Zoom_Options_Container" to="." method="_on_zoom_options_container_mouse_exited"]
 [connection signal="pressed" from="Right_GUI_Root/VBoxContainer/Control/Zoom_Options_Container/Decrease_zoom" to="." method="_on_decrease_zoom_pressed"]
@@ -363,9 +469,13 @@ text = "Zone"
 [connection signal="pressed" from="Right_GUI_Root/VBoxContainer/Control/Zoom_Options_Container/Increase_zoom" to="." method="_on_increase_zoom_pressed"]
 [connection signal="pressed" from="Left_GUI_Root/VBoxContainer/File_Options" to="." method="_on_file_options_pressed"]
 [connection signal="mouse_exited" from="Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window" to="." method="_on_file_options_window_mouse_exited"]
+[connection signal="pressed" from="Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window/Save_As" to="." method="_on_save_as_pressed"]
 [connection signal="pressed" from="Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window/Save" to="." method="_on_save_pressed"]
 [connection signal="pressed" from="Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window/Open" to="." method="_on_open_file_pressed"]
 [connection signal="pressed" from="Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window/New_File" to="." method="_on_new_file_pressed"]
+[connection signal="pressed" from="Left_GUI_Root/VBoxContainer/Level_Settings" to="." method="_on_level_settings_pressed"]
 [connection signal="pressed" from="Left_GUI_Root/VBoxContainer/Add_Item" to="." method="_on_add_item_pressed"]
 [connection signal="mouse_exited" from="Left_GUI_Root/VBoxContainer/Add_Item/Add_item_window" to="." method="_on_add_item_window_mouse_exited"]
 [connection signal="pressed" from="Left_GUI_Root/VBoxContainer/Add_Item/Add_item_window/Add_item_panel/add_item_scroll_container/MarginContainer/GridContainer/New_Zone_Button" to="." method="_on_new_zone_button_pressed"]
+[connection signal="pressed" from="Level_Settings_Root/VBoxContainer/HBoxContainer/Apply_Level_Settings" to="." method="_on_apply_level_settings_pressed"]
+[connection signal="pressed" from="Level_Settings_Root/VBoxContainer/HBoxContainer/Cancel_Level_Settings" to="." method="_on_cancel_level_settings_pressed"]

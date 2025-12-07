@@ -6,8 +6,7 @@ extends Control
 @onready var play_generations: Button = $MarginContainer/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations
 @onready var step_generation: Button = $MarginContainer/VBoxContainer/Step_Generation
 @onready var restart: Button = $MarginContainer/VBoxContainer/Restart
-#@onready var decrease_zoom: Button = $MarginContainer/VBoxContainer/Control/HBoxContainer/Decrease_zoom
-#@onready var increase_zoom: Button = $MarginContainer/VBoxContainer/Control/HBoxContainer/Increase_zoom
+@onready var generation_counter: Label = $MarginContainer/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations/HBoxContainer/Generation_Counter
 
 var speed_slider_tween: Tween
 var zoom_slider_tween: Tween
@@ -65,15 +64,23 @@ func set_play_pause(set_to_play: bool) -> void:
 		playing_generations = false
 		generation_timer.stop()
 
+func set_generation_number(generation_num: int) -> void:
+	if generation_num > 0:
+		generation_counter.text = str(generation_num)
+	else:
+		generation_counter.text = ""
+
 func _on_speed_slider_value_changed(value: float) -> void:
 	generation_timer.wait_time = 1.0 / speed_slider.value
 
 func _on_step_generation_pressed() -> void:
 	Global.world_scene.iterate_generation()
+	set_generation_number(Global.generation_number)
 	set_play_pause(false)
 
 func _on_generation_timer_timeout() -> void:
 	Global.world_scene.iterate_generation()
+	set_generation_number(Global.generation_number)
 
 func _on_play_generations_pressed() -> void:
 	set_play_pause(!playing_generations)
@@ -117,4 +124,5 @@ func _on_zoom_slider_value_changed(value: float) -> void:
 
 func _on_restart_pressed() -> void:
 	Global.world_scene.clear_grid()
+	Global.generation_number = 0
 	set_play_pause(false)

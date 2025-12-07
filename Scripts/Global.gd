@@ -11,6 +11,8 @@ var world_scene: Node2D
 var menu_camera: Camera2D
 var game_camera: Camera2D
 
+var generation_number: int = 0
+
 func save_to_file(data_to_save: Dictionary, file_path: String) -> void:
 	var file := FileAccess.open(file_path, FileAccess.WRITE)
 	if file == null:
@@ -89,7 +91,7 @@ func prompt_user_for_file_path(
 	if current_directory:
 		dialog.current_dir = current_directory
 	if not default_file_name:
-		default_file_name = "new_file.txt"
+		default_file_name = "new_level.cgow"
 	dialog.current_file = default_file_name
 	
 	# Optional filters like ["*.json", "*.txt"]

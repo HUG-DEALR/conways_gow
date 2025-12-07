@@ -56,6 +56,29 @@ text = "❯❯"
 [node name="GenerationTimer" type="Timer" parent="MarginContainer/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations"]
 wait_time = 0.1
 
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -27.0
+offset_bottom = 50.0
+grow_horizontal = 0
+theme_override_constants/separation = 10
+
+[node name="Generation_Counter" type="Label" parent="MarginContainer/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations/HBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+size_flags_horizontal = 8
+theme_override_font_sizes/font_size = 30
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Gap_Enforcer" type="Control" parent="MarginContainer/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations/HBoxContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+mouse_filter = 1
+
 [node name="Speed_Slider" type="VSlider" parent="MarginContainer/VBoxContainer/Auto_Play_Container/VBoxContainer"]
 custom_minimum_size = Vector2(20, 0)
 layout_mode = 2

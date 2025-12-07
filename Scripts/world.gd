@@ -17,17 +17,24 @@ extends Node2D
 const cell_size: float = 10.0
 const cell_margin: float = 0.0
 
-var current_grid_dimensions: Vector2i
+#var current_grid_dimensions: Vector2i
 var current_cell_count: int
 var last_click_location: Vector2 = Vector2.ZERO
-var live_cells_dict: Dictionary = {} # format is index: ["cell type", live neighbours]
-var can_build_zones_dict: Dictionary = {} # format is node: ["filter"]
-var no_build_zones_dict: Dictionary = {} # format is node: ["filter"]
-var trigger_zones_dict: Dictionary = {} # format is node: ["logic gate", "filter"] # Filter types are: All, Empty, Alive, Target, Hole, Pole, Ally
+#var live_cells_dict: Dictionary = {} # format is index: ["cell type", live neighbours]
+#var can_build_zones_dict: Dictionary = {} # format is node: ["filter", Rect2]
+#var no_build_zones_dict: Dictionary = {} # format is node: ["filter", Rect2]
+#var trigger_zones_dict: Dictionary = {} # format is node: ["filter", Rect2, "Logic Gate"] # Filter types are: All, Empty, Alive, Target, Hole, Pole, Ally
 var current_menu: Control
 var current_sub_menu: String = "main"
 var menu_transition_tween: Tween
 var menus_active: bool = true
+var level_info_dict: Dictionary = {
+	"grid_dimensions": Vector2i.ZERO,
+	"live_cells": {}, # format is index: ["cell type", live neighbours]
+	"can_build_zones": {}, # format is node: ["filter", Rect2]
+	"no_build_zones": {}, # format is node: ["filter", Rect2]
+	"trigger_zones": {}, # format is node: ["filter", Rect2, "Logic Gate"] # Filter types are: All, Empty, Alive, Target, Hole, Pole, Ally
+}
 
 func _ready():
 	Global.world_scene = self
@@ -49,31 +56,81 @@ func _unhandled_input(event: InputEvent) -> void:
 			handle_cell_clicked(get_clicked_cell_index(last_click_location))
 
 # Grid functions
-func populate_cells(grid_size: Vector2i, level_dict: Dictionary = {}, clear_previous: bool = true) -> void:
-	if current_grid_dimensions != grid_size:
-		current_grid_dimensions = grid_size
+func populate_cells(grid_size: Vector2i, cells_dict: Dictionary = {}, clear_previous: bool = true) -> void:
+	if level_info_dict["grid_dimensions"] != grid_size:
+		level_info_dict["grid_dimensions"] = grid_size
 		current_cell_count = grid_size.x * grid_size.y
 		grid_multimesh.instance_count = current_cell_count
 		
-		var i: int = 0
+		var cell_index: int = 0
 		for y in range(grid_size.y):
 			for x in range(grid_size.x):
 				var pos = Vector2(x * (cell_size + cell_margin), y * (cell_size + cell_margin))
-				grid_multimesh.set_instance_transform_2d(i, Transform2D(0, pos))
-				grid_multimesh.set_instance_color(i, Global.dead_colour) # Grey, dead
-				i += 1
+				grid_multimesh.set_instance_transform_2d(cell_index, Transform2D(0, pos))
+				grid_multimesh.set_instance_color(cell_index, Global.dead_colour) # Grey, dead
+				cell_index += 1
 	
 	if clear_previous:
 		clear_grid()
-	if not level_dict.is_empty():
-	#	if max(level_dict.keys()) >= current_cell_count:
-	#		return # level dict does not match size
-		for key in level_dict.keys():
-			set_cell_type(key, level_dict.get(key)[0])
+	if not cells_dict.is_empty():
+		for key in cells_dict.keys():
+			set_cell_type(key, cells_dict.get(key)[0])
+
+func populate_zones(can_build_zones: Dictionary, no_build_zones: Dictionary, trigger_zones: Dictionary, clear_previous: bool = true, prevent_zone_editing: bool = true) -> void:
+	if clear_previous:
+		clear_zones()
+	
+	var generic_zone = preload("res://Scenes/Props/zone_polygon.tscn")
+	
+	for zone in can_build_zones:
+		var new_zone = generic_zone.instantiate()
+		add_child(new_zone)
+		if prevent_zone_editing:
+			new_zone.toggle_lock_state(true)
+		new_zone.visible = true
+		new_zone.set_zone_type("can build here")
+		new_zone.set_rect(can_build_zones.get(zone)[1])
+	
+	for zone in no_build_zones:
+		var new_zone = generic_zone.instantiate()
+		add_child(new_zone)
+		if prevent_zone_editing:
+			new_zone.toggle_lock_state(true)
+		new_zone.visible = true
+		new_zone.set_zone_type("no build here")
+		new_zone.set_rect(no_build_zones.get(zone)[1])
+	
+	for zone in trigger_zones:
+		var new_zone = generic_zone.instantiate()
+		add_child(new_zone)
+		if prevent_zone_editing:
+			new_zone.toggle_lock_state(true)
+		new_zone.visible = true
+		new_zone.set_zone_type("trigger")
+		new_zone.set_rect(trigger_zones.get(zone)[1])
+
+func resize_grid(new_grid_size: Vector2i, cells_dict: Dictionary) -> void:
+	if cells_dict.is_empty():
+		cells_dict = level_info_dict["live_cells"]
+	var old_grid_size: Vector2i = level_info_dict["grid_dimensions"]
+	var old_dict: Dictionary = cells_dict
+	var new_dict: Dictionary = {}
+	
+	for old_index in old_dict.keys():
+		var cell_data = old_dict[old_index]
+		
+		var cell_position: Vector2 = Vector2(old_index % old_grid_size.x, old_index / old_grid_size.x)
+		if cell_position.x >= new_grid_size.x or cell_position.y >= new_grid_size.y:
+			continue # Skip this item in the loop
+		var new_index: int = round(cell_position.y * new_grid_size.x + cell_position.x)
+		new_dict[new_index] = cell_data
+	
+	# Call populate with new grid size and remapped dict
+	populate_cells(new_grid_size, new_dict, true)
 
 func iterate_generation() -> void:
-	var cells_to_check: Dictionary = live_cells_dict.duplicate(false)
-	for cell_index in live_cells_dict.keys():
+	var cells_to_check: Dictionary = level_info_dict["live_cells"].duplicate(false)
+	for cell_index in level_info_dict["live_cells"].keys():
 		cells_to_check[cell_index][1] = 0
 		for neighbour in get_neighbours(cell_index):
 			
@@ -85,7 +142,7 @@ func iterate_generation() -> void:
 			if cells_to_check[neighbour][0] == "alive":
 				cells_to_check[cell_index][1] += 1
 	
-	var dead_neighbour_cells: Dictionary = subtract_dicts(cells_to_check, live_cells_dict, true)
+	var dead_neighbour_cells: Dictionary = subtract_dicts(cells_to_check, level_info_dict["live_cells"], true)
 	for cell_index in dead_neighbour_cells.keys():
 		for neighbour in get_neighbours(cell_index):
 			if get_cell_type(neighbour) == "alive":
@@ -100,10 +157,12 @@ func iterate_generation() -> void:
 			"dead":
 				if live_neighbours == 3:
 					set_cell_type(cell_index, "alive")
+	
+	Global.generation_number += 1
 
 func get_neighbours(target_index: int) -> Array:
-	var grid_width: int = current_grid_dimensions.x
-	var grid_height: int = current_grid_dimensions.y
+	var grid_width: int = level_info_dict["grid_dimensions"].x
+	var grid_height: int = level_info_dict["grid_dimensions"].y
 	var column: int = target_index % grid_width
 	var row: int = int(floor(float(target_index) / float(grid_width)))
 	
@@ -135,11 +194,11 @@ func get_clicked_cell_index(world_pos: Vector2) -> int:
 	var row = int(floor((world_pos.y + (step/2.0)) / step))
 	
 	# Check if inside grid bounds
-	if column < 0 or row < 0 or column >= current_grid_dimensions.x or row >= current_grid_dimensions.y:
+	if column < 0 or row < 0 or column >= level_info_dict["grid_dimensions"].x or row >= level_info_dict["grid_dimensions"].y:
 		return -1
 	
 	# Compute the index
-	var index = row * current_grid_dimensions.x + column
+	var index = row * level_info_dict["grid_dimensions"].x + column
 	if index >= current_cell_count:
 		return -1
 	
@@ -164,54 +223,54 @@ func handle_cell_clicked(cell_index: int) -> void:
 				set_cell_type(cell_index, "dead")
 
 func clear_grid() -> void:
-	for key in live_cells_dict.keys():
+	for key in level_info_dict["live_cells"].keys():
 		grid_multimesh.set_instance_color(key, Global.dead_colour)
-	live_cells_dict.clear()
+	level_info_dict["live_cells"].clear()
 
 func clear_zones() -> void:
-	for zone in no_build_zones_dict:
+	for zone in level_info_dict["no_build_zones"]:
 		zone.self_destruct()
-	for zone in can_build_zones_dict:
+	for zone in level_info_dict["can_build_zones"]:
 		zone.self_destruct()
-	for zone in trigger_zones_dict:
+	for zone in level_info_dict["trigger_zones"]:
 		zone.self_destruct()
 
 func get_cell_type(cell_index: int) -> String:
-	if live_cells_dict.has(cell_index):
-		return live_cells_dict.get(cell_index)[0]
+	if level_info_dict["live_cells"].has(cell_index):
+		return level_info_dict["live_cells"].get(cell_index)[0]
 	else:
 		return "dead"
 
 func set_cell_type(cell_index: int, type: String) -> void:
 	match type:
 		"dead":
-			live_cells_dict.erase(cell_index)
+			level_info_dict["live_cells"].erase(cell_index)
 			grid_multimesh.set_instance_color(cell_index, Global.dead_colour) # Grey
 		"alive":
-			live_cells_dict[cell_index] = ["alive",0]
+			level_info_dict["live_cells"][cell_index] = ["alive",0]
 			grid_multimesh.set_instance_color(cell_index, Global.alive_colour) # Black
 
 func index_to_grid_coords(cell_index: int) -> Vector2i:
-	var grid_width: int = current_grid_dimensions.x
+	var grid_width: int = level_info_dict["grid_dimensions"].x
 	return Vector2i(cell_index%grid_width, int(floor(float(cell_index)/float(grid_width))))
 
 func is_index_buildable(cell_index: int, cell_type: String = "Alive") -> bool:
-	if no_build_zones_dict.is_empty() and can_build_zones_dict.is_empty():
+	if level_info_dict["no_build_zones"].is_empty() and level_info_dict["can_build_zones"].is_empty():
 		return true # No zones
 	
-	for zone in no_build_zones_dict:
-		var zone_filter: String = no_build_zones_dict.get(zone)[0]
+	for zone in level_info_dict["no_build_zones"]:
+		var zone_filter: String = level_info_dict["no_build_zones"].get(zone)[0]
 		if zone_filter == cell_type or zone_filter == "All":
-			if zone.get_rect().has_point(cell_size * index_to_grid_coords(cell_index)):
+			if level_info_dict["no_build_zones"].get(zone)[1].has_point(cell_size * index_to_grid_coords(cell_index)):
 				return false # Point is in a no-build zone
 	
-	if can_build_zones_dict.is_empty():
+	if level_info_dict["can_build_zones"].is_empty():
 		return true
 	else:
-		for zone in can_build_zones_dict:
-			var zone_filter: String = can_build_zones_dict.get(zone)[0]
+		for zone in level_info_dict["can_build_zones"]:
+			var zone_filter: String = level_info_dict["can_build_zones"].get(zone)[0]
 			if zone_filter == cell_type or zone_filter == "All":
-				if zone.get_rect().has_point(cell_size * index_to_grid_coords(cell_index)):
+				if level_info_dict["can_build_zones"].get(zone)[1].has_point(cell_size * index_to_grid_coords(cell_index)):
 					return true # Is in a can-build zone, no-build zones already checked for
 	
 	return false # In neither type of zone
@@ -219,20 +278,20 @@ func is_index_buildable(cell_index: int, cell_type: String = "Alive") -> bool:
 func remove_zone_from_lists(zone_node: Polygon2D) -> void:
 	match zone_node.get_zone_type():
 		"can build here":
-			can_build_zones_dict.erase(zone_node)
+			level_info_dict["can_build_zones"].erase(zone_node)
 		"no build here":
-			no_build_zones_dict.erase(zone_node)
+			level_info_dict["no_build_zones"].erase(zone_node)
 		"trigger":
-			trigger_zones_dict.erase(zone_node)
+			level_info_dict["trigger_zones"].erase(zone_node)
 
 func update_or_add_zone_info(zone_node: Polygon2D) -> void:
 	match zone_node.get_zone_type():
 		"can build here":
-			can_build_zones_dict[zone_node] = zone_node.get_zone_info()
+			level_info_dict["can_build_zones"][zone_node] = zone_node.get_zone_info()
 		"no build here":
-			no_build_zones_dict[zone_node] = zone_node.get_zone_info()
+			level_info_dict["no_build_zones"][zone_node] = zone_node.get_zone_info()
 		"trigger":
-			trigger_zones_dict[zone_node] = zone_node.get_zone_info()
+			level_info_dict["trigger_zones"][zone_node] = zone_node.get_zone_info()
 
 func set_play_pause(set_to_play: bool) -> void:
 	menus.get("GUI").set_play_pause(set_to_play)
@@ -287,11 +346,10 @@ func button_signal(singal_name: String) -> void:
 			current_sub_menu = "build"
 			switch_to_menu("Build_menu")
 			menus.get("GUI").set_play_pause(false)
+			Global.generation_number = 0
 			populate_cells(Vector2i(50,50), {}, true)
 			game_camera.position = Vector2.ZERO
 			game_camera.zoom = Vector2.ONE * 2.0
-	#		var grid_real_size = current_grid_dimensions * (cell_size + cell_margin)
-	#		game_camera.set_bounds(Rect2(Vector2(0,0),grid_real_size))
 			game_camera.make_current()
 		"exit":
 			current_sub_menu = "exit"
@@ -302,10 +360,9 @@ func button_signal(singal_name: String) -> void:
 			menus.get("GUI").set_gui_visible(true)
 			switch_to_menu("GUI")
 			menus.get("GUI").set_play_pause(false)
+			Global.generation_number = 0
 			game_camera.position = Vector2.ZERO
 			game_camera.zoom = Vector2.ONE * 2.0
-	#		var grid_real_size = current_grid_dimensions * (cell_size + cell_margin)
-	#		game_camera.set_bounds(Rect2(Vector2(0,0),grid_real_size))
 			game_camera.make_current()
 
 # Misc functions
