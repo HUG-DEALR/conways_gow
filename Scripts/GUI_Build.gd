@@ -335,3 +335,6 @@ func _on_apply_level_settings_pressed() -> void:
 			if target_dimensions != current_grid_dimensions:
 				Global.world_scene.resize_grid(target_dimensions, {})
 	toggle_expand_level_settings(false)
+
+func _on_exit_pressed() -> void:
+	Global.world_scene.button_signal("main")

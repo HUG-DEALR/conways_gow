@@ -336,6 +336,10 @@ func button_signal(singal_name: String) -> void:
 		"main":
 			current_sub_menu = "main"
 			switch_to_menu("Main_menu")
+			clear_zones()
+			menu_camera.make_current()
+			menus.get("Main_menu")._on_background_reset_timer_timeout()
+			set_play_pause(true)
 		"levels":
 			current_sub_menu = "levels"
 			switch_to_menu("Levels_menu")

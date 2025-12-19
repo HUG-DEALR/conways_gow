@@ -102,7 +102,6 @@ offset_bottom = 200.0
 grow_horizontal = 2
 grow_vertical = 2
 focus_mode = 0
-mouse_filter = 1
 
 [node name="PanelContainer" type="PanelContainer" parent="GUI_Parent"]
 layout_mode = 1
