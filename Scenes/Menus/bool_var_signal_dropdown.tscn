@@ -1,0 +1,30 @@
+[gd_scene load_steps=2 format=3 uid="uid://dcb70fckbe53y"]
+
+[ext_resource type="Script" uid="uid://dxqckx7tocacl" path="res://Scripts/bool_var_signal_dropdown.gd" id="1_t35v4"]
+
+[node name="Bool_var_signal_dropdown" type="OptionButton"]
+custom_minimum_size = Vector2(100, 50)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1362.0
+offset_bottom = -850.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 30
+alignment = 1
+allow_reselect = true
+item_count = 4
+popup/item_0/text = "Logic Gate"
+popup/item_0/id = 0
+popup/item_1/text = "True"
+popup/item_1/id = 1
+popup/item_2/text = "False"
+popup/item_2/id = 2
+popup/item_3/text = "Triggers"
+popup/item_3/id = 3
+popup/item_3/separator = true
+script = ExtResource("1_t35v4")
+
+[connection signal="item_selected" from="." to="." method="_on_item_selected"]
+[connection signal="pressed" from="." to="." method="_on_pressed"]

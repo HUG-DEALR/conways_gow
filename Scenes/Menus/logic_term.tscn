@@ -1,0 +1,50 @@
+[gd_scene load_steps=3 format=3 uid="uid://d3pote4fqgcwc"]
+
+[ext_resource type="PackedScene" uid="uid://dcb70fckbe53y" path="res://Scenes/Menus/bool_var_signal_dropdown.tscn" id="1_hypa0"]
+[ext_resource type="Script" uid="uid://c2k4mc2dufbxu" path="res://Scripts/logic_term.gd" id="1_pp0sa"]
+
+[node name="Logic_Term" type="ScrollContainer"]
+custom_minimum_size = Vector2(450, 60)
+horizontal_scroll_mode = 4
+vertical_scroll_mode = 0
+script = ExtResource("1_pp0sa")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="OptionButton_Output" type="OptionButton" parent="HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+alignment = 1
+selected = 0
+item_count = 8
+popup/item_0/text = "Victory"
+popup/item_0/id = 0
+popup/item_1/text = "Defeat"
+popup/item_1/id = 1
+popup/item_2/text = "★☆☆"
+popup/item_2/id = 2
+popup/item_3/text = "☆★☆"
+popup/item_3/id = 3
+popup/item_4/text = "☆☆★"
+popup/item_4/id = 4
+popup/item_5/text = "★★☆"
+popup/item_5/id = 5
+popup/item_6/text = "★★★"
+popup/item_6/id = 6
+popup/item_7/text = "Delete Term"
+popup/item_7/id = 7
+
+[node name="Label" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "="
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Bool_var_signal_dropdown" parent="HBoxContainer" instance=ExtResource("1_hypa0")]
+layout_mode = 2
+
+[connection signal="item_selected" from="HBoxContainer/OptionButton_Output" to="." method="_on_output_item_selected"]

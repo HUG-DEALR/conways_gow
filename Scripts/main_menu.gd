@@ -26,6 +26,24 @@ func _ready() -> void:
 	Global.menu_camera.zoom = Vector2(4,4)
 	background_reset_timer.start()
 	entry_animation()
+	
+	
+	if true:
+		return # Seperates the code for the bool evaluation
+	
+	var expression: Expression = Expression.new()
+	var expr_string: String = "(bool_1 and bool_2) or (not bool_3 and bool_2) or false"
+	var error = expression.parse(expr_string, ["bool_1", "bool_2", "bool_3"])
+	if error != OK:
+		push_error(expression.get_error_text())
+		return
+	var bool_1 = true
+	var bool_2 = false
+	var bool_3 = false
+	var bool_values: Array = [bool_1, bool_2, bool_3]
+	
+	var result = expression.execute(bool_values)
+	print(result)
 
 func entry_animation() -> void:
 	var tween: Tween = get_tree().root.create_tween()

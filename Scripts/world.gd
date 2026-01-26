@@ -20,10 +20,6 @@ const cell_margin: float = 0.0
 #var current_grid_dimensions: Vector2i
 var current_cell_count: int
 var last_click_location: Vector2 = Vector2.ZERO
-#var live_cells_dict: Dictionary = {} # format is index: ["cell type", live neighbours]
-#var can_build_zones_dict: Dictionary = {} # format is node: ["filter", Rect2]
-#var no_build_zones_dict: Dictionary = {} # format is node: ["filter", Rect2]
-#var trigger_zones_dict: Dictionary = {} # format is node: ["filter", Rect2, "Logic Gate"] # Filter types are: All, Empty, Alive, Target, Hole, Pole, Ally
 var current_menu: Control
 var current_sub_menu: String = "main"
 var menu_transition_tween: Tween
@@ -33,8 +29,9 @@ var level_info_dict: Dictionary = {
 	"live_cells": {}, # format is index: ["cell type", live neighbours]
 	"can_build_zones": {}, # format is node: ["filter", Rect2]
 	"no_build_zones": {}, # format is node: ["filter", Rect2]
-	"trigger_zones": {}, # format is node: ["filter", Rect2, "Logic Gate"] # Filter types are: All, Empty, Alive, Target, Hole, Pole, Ally
+	"trigger_zones": {}, # format is node: ["filter", Rect2, "Logic Gate", "trigger_identifier"] # Filter types are: All, Empty, Alive, Target, Hole, Pole, Ally
 }
+var trigger_zone_id_itterator: int = 0
 
 func _ready():
 	Global.world_scene = self
@@ -292,6 +289,49 @@ func update_or_add_zone_info(zone_node: Polygon2D) -> void:
 			level_info_dict["no_build_zones"][zone_node] = zone_node.get_zone_info()
 		"trigger":
 			level_info_dict["trigger_zones"][zone_node] = zone_node.get_zone_info()
+			if level_info_dict["trigger_zones"][zone_node][3] == "":
+				trigger_zone_id_itterator += 1
+				var new_id: String = "trigger_" + str(trigger_zone_id_itterator)
+				level_info_dict["trigger_zones"][zone_node][3] = new_id
+				zone_node.set_trigger_identifier(new_id)
+
+func get_expression_inputs() -> Dictionary:
+	var trigger_ids: PackedStringArray = []
+	var values: Array = []
+	
+	for node in level_info_dict["trigger_zones"].keys():
+		var id: String = level_info_dict["trigger_zones"][node][3]
+		trigger_ids.append(id)
+		values.append(node.get_trigger_status())
+	
+	return {
+		"identifiers": trigger_ids,
+		"values": values
+	}
+
+func evaluate_end_level_expression(root_bool_node: Node) -> bool:
+	if root_bool_node == null:
+		return false
+	
+	var expr_string: String = root_bool_node.get_bool_string_segment()
+	if expr_string.is_empty():
+		return false
+	
+	var inputs: Dictionary = get_expression_inputs()
+	
+	var expression: Expression = Expression.new()
+	var error = expression.parse(expr_string, inputs.identifiers)
+	if error != OK:
+		push_error("Expression parse error: " + expression.get_error_text())
+		return false
+	
+	var result = expression.execute(inputs.values)
+	
+	if expression.has_execute_failed():
+		push_error("Expression execution failed")
+		return false
+	
+	return bool(result)
 
 func set_play_pause(set_to_play: bool) -> void:
 	menus.get("GUI").set_play_pause(set_to_play)

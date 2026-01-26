@@ -28,6 +28,7 @@ var menu_tween: Tween
 const single_cell_grid_rect: Rect2 = Rect2(Vector2.ONE * 5.0, Vector2.ONE * 10.0)
 var zone_type: String = ""
 var zone_name: String = ""
+var trigger_identifier: String = ""
 
 func _ready() -> void:
 	set_process(false)
@@ -170,11 +171,23 @@ func get_zone_info() -> Array:
 			zone_info[0] = no_build_zone_option_filter.get_item_text(no_build_zone_option_filter.selected)
 			zone_info[1] = get_rect()
 		"trigger": # format is node: ["filter", Rect2, "Logic Gate"]
-			zone_info.resize(3)
+			zone_info.resize(4)
 			zone_info[0] = trigger_zone_option_filter.get_item_text(trigger_zone_option_filter.selected)
 			zone_info[1] = get_rect()
 			zone_info[2] = trigger_zone_option_gate.get_item_text(trigger_zone_option_gate.selected)
+			zone_info[3] = trigger_identifier
 	return zone_info
+
+func get_bool_string_segment() -> String:
+	if zone_type != "trigger" or trigger_identifier == "":
+		return "false" # Non trigger zone can never be true
+	return trigger_identifier
+
+func set_trigger_identifier(identifier: String) -> void:
+	trigger_identifier = identifier
+
+func get_trigger_status() -> bool:
+	return false # WIP
 
 func toggle_zone_menu_visible(make_visible: bool) -> void:
 	if menu_tween:

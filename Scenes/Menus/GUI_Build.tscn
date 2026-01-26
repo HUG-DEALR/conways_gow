@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://8kbmirp7geg7"]
+[gd_scene load_steps=7 format=3 uid="uid://8kbmirp7geg7"]
 
 [ext_resource type="Script" uid="uid://dqmrmfmv2jixh" path="res://Scripts/GUI_Build.gd" id="1_7v46b"]
+[ext_resource type="PackedScene" uid="uid://d3pote4fqgcwc" path="res://Scenes/Menus/logic_term.tscn" id="2_tgoav"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_go701"]
 bg_color = Color(0, 0, 0, 0)
@@ -28,6 +29,17 @@ corner_radius_bottom_left = 20
 shadow_color = Color(0, 0, 0, 0.0588235)
 shadow_size = 1
 shadow_offset = Vector2(-10, 10)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tgoav"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+bg_color = Color(0, 0, 0, 0.196078)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [node name="GUI_Build" type="Control"]
 layout_mode = 3
@@ -328,7 +340,6 @@ tooltip_text = "Build logic options"
 focus_mode = 1
 mouse_filter = 1
 theme_override_font_sizes/font_size = 30
-disabled = true
 text = "⎇"
 
 [node name="Add_Item" type="Button" parent="Left_GUI_Root/VBoxContainer"]
@@ -386,6 +397,7 @@ theme_override_font_sizes/font_size = 30
 text = "Zone"
 
 [node name="Level_Settings_Root" type="PanelContainer" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -468,7 +480,6 @@ theme_override_font_sizes/font_size = 20
 text = "Cancel"
 
 [node name="Logic_Settings_Root" type="PanelContainer" parent="."]
-visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -494,6 +505,50 @@ text = "Logic Settings"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="ScrollContainer" type="ScrollContainer" parent="Logic_Settings_Root/VBoxContainer"]
+custom_minimum_size = Vector2(0, 285)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_tgoav")
+follow_focus = true
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Logic_Settings_Root/VBoxContainer/ScrollContainer"]
+custom_minimum_size = Vector2(900, 0)
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="Logic_Term_0" parent="Logic_Settings_Root/VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_tgoav")]
+layout_mode = 2
+
+[node name="New_Bool" type="Button" parent="Logic_Settings_Root/VBoxContainer/ScrollContainer/VBoxContainer"]
+self_modulate = Color(1, 1, 1, 0.784314)
+custom_minimum_size = Vector2(300, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "Add new logic term"
+theme_override_font_sizes/font_size = 30
+text = "+"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Logic_Settings_Root/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Apply_Logic" type="Button" parent="Logic_Settings_Root/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+tooltip_text = "Apply logic settings"
+theme_override_font_sizes/font_size = 30
+text = "Apply"
+
+[node name="Cancel_Logic" type="Button" parent="Logic_Settings_Root/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+tooltip_text = "Cancel Changes"
+theme_override_font_sizes/font_size = 30
+text = "Cancel"
+
 [connection signal="mouse_exited" from="Right_GUI_Root" to="." method="_on_left_GUI_container_mouse_exited"]
 [connection signal="mouse_entered" from="Right_GUI_Root/VBoxContainer/Auto_Play_Container" to="." method="_on_auto_play_container_mouse_entered"]
 [connection signal="pressed" from="Right_GUI_Root/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations" to="." method="_on_play_generations_pressed"]
@@ -517,8 +572,11 @@ vertical_alignment = 1
 [connection signal="pressed" from="Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window/New_File" to="." method="_on_new_file_pressed"]
 [connection signal="pressed" from="Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window/Exit" to="." method="_on_exit_pressed"]
 [connection signal="pressed" from="Left_GUI_Root/VBoxContainer/Level_Settings" to="." method="_on_level_settings_pressed"]
+[connection signal="pressed" from="Left_GUI_Root/VBoxContainer/Logic_Option" to="." method="_on_logic_option_pressed"]
 [connection signal="pressed" from="Left_GUI_Root/VBoxContainer/Add_Item" to="." method="_on_add_item_pressed"]
 [connection signal="mouse_exited" from="Left_GUI_Root/VBoxContainer/Add_Item/Add_item_window" to="." method="_on_add_item_window_mouse_exited"]
 [connection signal="pressed" from="Left_GUI_Root/VBoxContainer/Add_Item/Add_item_window/Add_item_panel/add_item_scroll_container/MarginContainer/GridContainer/New_Zone_Button" to="." method="_on_new_zone_button_pressed"]
 [connection signal="pressed" from="Level_Settings_Root/VBoxContainer/HBoxContainer/Apply_Level_Settings" to="." method="_on_apply_level_settings_pressed"]
 [connection signal="pressed" from="Level_Settings_Root/VBoxContainer/HBoxContainer/Cancel_Level_Settings" to="." method="_on_cancel_level_settings_pressed"]
+[connection signal="pressed" from="Logic_Settings_Root/VBoxContainer/ScrollContainer/VBoxContainer/New_Bool" to="." method="_on_new_bool_pressed"]
+[connection signal="pressed" from="Logic_Settings_Root/VBoxContainer/HBoxContainer/Cancel_Logic" to="." method="_on_cancel_logic_settings_pressed"]

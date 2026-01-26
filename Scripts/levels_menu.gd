@@ -2,10 +2,11 @@ extends Control
 
 signal level_selected
 
-@onready var play_button: Button = $PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer/Play
-@onready var level_name_info_tab: Label = $PanelContainer/MarginContainer/HBoxContainer/VBoxContainer2/Level_Name
-@onready var level_rating_info_tab: Label = $PanelContainer/MarginContainer/HBoxContainer/VBoxContainer2/Level_Rating
-@onready var level_description_info_tab: Label = $PanelContainer/MarginContainer/HBoxContainer/VBoxContainer2/Level_Description
+@onready var level_source_tab_container: TabContainer = $PanelContainer/MarginContainer/TabContainer
+@onready var play_button: Button = $PanelContainer/MarginContainer/TabContainer/Campaign_Levels/VBoxContainer/HBoxContainer/Play
+@onready var level_name_info_tab: Label = $PanelContainer/MarginContainer/TabContainer/Campaign_Levels/VBoxContainer2/Level_Name
+@onready var level_rating_info_tab: Label = $PanelContainer/MarginContainer/TabContainer/Campaign_Levels/VBoxContainer2/Level_Rating
+@onready var level_description_info_tab: Label = $PanelContainer/MarginContainer/TabContainer/Campaign_Levels/VBoxContainer2/Level_Description
 
 var levels_dict: Dictionary = { # Grid dimension, layout_dict, unlocked, Name, Rating, Description
 	"blank50": [Vector2i(50,50),{}, true, "Sandbox", "★★★", "An empty world to experiment in"],
@@ -20,6 +21,14 @@ var entry_exit_tween: Tween
 
 func _ready() -> void:
 	level_selected.connect(_on_level_selected)
+	
+	var level_source_tab_bar: TabBar = level_source_tab_container.get_tab_bar()
+	level_source_tab_bar.set_tab_title(0, " Campaign Levels ")
+	level_source_tab_bar.set_tab_title(1, " Steam Workshop ")
+	level_source_tab_bar.set_tab_title(2, " Open From Local ")
+	
+	level_source_tab_bar.set_tab_disabled(1, true)
+	level_source_tab_bar.set_tab_disabled(2, true)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:

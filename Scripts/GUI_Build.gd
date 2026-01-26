@@ -10,6 +10,8 @@ extends Control
 @onready var file_name_label: Label = $Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window/File_name
 @onready var reset_options_container: HBoxContainer = $Right_GUI_Root/VBoxContainer/Restart/Reset_Options_Container
 @onready var level_settings_root: PanelContainer = $Level_Settings_Root
+@onready var logic_settings_root: PanelContainer = $Logic_Settings_Root
+@onready var logic_terms_vbox: VBoxContainer = $Logic_Settings_Root/VBoxContainer/ScrollContainer/VBoxContainer
 @onready var grid_width_line_edit: LineEdit = $Level_Settings_Root/VBoxContainer/Resize_Grid_HBoxContainer/Grid_Width_Line_Edit
 @onready var grid_height_line_edit: LineEdit = $Level_Settings_Root/VBoxContainer/Resize_Grid_HBoxContainer/Grid_Height_Line_Edit
 @onready var add_item_panel: PanelContainer = $Left_GUI_Root/VBoxContainer/Add_Item/Add_item_window/Add_item_panel
@@ -18,12 +20,15 @@ extends Control
 @onready var reset_to_saved_button: Button = $Right_GUI_Root/VBoxContainer/Restart/Reset_Options_Container/Reset_To_Saved
 @onready var generic_zone = preload("res://Scenes/Props/zone_polygon.tscn")
 
+const logic_term_path: String = "res://Scenes/Menus/logic_term.tscn"
+
 var speed_slider_tween: Tween
 var zoom_slider_tween: Tween
 var reset_options_tween: Tween
 var new_item_window_tween: Tween
 var file_options_window_tween: Tween
 var level_settings_tween: Tween
+var logic_settings_tween: Tween
 var playing_generations: bool = false
 var mouse_over_speed_options: bool = false
 var mouse_over_zoom_options: bool = false
@@ -39,6 +44,7 @@ func _ready() -> void:
 	file_options_window.visible = false
 	reset_to_saved_button.disabled = true
 	level_settings_root.visible = false
+	logic_settings_root.visible = false
 
 func set_gui_visible(set_to_visible: bool) -> void:
 	self.visible = set_to_visible
@@ -163,6 +169,25 @@ func toggle_expand_level_settings(set_to_expand: bool) -> void:
 		level_settings_tween.play()
 		await level_settings_tween.finished
 		level_settings_root.visible = false
+
+func toggle_expand_logic_settings(set_to_expand: bool) -> void:
+	if logic_settings_tween:
+		logic_settings_tween.kill()
+	logic_settings_tween = get_tree().create_tween()
+	logic_settings_tween.pause()
+	logic_settings_tween.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_CUBIC)
+	logic_settings_root.pivot_offset = logic_settings_root.size/2.0
+	if set_to_expand:
+		update_level_settings_display()
+		logic_settings_tween.tween_property(logic_settings_root, "scale", Vector2.ZERO, 0.0)
+		logic_settings_tween.tween_property(logic_settings_root, "scale", Vector2.ONE, 0.2)
+		logic_settings_root.visible = true
+		logic_settings_tween.play()
+	else:
+		logic_settings_tween.tween_property(logic_settings_root, "scale", Vector2.ZERO, 0.2)
+		logic_settings_tween.play()
+		await logic_settings_tween.finished
+		logic_settings_root.visible = false
 
 func update_level_settings_display() -> void:
 	var grid_dimensions: Vector2i = Global.world_scene.level_info_dict["grid_dimensions"]
@@ -323,6 +348,8 @@ func _on_new_zone_button_pressed() -> void:
 
 func _on_level_settings_pressed() -> void:
 	toggle_expand_level_settings(!level_settings_root.visible)
+	if logic_settings_root.visible:
+		toggle_expand_logic_settings(false)
 
 func _on_cancel_level_settings_pressed() -> void:
 	toggle_expand_level_settings(false)
@@ -335,6 +362,19 @@ func _on_apply_level_settings_pressed() -> void:
 			if target_dimensions != current_grid_dimensions:
 				Global.world_scene.resize_grid(target_dimensions, {})
 	toggle_expand_level_settings(false)
+
+func _on_logic_option_pressed() -> void:
+	toggle_expand_logic_settings(!logic_settings_root.visible)
+	if level_settings_root.visible:
+		toggle_expand_level_settings(false)
+
+func _on_cancel_logic_settings_pressed() -> void:
+	toggle_expand_logic_settings(false)
+
+func _on_new_bool_pressed() -> void:
+	var instance = load(logic_term_path).instantiate()
+	logic_terms_vbox.add_child(instance)
+	logic_terms_vbox.move_child(instance, -2)
 
 func _on_exit_pressed() -> void:
 	Global.world_scene.button_signal("main")

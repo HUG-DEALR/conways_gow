@@ -134,10 +134,11 @@ vertical_alignment = 1
 custom_minimum_size = Vector2(600, 200)
 layout_mode = 2
 tab_alignment = 1
-current_tab = 0
+current_tab = 2
 clip_tabs = false
 
 [node name="Can_Build_Here" type="ColorRect" parent="GUI_Parent/PanelContainer/VBoxContainer/TabContainer"]
+visible = false
 custom_minimum_size = Vector2(100, 100)
 layout_mode = 2
 color = Color(0, 0.5, 0.7, 0.2)
@@ -277,7 +278,6 @@ popup/item_6/text = "Ally"
 popup/item_6/id = 6
 
 [node name="Trigger" type="ColorRect" parent="GUI_Parent/PanelContainer/VBoxContainer/TabContainer"]
-visible = false
 custom_minimum_size = Vector2(100, 100)
 layout_mode = 2
 color = Color(0, 0.7, 0.5, 0.2)

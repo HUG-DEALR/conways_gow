@@ -1,0 +1,62 @@
+[gd_scene load_steps=5 format=3 uid="uid://fclbao06pncw"]
+
+[ext_resource type="Script" uid="uid://8subygq14o23" path="res://Scripts/bool_constructor.gd" id="1_uajyb"]
+[ext_resource type="PackedScene" uid="uid://dcb70fckbe53y" path="res://Scenes/Menus/bool_var_signal_dropdown.tscn" id="2_6qrd3"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tgoav"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+bg_color = Color(0, 0, 0, 0.196078)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gkk8u"]
+bg_color = Color(0, 0, 0, 0)
+
+[node name="Bool_Constructor" type="PanelContainer"]
+custom_minimum_size = Vector2(50, 50)
+theme_override_styles/panel = SubResource("StyleBoxFlat_tgoav")
+script = ExtResource("1_uajyb")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Signal_A_Host" type="PanelContainer" parent="HBoxContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_gkk8u")
+
+[node name="Bool_var_signal_dropdown" parent="HBoxContainer/Signal_A_Host" instance=ExtResource("2_6qrd3")]
+layout_mode = 2
+
+[node name="Logic_Gate" type="OptionButton" parent="HBoxContainer"]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+alignment = 1
+selected = 0
+item_count = 5
+popup/item_0/text = "And"
+popup/item_0/id = 0
+popup/item_1/text = "Or"
+popup/item_1/id = 1
+popup/item_2/text = "Not"
+popup/item_2/id = 2
+popup/item_3/text = "Xor"
+popup/item_3/id = 3
+popup/item_4/text = "Var"
+popup/item_4/id = 4
+
+[node name="Signal_B_Host" type="PanelContainer" parent="HBoxContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_gkk8u")
+
+[node name="Bool_var_signal_dropdown" parent="HBoxContainer/Signal_B_Host" instance=ExtResource("2_6qrd3")]
+layout_mode = 2
+
+[connection signal="item_selected" from="HBoxContainer/Logic_Gate" to="." method="_on_logic_gate_item_selected"]
