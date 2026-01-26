@@ -1,13 +1,37 @@
 extends ScrollContainer
 
 @onready var option_button_output: OptionButton = $HBoxContainer/OptionButton_Output
+@onready var h_box_container: HBoxContainer = $HBoxContainer
 
 var entry_exit_tween: Tween
 
 func _ready() -> void:
+	entry_exit_animation(true)
+	await get_tree().process_frame
 	if get_index() == 0:
 		option_button_output.get_popup().set_item_disabled(7, true)
-	entry_exit_animation(true)
+
+func get_bool_info() -> Array:
+	var outcome_string: String = ""
+	match option_button_output.selected:
+		0: # Victory
+			outcome_string = "victory"
+		1: # Defeat
+			outcome_string = "defeat"
+		2: # ★☆☆
+			outcome_string = "star_1"
+		3: # ☆★☆
+			outcome_string = "star_2"
+		4: # ☆☆★
+			outcome_string = "star_3"
+		5: # ★★☆
+			outcome_string = "star_1_2"
+		6: # ★★★
+			outcome_string = "star_1_2_3"
+		7: # Delete self
+			return ["",""] # This should never trigger
+	var bool_string: String = h_box_container.get_child(-1).get_bool_string_segment()
+	return [outcome_string, bool_string]
 
 func entry_exit_animation(entering: bool) -> void:
 	if entry_exit_tween:

@@ -1,0 +1,68 @@
+[gd_scene load_steps=3 format=3 uid="uid://bwdne2lnj71mr"]
+
+[ext_resource type="Script" uid="uid://lcpu8xbl4w1r" path="res://Scripts/gen_count_constructor.gd" id="1_l4epg"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tgoav"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+bg_color = Color(0, 0, 0, 0.196078)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="Gen_Count_Constructor" type="PanelContainer"]
+custom_minimum_size = Vector2(50, 50)
+theme_override_styles/panel = SubResource("StyleBoxFlat_tgoav")
+script = ExtResource("1_l4epg")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+tooltip_text = "Generation Number"
+mouse_filter = 1
+theme_override_font_sizes/font_size = 30
+text = "Gen #"
+
+[node name="Opperator" type="OptionButton" parent="HBoxContainer"]
+custom_minimum_size = Vector2(70, 50)
+layout_mode = 2
+tooltip_text = "Generation number opperator"
+theme_override_font_sizes/font_size = 30
+alignment = 1
+selected = 0
+fit_to_longest_item = false
+allow_reselect = true
+item_count = 7
+popup/item_0/text = "="
+popup/item_0/id = 0
+popup/item_1/text = "<="
+popup/item_1/id = 1
+popup/item_2/text = ">="
+popup/item_2/id = 2
+popup/item_3/text = "<"
+popup/item_3/id = 3
+popup/item_4/text = ">"
+popup/item_4/id = 4
+popup/item_5/text = "!="
+popup/item_5/id = 5
+popup/item_6/text = "Revert to Variable"
+popup/item_6/id = 6
+
+[node name="Target_Number" type="SpinBox" parent="HBoxContainer"]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+tooltip_text = "Generation number to compare to"
+rounded = true
+allow_greater = true
+allow_lesser = true
+alignment = 1
+custom_arrow_step = 1.0
+
+[connection signal="item_selected" from="HBoxContainer/Opperator" to="." method="_on_opperator_item_selected"]

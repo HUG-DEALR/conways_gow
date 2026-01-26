@@ -30,6 +30,7 @@ var level_info_dict: Dictionary = {
 	"can_build_zones": {}, # format is node: ["filter", Rect2]
 	"no_build_zones": {}, # format is node: ["filter", Rect2]
 	"trigger_zones": {}, # format is node: ["filter", Rect2, "Logic Gate", "trigger_identifier"] # Filter types are: All, Empty, Alive, Target, Hole, Pole, Ally
+	"logic_terms": {}, # format is node: ["outcome", "eval_string"]
 }
 var trigger_zone_id_itterator: int = 0
 
@@ -309,7 +310,7 @@ func get_expression_inputs() -> Dictionary:
 		"values": values
 	}
 
-func evaluate_end_level_expression(root_bool_node: Node) -> bool:
+func evaluate_end_level_expression(root_bool_node: Node) -> bool: # This needs to be remade from scratch
 	if root_bool_node == null:
 		return false
 	

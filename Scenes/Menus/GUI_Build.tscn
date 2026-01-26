@@ -1,7 +1,6 @@
-[gd_scene load_steps=7 format=3 uid="uid://8kbmirp7geg7"]
+[gd_scene load_steps=6 format=3 uid="uid://8kbmirp7geg7"]
 
 [ext_resource type="Script" uid="uid://dqmrmfmv2jixh" path="res://Scripts/GUI_Build.gd" id="1_7v46b"]
-[ext_resource type="PackedScene" uid="uid://d3pote4fqgcwc" path="res://Scenes/Menus/logic_term.tscn" id="2_tgoav"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_go701"]
 bg_color = Color(0, 0, 0, 0)
@@ -352,6 +351,7 @@ theme_override_font_sizes/font_size = 30
 text = "❒"
 
 [node name="Add_item_window" type="HBoxContainer" parent="Left_GUI_Root/VBoxContainer/Add_Item"]
+visible = false
 layout_mode = 1
 offset_right = 88.0
 offset_bottom = 50.0
@@ -453,6 +453,49 @@ alignment = 1
 max_length = 5
 virtual_keyboard_type = 2
 
+[node name="Text_Input_HBox" type="HBoxContainer" parent="Level_Settings_Root/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Description" type="TextEdit" parent="Level_Settings_Root/VBoxContainer/Text_Input_HBox"]
+custom_minimum_size = Vector2(250, 250)
+layout_mode = 2
+tooltip_text = "Level Description"
+theme_override_font_sizes/font_size = 20
+placeholder_text = "Level Description"
+context_menu_enabled = false
+drag_and_drop_selection_enabled = false
+empty_selection_clipboard_enabled = false
+wrap_mode = 1
+scroll_smooth = true
+caret_multiple = false
+
+[node name="Instructions" type="TextEdit" parent="Level_Settings_Root/VBoxContainer/Text_Input_HBox"]
+custom_minimum_size = Vector2(250, 250)
+layout_mode = 2
+tooltip_text = "How to Win
+Explain to the player how to complete the level"
+theme_override_font_sizes/font_size = 20
+placeholder_text = "How to Win
+Explain to the player how to complete the level"
+context_menu_enabled = false
+drag_and_drop_selection_enabled = false
+empty_selection_clipboard_enabled = false
+wrap_mode = 1
+scroll_smooth = true
+caret_multiple = false
+
+[node name="Start_Gen_HBox" type="HBoxContainer" parent="Level_Settings_Root/VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="SpinBox" type="SpinBox" parent="Level_Settings_Root/VBoxContainer/Start_Gen_HBox"]
+layout_mode = 2
+alignment = 1
+
 [node name="HBoxContainer" type="HBoxContainer" parent="Level_Settings_Root/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 10
@@ -460,36 +503,37 @@ alignment = 1
 
 [node name="Apply_Level_Settings" type="Button" parent="Level_Settings_Root/VBoxContainer/HBoxContainer"]
 show_behind_parent = true
-custom_minimum_size = Vector2(100, 50)
+custom_minimum_size = Vector2(150, 50)
 layout_mode = 2
 tooltip_text = "Save current build to local file"
 focus_mode = 1
 mouse_filter = 1
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 30
 text = "Apply
 "
 
 [node name="Cancel_Level_Settings" type="Button" parent="Level_Settings_Root/VBoxContainer/HBoxContainer"]
 show_behind_parent = true
-custom_minimum_size = Vector2(100, 50)
+custom_minimum_size = Vector2(150, 50)
 layout_mode = 2
 tooltip_text = "Save current build to local file"
 focus_mode = 1
 mouse_filter = 1
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 30
 text = "Cancel"
 
 [node name="Logic_Settings_Root" type="PanelContainer" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -10.0
-offset_top = -10.0
-offset_right = 10.0
-offset_bottom = 10.0
+offset_left = -474.0
+offset_top = -208.5
+offset_right = 474.0
+offset_bottom = 208.5
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_57d56")
@@ -506,20 +550,17 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="ScrollContainer" type="ScrollContainer" parent="Logic_Settings_Root/VBoxContainer"]
-custom_minimum_size = Vector2(0, 285)
+custom_minimum_size = Vector2(0, 400)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_tgoav")
 follow_focus = true
 horizontal_scroll_mode = 0
-vertical_scroll_mode = 2
+vertical_scroll_mode = 4
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Logic_Settings_Root/VBoxContainer/ScrollContainer"]
 custom_minimum_size = Vector2(900, 0)
 layout_mode = 2
 theme_override_constants/separation = 15
-
-[node name="Logic_Term_0" parent="Logic_Settings_Root/VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_tgoav")]
-layout_mode = 2
 
 [node name="New_Bool" type="Button" parent="Logic_Settings_Root/VBoxContainer/ScrollContainer/VBoxContainer"]
 self_modulate = Color(1, 1, 1, 0.784314)
@@ -538,14 +579,14 @@ alignment = 1
 [node name="Apply_Logic" type="Button" parent="Logic_Settings_Root/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(150, 50)
 layout_mode = 2
-tooltip_text = "Apply logic settings"
+tooltip_text = "Apply Logic Settings"
 theme_override_font_sizes/font_size = 30
 text = "Apply"
 
 [node name="Cancel_Logic" type="Button" parent="Logic_Settings_Root/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(150, 50)
 layout_mode = 2
-tooltip_text = "Cancel Changes"
+tooltip_text = "Save but not apply Logic Settings"
 theme_override_font_sizes/font_size = 30
 text = "Cancel"
 
@@ -579,4 +620,5 @@ text = "Cancel"
 [connection signal="pressed" from="Level_Settings_Root/VBoxContainer/HBoxContainer/Apply_Level_Settings" to="." method="_on_apply_level_settings_pressed"]
 [connection signal="pressed" from="Level_Settings_Root/VBoxContainer/HBoxContainer/Cancel_Level_Settings" to="." method="_on_cancel_level_settings_pressed"]
 [connection signal="pressed" from="Logic_Settings_Root/VBoxContainer/ScrollContainer/VBoxContainer/New_Bool" to="." method="_on_new_bool_pressed"]
+[connection signal="pressed" from="Logic_Settings_Root/VBoxContainer/HBoxContainer/Apply_Logic" to="." method="_on_apply_logic_pressed"]
 [connection signal="pressed" from="Logic_Settings_Root/VBoxContainer/HBoxContainer/Cancel_Logic" to="." method="_on_cancel_logic_settings_pressed"]

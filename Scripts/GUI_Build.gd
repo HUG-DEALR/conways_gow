@@ -34,6 +34,7 @@ var mouse_over_speed_options: bool = false
 var mouse_over_zoom_options: bool = false
 var mouse_over_reset_options: bool = false
 var active_directory: String = ""
+var logic_terms: Dictionary = {} # Format is node: [String ( Outcome ) , String( eval_text )]
 
 func _ready() -> void:
 	speed_slider.visible = false
@@ -45,6 +46,8 @@ func _ready() -> void:
 	reset_to_saved_button.disabled = true
 	level_settings_root.visible = false
 	logic_settings_root.visible = false
+	
+	_on_new_bool_pressed()
 
 func set_gui_visible(set_to_visible: bool) -> void:
 	self.visible = set_to_visible
@@ -188,6 +191,11 @@ func toggle_expand_logic_settings(set_to_expand: bool) -> void:
 		logic_settings_tween.play()
 		await logic_settings_tween.finished
 		logic_settings_root.visible = false
+
+func get_all_logic_term_eval_strings() -> void:
+	for logic_term in logic_terms.keys():
+		logic_terms[logic_term] = logic_term.get_bool_info()
+	Global.world_scene.level_info_dict["logic_terms"] = logic_terms
 
 func update_level_settings_display() -> void:
 	var grid_dimensions: Vector2i = Global.world_scene.level_info_dict["grid_dimensions"]
@@ -371,10 +379,15 @@ func _on_logic_option_pressed() -> void:
 func _on_cancel_logic_settings_pressed() -> void:
 	toggle_expand_logic_settings(false)
 
+func _on_apply_logic_pressed() -> void:
+	get_all_logic_term_eval_strings()
+	toggle_expand_logic_settings(false)
+
 func _on_new_bool_pressed() -> void:
 	var instance = load(logic_term_path).instantiate()
 	logic_terms_vbox.add_child(instance)
 	logic_terms_vbox.move_child(instance, -2)
+	logic_terms[instance] = "" # Standin until the actual eval text is retrieved and implimented
 
 func _on_exit_pressed() -> void:
 	Global.world_scene.button_signal("main")
