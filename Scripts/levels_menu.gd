@@ -28,7 +28,6 @@ func _ready() -> void:
 	level_source_tab_bar.set_tab_title(2, " Open From Local ")
 	
 	level_source_tab_bar.set_tab_disabled(1, true)
-	level_source_tab_bar.set_tab_disabled(2, true)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
@@ -55,3 +54,7 @@ func _on_play_pressed() -> void:
 		Global.world_scene.button_signal("play")
 		var level_data: Array = levels_dict.get(selected_level_id)
 		Global.world_scene.populate_cells(level_data[0], level_data[1], true)
+
+func _on_open_from_local_pressed() -> void:
+	await Global.world_scene.open_level_from_local()
+	Global.world_scene.button_signal("play")

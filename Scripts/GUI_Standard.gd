@@ -20,6 +20,7 @@ func _ready() -> void:
 
 func set_gui_visible(set_to_visible: bool) -> void:
 	self.visible = set_to_visible
+	set_generation_number(Global.generation_number)
 
 func toggle_expand_speed_slider(set_to_expand: bool) -> void:
 	if speed_slider_tween:

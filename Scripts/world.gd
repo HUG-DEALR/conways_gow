@@ -384,16 +384,16 @@ func button_signal(singal_name: String) -> void:
 			get_tree().call_deferred("quit")
 		"play":
 			current_sub_menu = "play"
-			menus.get("GUI").set_gui_visible(true)
 			switch_to_menu("GUI")
 			menus.get("GUI").set_play_pause(false)
 			Global.generation_number = 0
+			menus.get("GUI").set_gui_visible(true)
 			game_camera.position = Vector2.ZERO
 			game_camera.zoom = Vector2.ONE * 2.0
 			game_camera.make_current()
 
 # File functions
-func open_level_from_local(skip_directory_prompt: bool = false) -> void:
+func open_level_from_local(skip_directory_prompt: bool = false) -> bool:
 	var open_from_directory: String = ""
 	if skip_directory_prompt and active_directory.get_extension() == "cgow":
 		open_from_directory = active_directory
@@ -407,11 +407,13 @@ func open_level_from_local(skip_directory_prompt: bool = false) -> void:
 		menus.get("Build_menu").reset_to_saved_button.disabled = false
 	else:
 		print("Could not open file: " + open_from_directory + "\n" + loaded_file)
-		return
+		return false
 	populate_cells(loaded_file.get("grid_dimensions"), loaded_file.get("live_cells"), true)
 	level_info_dict = loaded_file
 	populate_zones(loaded_file.get("can_build_zones"), loaded_file.get("no_build_zones"), loaded_file.get("trigger_zones"), true, false)
 	populate_logic_terms(loaded_file.get("logic_terms"))
+	
+	return true
 
 func save_level(level_data: Dictionary) -> void:
 	if active_directory:
