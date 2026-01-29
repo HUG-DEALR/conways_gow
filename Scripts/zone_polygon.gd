@@ -9,8 +9,8 @@ extends Polygon2D
 @onready var zone_name_line_edit: LineEdit = $GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer/Zone_Name_LineEdit
 @onready var can_build_zone_option_filter: OptionButton = $GUI_Parent/PanelContainer/VBoxContainer/TabContainer/Can_Build_Here/VBoxContainer/HBoxContainer/OptionButton2
 @onready var no_build_zone_option_filter: OptionButton = $GUI_Parent/PanelContainer/VBoxContainer/TabContainer/No_Build_Here/VBoxContainer/HBoxContainer/OptionButton2
-@onready var trigger_zone_option_gate: OptionButton = $GUI_Parent/PanelContainer/VBoxContainer/TabContainer/Trigger/VBoxContainer/HBoxContainer/OptionButton
-@onready var trigger_zone_option_filter: OptionButton = $GUI_Parent/PanelContainer/VBoxContainer/TabContainer/Trigger/VBoxContainer/HBoxContainer/OptionButton2
+@onready var trigger_zone_option_gate: OptionButton = $GUI_Parent/PanelContainer/VBoxContainer/TabContainer/Trigger/VBoxContainer/HBoxContainer/Gate
+@onready var trigger_zone_option_filter: OptionButton = $GUI_Parent/PanelContainer/VBoxContainer/TabContainer/Trigger/VBoxContainer/HBoxContainer/Filter
 @onready var central_area_2d: Area2D = $Central_Area2D
 @onready var central_collision_shape_2d: CollisionShape2D = $Central_Area2D/Central_CollisionShape2D
 @onready var corner_indicators: Array[Node] = [
@@ -25,10 +25,16 @@ const min_dimensions: Vector2 = Vector2(10,10)
 var dragging_corner: Node = null
 var drag_offset: Vector2 = Vector2.ZERO
 var menu_tween: Tween
-const single_cell_grid_rect: Rect2 = Rect2(Vector2.ONE * 5.0, Vector2.ONE * 10.0)
+var single_cell_grid_rect: Rect2 = Rect2(Vector2.ONE * 5.0, Vector2.ONE * 10.0)
 var zone_type: String = ""
 var zone_name: String = ""
 var trigger_identifier: String = ""
+var filter_id: int = 1
+var filter_type: String = "empty"
+var gate_id: int = 0
+var total_covered_cells: int = 0
+var previous_measured_population: int = 0 # This var is not updated unless the trigger gate is "pop change of"
+var previous_trigger_status: bool = false # This var is not updated unless the zone is a trigger
 
 func _ready() -> void:
 	set_process(false)
@@ -50,6 +56,8 @@ func _ready() -> void:
 	if Global.world_scene:
 		gui_parent.reparent(Global.world_scene.canvas_layer)
 		Global.world_scene.update_or_add_zone_info(self)
+		single_cell_grid_rect.size = Vector2.ONE * (Global.world_scene.cell_size + Global.world_scene.cell_margin)
+		Global.world_scene.connect("generation_itterated", _on_generation_iterated)
 	else:
 		print("World scene not found through Global, option window failed to reparent for node:" + "\n" + str(self))
 	
@@ -170,13 +178,40 @@ func get_zone_info() -> Array:
 		"no build here": # format is node: ["filter", Rect2]
 			zone_info[0] = no_build_zone_option_filter.get_item_text(no_build_zone_option_filter.selected)
 			zone_info[1] = get_rect()
-		"trigger": # format is node: ["filter", Rect2, "Logic Gate"]
+		"trigger": # format is node: ["filter", Rect2, "Logic Gate", "trigger_id"]
 			zone_info.resize(4)
 			zone_info[0] = trigger_zone_option_filter.get_item_text(trigger_zone_option_filter.selected)
 			zone_info[1] = get_rect()
 			zone_info[2] = trigger_zone_option_gate.get_item_text(trigger_zone_option_gate.selected)
 			zone_info[3] = trigger_identifier
 	return zone_info
+
+func set_zone_options(filter: String, logic_gate: String) -> void:
+	match filter:
+		"All":
+			filter_id = 0
+		"Empty":
+			filter_id = 1
+		"Alive":
+			filter_id = 2
+		"Target":
+			filter_id = 3
+		"Hole":
+			filter_id = 4
+		"Pole":
+			filter_id = 5
+		"Ally":
+			filter_id = 6
+	trigger_zone_option_filter.select(filter_id)
+	
+	match logic_gate:
+		"Zone is all":
+			gate_id = 0
+		"Zone has no":
+			gate_id = 1
+		"Pop change of":
+			gate_id = 2
+	trigger_zone_option_gate.select(gate_id)
 
 func get_bool_string_segment() -> String:
 	if zone_type != "trigger" or trigger_identifier == "":
@@ -186,8 +221,117 @@ func get_bool_string_segment() -> String:
 func set_trigger_identifier(identifier: String) -> void:
 	trigger_identifier = identifier
 
+func get_covered_active_cells(active_cells: Array) -> Array[int]:
+	var output_list: Array[int] = []
+	var rect: Rect2 = get_rect()
+	var step: float = single_cell_grid_rect.size.x
+	var grid_origin: Vector2 = single_cell_grid_rect.position
+	
+	if total_covered_cells < active_cells.size():
+		# This method is prefered when active cells is large and or rect is small
+		
+		var start_column: int = int(floor((rect.position.x - grid_origin.x) / step))
+		var start_row: int = int(floor((rect.position.y - grid_origin.y) / step))
+		var end_column: int = int(ceil((rect.position.x + rect.size.x - grid_origin.x) / step)) - 1
+		var end_row: int = int(ceil((rect.position.y + rect.size.y - grid_origin.y) / step)) - 1
+		
+		var grid_dimensions: Vector2i = Global.world_scene["grid_dimensions"]
+		
+		start_column = clamp(start_column, 0, grid_dimensions.x - 1)
+		start_row = clamp(start_row, 0, grid_dimensions.y - 1)
+		end_column = clamp(end_column, 0, grid_dimensions.x - 1)
+		end_row = clamp(end_row, 0, grid_dimensions.y - 1)
+		
+		for row in range(start_row, end_row + 1):
+			for column in range(start_column, end_column + 1):
+				var index: int = Global.world_scene.get_cell_index_from_position(grid_origin + Vector2(column * step, row * step))
+				if index != -1 and active_cells.has(index):
+					output_list.append(index)
+	else: # total_covered_cells >= active_cells.size()
+		# This method is prefered when active cells is small and or rect is large
+		for index in active_cells:
+			if rect.has_point(grid_origin + (Global.world_scene.index_to_grid_coords(index) * step)):
+				output_list.append(index)
+	
+	return output_list
+
 func get_trigger_status() -> bool:
-	return false # WIP
+	if filter_id < 0 or filter_id > 6:
+		print("Trigger filter not configured for " + trigger_identifier + "\n" + str(self))
+		previous_trigger_status = false
+		return false
+	match gate_id:
+		
+		0: # Zone is all
+			if filter_id == 0: # Any
+				previous_trigger_status = true
+				return true # If (Zone is all) (Any) is always true
+			var active_cell_indexes: Array = get_covered_active_cells(Global.world_scene.level_info_dict["live_cells"].keys())
+			match filter_id:
+				1: # Empty
+					if active_cell_indexes.size() == 0:
+						previous_trigger_status = true
+						return true # If there are no active cells then (Zone is all) (Empty) is true
+					else:
+						previous_trigger_status = false
+						return false # There is atleast 1 active cell
+				_: # Alive, Target, Hole, Pole, Ally
+					if active_cell_indexes.size() != total_covered_cells:
+						previous_trigger_status = false
+						return false # Number of active cells does not fill zone, atleast 1 inactive cell
+					else:
+						for cell_index in active_cell_indexes:
+							if Global.world_scene.get_cell_type(cell_index) != filter_type:
+								previous_trigger_status = false
+								return false # All cells active, atleast 1 cell of wrong type
+						previous_trigger_status = true
+						return true # All cells of right type
+		
+		1: # Zone has no
+			if filter_id == 0: # Any
+				previous_trigger_status = false
+				return false # If (Zone has no) (Any) is always false
+			var active_cell_indexes: Array = get_covered_active_cells(Global.world_scene.level_info_dict["live_cells"].keys())
+			match filter_id:
+				1: # Empty
+					if active_cell_indexes.size() == total_covered_cells:
+						previous_trigger_status = true
+						return true # All cells are live, not empty. zone has no empty
+					else:
+						previous_trigger_status = false
+						return false # Atleast 1 empty cell
+				_: # Alive, Target, Hole, Pole, Ally
+					if active_cell_indexes.size() == 0:
+						previous_trigger_status = true
+						return true # All cells empty, Zone has no of any other type
+					else:
+						for cell_index in active_cell_indexes:
+							if Global.world_scene.get_cell_type(cell_index) == filter_type:
+								previous_trigger_status = false
+								return false # Atleast 1 cell of target type
+						previous_trigger_status = true
+						return true # No cells of target type
+		
+		2: # Population change of
+			if previous_measured_population != get_population_of_covered_cell_type(filter_type):
+				previous_trigger_status = true
+				return true
+			else:
+				previous_trigger_status = false
+				return false
+		
+		_: # Fail safe
+			print("Trigger gate not configured for " + trigger_identifier + "\n" + str(self))
+			previous_trigger_status = false
+			return false
+
+func get_population_of_covered_cell_type(cell_type: String) -> int:
+	var active_cell_indexes: Array = get_covered_active_cells(Global.world_scene.level_info_dict["live_cells"].keys())
+	var count: int = 0
+	for cell_index in active_cell_indexes:
+		if Global.world_scene.get_cell_type(cell_index) == cell_type:
+			count += 1
+	return count
 
 func toggle_zone_menu_visible(make_visible: bool) -> void:
 	if menu_tween:
@@ -244,6 +388,7 @@ func snap_to_grid(grid_rect: Rect2) -> void:
 	polygon = new_poly
 	_update_corner_positions()
 	Global.world_scene.update_or_add_zone_info(self)
+	total_covered_cells = int(round(get_rect().get_area()/single_cell_grid_rect.get_area()))
 
 func apply_zone_options() -> void:
 	var target_type: String = ""
@@ -309,3 +454,19 @@ func _on_central_area_2d_input_event(_viewport: Node, event: InputEvent, _shape_
 func _on_apply_zone_options_pressed() -> void:
 	toggle_zone_menu_visible(false)
 	apply_zone_options()
+
+func _on_gate_item_selected(index: int) -> void:
+	gate_id = index
+
+func _on_filter_item_selected(index: int) -> void:
+	filter_id = index
+	filter_type = trigger_zone_option_filter.get_item_text(index).to_lower()
+
+func _on_generation_iterated() -> void:
+	if zone_type == "trigger":
+		if previous_trigger_status != get_trigger_status():
+			# Only check full bool if there is a change in status
+			Global.world_scene.check_logic_conditions(trigger_identifier)
+		
+		if gate_id == 2: # Population change of
+			previous_measured_population = get_population_of_covered_cell_type(filter_type)

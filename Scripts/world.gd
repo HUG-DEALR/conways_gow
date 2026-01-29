@@ -1,5 +1,7 @@
 extends Node2D
 
+signal generation_itterated
+
 @onready var grid: MultiMeshInstance2D = $Grid
 @onready var grid_multimesh: MultiMesh = grid.multimesh
 @onready var game_camera: Camera2D = $Game_Camera
@@ -26,13 +28,14 @@ var menu_transition_tween: Tween
 var menus_active: bool = true
 var level_info_dict: Dictionary = {
 	"grid_dimensions": Vector2i.ZERO,
-	"live_cells": {}, # format is index: ["cell type", live neighbours]
+	"live_cells": {}, # format is index: ["cell type", number of live neighbours]
 	"can_build_zones": {}, # format is node: ["filter", Rect2]
 	"no_build_zones": {}, # format is node: ["filter", Rect2]
 	"trigger_zones": {}, # format is node: ["filter", Rect2, "Logic Gate", "trigger_identifier"] # Filter types are: All, Empty, Alive, Target, Hole, Pole, Ally
 	"logic_terms": {}, # format is node: ["outcome", "eval_string"]
 }
 var trigger_zone_id_itterator: int = 0
+var active_directory: String = ""
 
 func _ready():
 	Global.world_scene = self
@@ -51,7 +54,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 			last_click_location = get_global_mouse_position()
-			handle_cell_clicked(get_clicked_cell_index(last_click_location))
+			handle_cell_clicked(get_cell_index_from_position(last_click_location))
 
 # Grid functions
 func populate_cells(grid_size: Vector2i, cells_dict: Dictionary = {}, clear_previous: bool = true) -> void:
@@ -70,6 +73,7 @@ func populate_cells(grid_size: Vector2i, cells_dict: Dictionary = {}, clear_prev
 	
 	if clear_previous:
 		clear_grid()
+	
 	if not cells_dict.is_empty():
 		for key in cells_dict.keys():
 			set_cell_type(key, cells_dict.get(key)[0])
@@ -80,6 +84,7 @@ func populate_zones(can_build_zones: Dictionary, no_build_zones: Dictionary, tri
 	
 	var generic_zone = preload("res://Scenes/Props/zone_polygon.tscn")
 	
+	var new_can_build_dict: Dictionary = {}
 	for zone in can_build_zones:
 		var new_zone = generic_zone.instantiate()
 		add_child(new_zone)
@@ -88,7 +93,9 @@ func populate_zones(can_build_zones: Dictionary, no_build_zones: Dictionary, tri
 		new_zone.visible = true
 		new_zone.set_zone_type("can build here")
 		new_zone.set_rect(can_build_zones.get(zone)[1])
+		new_can_build_dict[new_zone] = can_build_zones[zone]
 	
+	var new_no_build_dict: Dictionary = {}
 	for zone in no_build_zones:
 		var new_zone = generic_zone.instantiate()
 		add_child(new_zone)
@@ -97,7 +104,9 @@ func populate_zones(can_build_zones: Dictionary, no_build_zones: Dictionary, tri
 		new_zone.visible = true
 		new_zone.set_zone_type("no build here")
 		new_zone.set_rect(no_build_zones.get(zone)[1])
+		new_no_build_dict[new_zone] = no_build_zones[zone]
 	
+	var new_trigger_dict: Dictionary = {}
 	for zone in trigger_zones:
 		var new_zone = generic_zone.instantiate()
 		add_child(new_zone)
@@ -105,7 +114,20 @@ func populate_zones(can_build_zones: Dictionary, no_build_zones: Dictionary, tri
 			new_zone.toggle_lock_state(true)
 		new_zone.visible = true
 		new_zone.set_zone_type("trigger")
-		new_zone.set_rect(trigger_zones.get(zone)[1])
+		var zone_info: Array = trigger_zones.get(zone)
+		new_zone.set_zone_options(zone_info[0], zone_info[2]) # Set filter and set gate
+		new_zone.set_rect(zone_info[1])
+		
+		var trigger_id: String = zone_info[3]
+		if trigger_id == "":
+			push_error("missing a trigger id from loaded file")
+		else:
+			new_zone.set_trigger_identifier(trigger_id)
+		new_trigger_dict[new_zone] = trigger_zones[zone]
+	
+	level_info_dict["can_build_zones"] = new_can_build_dict
+	level_info_dict["no_build_zones"] = new_no_build_dict
+	level_info_dict["trigger_zones"] = new_trigger_dict
 
 func resize_grid(new_grid_size: Vector2i, cells_dict: Dictionary) -> void:
 	if cells_dict.is_empty():
@@ -157,6 +179,7 @@ func iterate_generation() -> void:
 					set_cell_type(cell_index, "alive")
 	
 	Global.generation_number += 1
+	generation_itterated.emit()
 
 func get_neighbours(target_index: int) -> Array:
 	var grid_width: int = level_info_dict["grid_dimensions"].x
@@ -183,24 +206,18 @@ func get_neighbours(target_index: int) -> Array:
 	
 	return neighbours
 
-func get_clicked_cell_index(world_pos: Vector2) -> int:
-	# Get total spacing (size + margin)
+func get_cell_index_from_position(world_pos: Vector2) -> int: # Returns -1 on fail
 	var step: float = cell_size + cell_margin
-	
-	# Convert world position to grid-space coordinates
 	var column = int(floor((world_pos.x + (step/2.0)) / step))
 	var row = int(floor((world_pos.y + (step/2.0)) / step))
 	
-	# Check if inside grid bounds
 	if column < 0 or row < 0 or column >= level_info_dict["grid_dimensions"].x or row >= level_info_dict["grid_dimensions"].y:
 		return -1
 	
-	# Compute the index
 	var index = row * level_info_dict["grid_dimensions"].x + column
 	if index >= current_cell_count:
 		return -1
 	
-	# check if target landed inside the actual cell (not in margin)
 	var cell_origin = Vector2(column * step, row * step)
 	var inside_x = (world_pos.x - cell_origin.x) < cell_size
 	var inside_y = (world_pos.y - cell_origin.y) < cell_size
@@ -227,11 +244,14 @@ func clear_grid() -> void:
 
 func clear_zones() -> void:
 	for zone in level_info_dict["no_build_zones"]:
-		zone.self_destruct()
+		if zone is Polygon2D:
+			zone.self_destruct()
 	for zone in level_info_dict["can_build_zones"]:
-		zone.self_destruct()
+		if zone is Polygon2D:
+			zone.self_destruct()
 	for zone in level_info_dict["trigger_zones"]:
-		zone.self_destruct()
+		if zone is Polygon2D:
+			zone.self_destruct()
 
 func get_cell_type(cell_index: int) -> String:
 	if level_info_dict["live_cells"].has(cell_index):
@@ -295,44 +315,6 @@ func update_or_add_zone_info(zone_node: Polygon2D) -> void:
 				var new_id: String = "trigger_" + str(trigger_zone_id_itterator)
 				level_info_dict["trigger_zones"][zone_node][3] = new_id
 				zone_node.set_trigger_identifier(new_id)
-
-func get_expression_inputs() -> Dictionary:
-	var trigger_ids: PackedStringArray = []
-	var values: Array = []
-	
-	for node in level_info_dict["trigger_zones"].keys():
-		var id: String = level_info_dict["trigger_zones"][node][3]
-		trigger_ids.append(id)
-		values.append(node.get_trigger_status())
-	
-	return {
-		"identifiers": trigger_ids,
-		"values": values
-	}
-
-func evaluate_end_level_expression(root_bool_node: Node) -> bool: # This needs to be remade from scratch
-	if root_bool_node == null:
-		return false
-	
-	var expr_string: String = root_bool_node.get_bool_string_segment()
-	if expr_string.is_empty():
-		return false
-	
-	var inputs: Dictionary = get_expression_inputs()
-	
-	var expression: Expression = Expression.new()
-	var error = expression.parse(expr_string, inputs.identifiers)
-	if error != OK:
-		push_error("Expression parse error: " + expression.get_error_text())
-		return false
-	
-	var result = expression.execute(inputs.values)
-	
-	if expression.has_execute_failed():
-		push_error("Expression execution failed")
-		return false
-	
-	return bool(result)
 
 func set_play_pause(set_to_play: bool) -> void:
 	menus.get("GUI").set_play_pause(set_to_play)
@@ -410,6 +392,41 @@ func button_signal(singal_name: String) -> void:
 			game_camera.zoom = Vector2.ONE * 2.0
 			game_camera.make_current()
 
+# File functions
+func open_level_from_local(skip_directory_prompt: bool = false) -> void:
+	var open_from_directory: String = ""
+	if skip_directory_prompt and active_directory.get_extension() == "cgow":
+		open_from_directory = active_directory
+	else:
+		open_from_directory = await Global.prompt_user_for_file_path("Open", "", "", ["*.cgow"], false)
+	
+	var loaded_file = Global.load_from_file(open_from_directory)
+	if loaded_file:
+		active_directory = open_from_directory
+		menus.get("Build_menu").file_name_label.text = active_directory.get_file()
+		menus.get("Build_menu").reset_to_saved_button.disabled = false
+	else:
+		print("Could not open file: " + open_from_directory + "\n" + loaded_file)
+		return
+	populate_cells(loaded_file.get("grid_dimensions"), loaded_file.get("live_cells"), true)
+	level_info_dict = loaded_file
+	populate_zones(loaded_file.get("can_build_zones"), loaded_file.get("no_build_zones"), loaded_file.get("trigger_zones"), true, false)
+	populate_logic_terms(loaded_file.get("logic_terms"))
+
+func save_level(level_data: Dictionary) -> void:
+	if active_directory:
+		Global.save_to_file(level_data, active_directory)
+		menus.get("Build_menu").reset_to_saved_button.disabled = false
+	else:
+		save_level_as(level_data)
+
+func save_level_as(level_data: Dictionary) -> void:
+	active_directory = await Global.prompt_user_for_file_path()
+	if active_directory.get_extension() != "cgow":
+		active_directory += ".cgow"
+	Global.save_to_file(level_data, active_directory)
+	menus.get("Build_menu").reset_to_saved_button.disabled = false
+
 # Misc functions
 func subtract_dicts(dict_subtracting_from: Dictionary, dict_subtracting: Dictionary, only_keep_keys: bool = false) -> Dictionary:
 	var result: Dictionary = {}
@@ -420,5 +437,50 @@ func subtract_dicts(dict_subtracting_from: Dictionary, dict_subtracting: Diction
 			else:
 				result[key] = dict_subtracting_from[key]
 	return result
+
+func populate_logic_terms(logic_terms: Dictionary) -> void:
+	logic_terms.clear()
+	pass
+
+func evaluate_string_to_bool(expr_string: String) -> bool:
+	if expr_string.is_empty():
+		push_error("Empty expression passed to evaluate_string_to_bool()")
+		return false
+	
+	var variable_ids: PackedStringArray = ["gen_count"]
+	var values: Array = [Global.generation_number]
+	
+	for node in level_info_dict["trigger_zones"].keys():
+		var id: String = level_info_dict["trigger_zones"][node][3]
+		variable_ids.append(id)
+		values.append(node.get_trigger_status())
+	if variable_ids.size() != values.size():
+		push_error("Discrepancy in number of variables and values in evaluate_string_to_bool()" + "\n" + "variable_ids.size() " + str(variable_ids.size()) + "\n" + "values.size() " + str(values.size()) + "\n" + str(variable_ids) + "\n" + str(values))
+		return false
+	#var inputs: Dictionary = {
+	#	"identifiers": variable_ids,
+	#	"values": values
+	#}
+	
+	var expression: Expression = Expression.new()
+	var error = expression.parse(expr_string, variable_ids)
+	if error != OK:
+		push_error("Expression parse error: " + expression.get_error_text())
+		return false
+	
+	var result = expression.execute(values)
+	if expression.has_execute_failed():
+		push_error("Expression execution failed")
+		return false
+	
+	return bool(result)
+
+func check_logic_conditions(trigger_id: String = "") -> void:
+	if trigger_id == "":
+		# check all
+		pass
+	else:
+		# check only logic conditions containing trigger_id
+		pass
 
 # Signal functions

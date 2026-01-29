@@ -38,7 +38,7 @@ func load_from_file(file_path: String) -> Dictionary:
 	if typeof(data) == TYPE_DICTIONARY:
 		return data
 	else:
-		push_error("Failed to parse JSON from file: " + file_path + "\n" + data)
+		push_error("Failed to parse file: " + file_path + "\n" + str(typeof(data)) + "\n" + data)
 		return {}
 
 func prompt_user_for_directory(prompt: String = "Select Directory", current_directory: String = "") -> String:

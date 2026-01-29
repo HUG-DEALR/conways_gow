@@ -33,7 +33,7 @@ var playing_generations: bool = false
 var mouse_over_speed_options: bool = false
 var mouse_over_zoom_options: bool = false
 var mouse_over_reset_options: bool = false
-var active_directory: String = ""
+#var active_directory: String = ""
 var logic_terms: Dictionary = {} # Format is node: [String ( Outcome ) , String( eval_text )]
 
 func _ready() -> void:
@@ -202,38 +202,38 @@ func update_level_settings_display() -> void:
 	grid_width_line_edit.text = str(grid_dimensions.x)
 	grid_height_line_edit.text = str(grid_dimensions.y)
 
-func save_level(level_data: Dictionary) -> void:
-	if active_directory:
-		Global.save_to_file(level_data, active_directory)
-		reset_to_saved_button.disabled = false
-	else:
-		save_level_as(level_data)
+#func save_level(level_data: Dictionary) -> void:
+#	if Global.world_scene.active_directory:
+#		Global.save_to_file(level_data, Global.world_scene.active_directory)
+#		reset_to_saved_button.disabled = false
+#	else:
+#		save_level_as(level_data)
 
-func save_level_as(level_data: Dictionary) -> void:
-	active_directory = await Global.prompt_user_for_file_path()
-#	var extension: String = active_directory.get_extension()
-	if active_directory.get_extension() != "cgow":
-		active_directory += ".cgow"
-	Global.save_to_file(level_data, active_directory)
-	reset_to_saved_button.disabled = false
+#func save_level_as(level_data: Dictionary) -> void:
+#	Global.world_scene.active_directory = await Global.prompt_user_for_file_path()
+#	if Global.world_scene.active_directory.get_extension() != "cgow":
+#		Global.world_scene.active_directory += ".cgow"
+#	Global.save_to_file(level_data, Global.world_scene.active_directory)
+#	reset_to_saved_button.disabled = false
 
-func open_level_from_local(skip_directory_prompt: bool = false) -> void:
-	var open_from_directory: String = ""
-	if skip_directory_prompt and active_directory.get_extension() == "cgow":
-		open_from_directory = active_directory
-	else:
-		open_from_directory = await Global.prompt_user_for_file_path("Open", "", "", ["*.cgow"], false)
-	
-	var loaded_file = Global.load_from_file(open_from_directory)
-	if loaded_file:
-		active_directory = open_from_directory
-		file_name_label.text = active_directory.get_file()
-		reset_to_saved_button.disabled = false
-	else:
-		print("Could not open file: " + open_from_directory + "\n" + loaded_file)
-		return
-	Global.world_scene.populate_cells(loaded_file.get("grid_dimensions"), loaded_file.get("live_cells"), true)
-	Global.world_scene.populate_zones(loaded_file.get("can_build_zones"), loaded_file.get("no_build_zones"), loaded_file.get("trigger_zones"), true, false)
+#func open_level_from_local(skip_directory_prompt: bool = false) -> void:
+#	var open_from_directory: String = ""
+#	if skip_directory_prompt and active_directory.get_extension() == "cgow":
+#		open_from_directory = active_directory
+#	else:
+#		open_from_directory = await Global.prompt_user_for_file_path("Open", "", "", ["*.cgow"], false)
+#	
+#	var loaded_file = Global.load_from_file(open_from_directory)
+#	if loaded_file:
+#		active_directory = open_from_directory
+#		file_name_label.text = active_directory.get_file()
+#		reset_to_saved_button.disabled = false
+#	else:
+#		print("Could not open file: " + open_from_directory + "\n" + loaded_file)
+#		return
+#	Global.world_scene.populate_cells(loaded_file.get("grid_dimensions"), loaded_file.get("live_cells"), true)
+#	Global.world_scene.populate_zones(loaded_file.get("can_build_zones"), loaded_file.get("no_build_zones"), loaded_file.get("trigger_zones"), true, false)
+#	Global.world_scene.level_info_dict = loaded_file
 
 func _on_speed_slider_value_changed(value: float) -> void:
 	generation_timer.wait_time = 1.0 / speed_slider.value
@@ -303,13 +303,13 @@ func _on_file_options_window_mouse_exited() -> void:
 	toggle_expand_file_options_window(false)
 
 func _on_open_file_pressed() -> void:
-	open_level_from_local()
+	Global.world_scene.open_level_from_local()
 
 func _on_save_pressed() -> void:
-	save_level(Global.world_scene.level_info_dict)
+	Global.world_scene.save_level(Global.world_scene.level_info_dict)
 
 func _on_save_as_pressed() -> void:
-	save_level_as(Global.world_scene.level_info_dict)
+	Global.world_scene.save_level_as(Global.world_scene.level_info_dict)
 
 func _on_new_file_pressed() -> void:
 	Global.world_scene.clear_grid()
@@ -318,7 +318,7 @@ func _on_new_file_pressed() -> void:
 	set_generation_number(0)
 	set_play_pause(false)
 	file_name_label.text = "new_level.cgow"
-	active_directory = ""
+	Global.world_scene.active_directory = ""
 	reset_to_saved_button.disabled = true
 
 func _on_reset_build_to_clear_mouse_entered() -> void:
@@ -343,7 +343,7 @@ func _on_reset_to_clear_pressed() -> void:
 	set_play_pause(false)
 
 func _on_reset_to_saved_pressed() -> void:
-	open_level_from_local(true)
+	Global.world_scene.open_level_from_local(true)
 	Global.generation_number = 0
 	set_generation_number(0)
 	set_play_pause(false)

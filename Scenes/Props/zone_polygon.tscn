@@ -326,7 +326,7 @@ text = "Triggered by:"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="OptionButton" type="OptionButton" parent="GUI_Parent/PanelContainer/VBoxContainer/TabContainer/Trigger/VBoxContainer/HBoxContainer"]
+[node name="Gate" type="OptionButton" parent="GUI_Parent/PanelContainer/VBoxContainer/TabContainer/Trigger/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 selected = 0
@@ -338,7 +338,7 @@ popup/item_1/id = 1
 popup/item_2/text = "Pop change of"
 popup/item_2/id = 2
 
-[node name="OptionButton2" type="OptionButton" parent="GUI_Parent/PanelContainer/VBoxContainer/TabContainer/Trigger/VBoxContainer/HBoxContainer"]
+[node name="Filter" type="OptionButton" parent="GUI_Parent/PanelContainer/VBoxContainer/TabContainer/Trigger/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 selected = 1
@@ -428,5 +428,7 @@ text = "Cancel"
 [connection signal="input_event" from="Central_Area2D" to="." method="_on_central_area_2d_input_event"]
 [connection signal="button_down" from="GUI_Parent/Drag_Button" to="GUI_Parent" method="_on_drag_button_button_down"]
 [connection signal="button_up" from="GUI_Parent/Drag_Button" to="GUI_Parent" method="_on_drag_button_button_up"]
+[connection signal="item_selected" from="GUI_Parent/PanelContainer/VBoxContainer/TabContainer/Trigger/VBoxContainer/HBoxContainer/Gate" to="." method="_on_gate_item_selected"]
+[connection signal="item_selected" from="GUI_Parent/PanelContainer/VBoxContainer/TabContainer/Trigger/VBoxContainer/HBoxContainer/Filter" to="." method="_on_filter_item_selected"]
 [connection signal="pressed" from="GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer/Apply" to="." method="_on_apply_zone_options_pressed"]
 [connection signal="pressed" from="GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer/Cancel" to="." method="_on_cancel_pressed"]
