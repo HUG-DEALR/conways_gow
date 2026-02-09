@@ -17,10 +17,36 @@ func get_bool_string_segment() -> String:
 	else:
 		return "false"
 
-func replace_self_with_alternate(path: String) -> void:
+func get_logic_term_structure_array() -> Array:
+	# [object_index, [selection_indexes], [child_A_info], [child_B_info]]
+	return [2, [get_bool_string_segment()], [null], [null]]
+
+func set_logic_structure(structure_array: Array) -> void:
+	if structure_array[0] != 2:
+		push_error("set_logic_structure() object type failed to set up correctly" + "\n" + str(structure_array))
+		return
+	# format is [object_index, [selection_indexes], [child_A_info], [child_B_info]]
+	target_trigger = structure_array[1][0]
+	refresh_trigger_list()
+	
+	if item_count > 5:
+		for item_index in range(item_count):
+			if target_trigger == get_item_text(item_index):
+				select(item_index)
+				break
+
+func replace_self_with_alternate(index_of_replacement: int) -> void:
 	var parent = get_parent()
 	if not (parent is Control):
 		return
+	var path = ""
+	match index_of_replacement:
+		0:
+			path = bool_constructor_path
+		1:
+			path = gen_count_constructor_path
+		_:
+			return
 	var instance = load(path).instantiate()
 	parent.add_child(instance)
 	queue_free()
@@ -36,9 +62,9 @@ func refresh_trigger_list() -> void:
 func _on_item_selected(index: int) -> void:
 	match index:
 		0: # New logic gate
-			replace_self_with_alternate(bool_constructor_path)
+			replace_self_with_alternate(0)
 		1: # Gen Count
-			replace_self_with_alternate(gen_count_constructor_path)
+			replace_self_with_alternate(1)
 		2: # True
 			target_trigger = "true"
 		3: # False
@@ -47,7 +73,7 @@ func _on_item_selected(index: int) -> void:
 			pass
 			# This code is unreachable
 		_: # trigger
-			pass
+			pass # WIP
 
 func _on_pressed() -> void:
 	refresh_trigger_list()

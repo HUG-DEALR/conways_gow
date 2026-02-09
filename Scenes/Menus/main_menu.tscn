@@ -55,7 +55,7 @@ alignment = 1
 [node name="Levels" type="Button" parent="PanelContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
-text = "Levels"
+text = "Play"
 
 [node name="AnimatedControl" type="Node" parent="PanelContainer/VBoxContainer/Levels"]
 script = ExtResource("1_28flt")

@@ -33,9 +33,23 @@ func get_bool_info() -> Array:
 	var bool_string: String = h_box_container.get_child(-1).get_bool_string_segment()
 	return [outcome_string, bool_string]
 
-func entry_exit_animation(entering: bool) -> void:
+func get_logic_term_structure_array() -> Array:
+	return [option_button_output.selected, h_box_container.get_child(-1).get_logic_term_structure_array()]
+
+func set_logic_structure(structure_array: Array) -> void:
+	option_button_output.selected = structure_array[0]
+	# format is arbitrary_index: [outcome_index, [object_index, [selection_indexes], [child_A_info], [child_B_info]]]
+	h_box_container.get_child(-1).replace_self_with_alternate(structure_array[1][0])
+	await get_tree().process_frame
+	h_box_container.get_child(-1).set_logic_structure(structure_array[1])
+
+func entry_exit_animation(entering: bool, instant_clear: bool = false) -> void:
 	if entry_exit_tween:
 		entry_exit_tween.kill()
+	
+	if instant_clear:
+		queue_free()
+	
 	entry_exit_tween = create_tween()
 	entry_exit_tween.pause()
 	entry_exit_tween.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_CUBIC)

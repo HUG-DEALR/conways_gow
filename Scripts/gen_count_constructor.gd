@@ -9,11 +9,15 @@ func _ready() -> void:
 	var target_number_line_edit = target_number.get_line_edit()
 	target_number_line_edit.add_theme_font_size_override("font_size", 30)
 
-func replace_self_with_alternate(path: String) -> void:
+func replace_self_with_alternate(_index_of_replacement: int) -> void:
 	var parent = get_parent()
 	if not (parent is Control):
 		return
-	var instance = load(path).instantiate()
+#	var path = ""
+#	match index_of_replacement:
+#		2:
+#			path = trigger_selector_path
+	var instance = load(trigger_selector_path).instantiate()
 	parent.add_child(instance)
 	queue_free()
 
@@ -22,7 +26,19 @@ func get_bool_string_segment() -> String:
 		return "false"
 	return "(gen_count " + opperator.get_item_text(opperator.selected) + " " + str(int(target_number.value)) + ")"
 
+func get_logic_term_structure_array() -> Array:
+	# [object_index, [selection_indexes], [child_A_info], [child_B_info]]
+	return [1, [opperator.selected, target_number.value], [null], [null]]
+
+func set_logic_structure(structure_array: Array) -> void:
+	if structure_array[0] != 1:
+		push_error("set_logic_structure() object type failed to set up correctly" + "\n" + str(structure_array))
+		return
+	# format is [object_index, [selection_indexes], [child_A_info], [child_B_info]]
+	opperator.selected = structure_array[1][0]
+	target_number.value = structure_array[1][0]
+
 func _on_opperator_item_selected(index: int) -> void:
 	match index:
 		6: # Revert to variable
-			replace_self_with_alternate(trigger_selector_path)
+			replace_self_with_alternate(2)

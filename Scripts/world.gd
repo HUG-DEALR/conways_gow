@@ -19,7 +19,6 @@ signal generation_itterated
 const cell_size: float = 10.0
 const cell_margin: float = 0.0
 
-#var current_grid_dimensions: Vector2i
 var current_cell_count: int
 var last_click_location: Vector2 = Vector2.ZERO
 var current_menu: Control
@@ -33,6 +32,8 @@ var level_info_dict: Dictionary = {
 	"no_build_zones": {}, # format is node: ["filter", Rect2]
 	"trigger_zones": {}, # format is node: ["filter", Rect2, "Logic Gate", "trigger_identifier"] # Filter types are: All, Empty, Alive, Target, Hole, Pole, Ally
 	"logic_terms": {}, # format is node: ["outcome", "eval_string"]
+	"logic_menu_structure": {}, # format is arbitrary_index: [outcome_index, [object_index, [selection_indexes], [child_A_info], [child_B_info]]]
+	# Logic Object indexes are: 0=bool_constructor, 1=gen_count, 2=bool_var
 }
 var trigger_zone_id_itterator: int = 0
 var active_directory: String = ""
@@ -55,6 +56,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 			last_click_location = get_global_mouse_position()
 			handle_cell_clicked(get_cell_index_from_position(last_click_location))
+	if event.is_action_pressed("ui_cancel"):
+		if current_menu != menus.get("Main_menu"):
+			button_signal("main")
 
 # Grid functions
 func populate_cells(grid_size: Vector2i, cells_dict: Dictionary = {}, clear_previous: bool = true) -> void:
@@ -411,7 +415,7 @@ func open_level_from_local(skip_directory_prompt: bool = false) -> bool:
 	populate_cells(loaded_file.get("grid_dimensions"), loaded_file.get("live_cells"), true)
 	level_info_dict = loaded_file
 	populate_zones(loaded_file.get("can_build_zones"), loaded_file.get("no_build_zones"), loaded_file.get("trigger_zones"), true, false)
-	populate_logic_terms(loaded_file.get("logic_terms"))
+	populate_logic_terms(loaded_file.get("logic_menu_structure"), true)
 	
 	return true
 
@@ -440,9 +444,11 @@ func subtract_dicts(dict_subtracting_from: Dictionary, dict_subtracting: Diction
 				result[key] = dict_subtracting_from[key]
 	return result
 
-func populate_logic_terms(logic_terms: Dictionary) -> void:
-	logic_terms.clear()
-	pass
+func populate_logic_terms(logic_structures: Dictionary, clear_previous: bool = true) -> void:
+	var build_menu: Node = menus.get("Build_menu")
+	if clear_previous:
+		build_menu.clear_logic_structures()
+	build_menu.create_and_set_logic_terms(logic_structures)
 
 func evaluate_string_to_bool(expr_string: String) -> bool:
 	if expr_string.is_empty():

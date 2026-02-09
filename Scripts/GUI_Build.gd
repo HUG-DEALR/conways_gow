@@ -35,6 +35,7 @@ var mouse_over_zoom_options: bool = false
 var mouse_over_reset_options: bool = false
 #var active_directory: String = ""
 var logic_terms: Dictionary = {} # Format is node: [String ( Outcome ) , String( eval_text )]
+var logic_structure: Dictionary = {} # format is arbitrary_index: [outcome_index, [object_index, [selection_indexes], [child_A_info], [child_B_info]]]
 
 func _ready() -> void:
 	speed_slider.visible = false
@@ -193,15 +194,33 @@ func toggle_expand_logic_settings(set_to_expand: bool) -> void:
 		await logic_settings_tween.finished
 		logic_settings_root.visible = false
 
-func get_all_logic_term_eval_strings() -> void:
+func write_all_logic_term_info_to_world_dict() -> void:
+	var arbitrary_index: int = 0
 	for logic_term in logic_terms.keys():
 		logic_terms[logic_term] = logic_term.get_bool_info()
+		logic_structure[arbitrary_index] = logic_term.get_logic_term_structure_array()
+		arbitrary_index += 1
 	Global.world_scene.level_info_dict["logic_terms"] = logic_terms
+	Global.world_scene.level_info_dict["logic_menu_structure"] = logic_structure
 
 func update_level_settings_display() -> void:
 	var grid_dimensions: Vector2i = Global.world_scene.level_info_dict["grid_dimensions"]
 	grid_width_line_edit.text = str(grid_dimensions.x)
 	grid_height_line_edit.text = str(grid_dimensions.y)
+
+func create_and_set_logic_terms(logic_structures: Dictionary) -> void:
+	for structure_array in logic_structures.values():
+		var instance = load(logic_term_path).instantiate()
+		logic_terms_vbox.add_child(instance)
+		logic_terms_vbox.move_child(instance, -2)
+		logic_terms[instance] = "" # Standin until the actual eval text is retrieved and implimented
+		instance.set_logic_structure(structure_array)
+
+func clear_logic_structures() -> void:
+	for node in logic_terms.keys():
+		node.entry_exit_animation(false, true)
+	logic_terms.clear()
+	logic_structure.clear()
 
 #func save_level(level_data: Dictionary) -> void:
 #	if Global.world_scene.active_directory:
@@ -235,6 +254,8 @@ func update_level_settings_display() -> void:
 #	Global.world_scene.populate_cells(loaded_file.get("grid_dimensions"), loaded_file.get("live_cells"), true)
 #	Global.world_scene.populate_zones(loaded_file.get("can_build_zones"), loaded_file.get("no_build_zones"), loaded_file.get("trigger_zones"), true, false)
 #	Global.world_scene.level_info_dict = loaded_file
+
+### Signal Functions
 
 func _on_speed_slider_value_changed(value: float) -> void:
 	generation_timer.wait_time = 1.0 / speed_slider.value
@@ -381,7 +402,7 @@ func _on_cancel_logic_settings_pressed() -> void:
 	toggle_expand_logic_settings(false)
 
 func _on_apply_logic_pressed() -> void:
-	get_all_logic_term_eval_strings()
+	write_all_logic_term_info_to_world_dict()
 	toggle_expand_logic_settings(false)
 
 func _on_new_bool_pressed() -> void:

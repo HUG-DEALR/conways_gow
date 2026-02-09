@@ -21,10 +21,30 @@ func get_bool_string_segment() -> String:
 		_:
 			return "false" # Fallback case, probably will never trigger
 
-func replace_self_with_trigger_selector() -> void:
+func get_logic_term_structure_array() -> Array:
+	# [object_index, [selection_indexes], [child_A_info], [child_B_info]]
+	return [0, [logic_gate.selected], signal_a_host.get_child(-1).get_logic_term_structure_array(), signal_b_host.get_child(-1).get_logic_term_structure_array()]
+
+func set_logic_structure(structure_array: Array) -> void:
+	if structure_array[0] != 0:
+		push_error("set_logic_structure() object type failed to set up correctly" + "\n" + str(structure_array))
+		return
+	# format is [object_index, [selection_indexes], [child_A_info], [child_B_info]]
+	logic_gate.selected = structure_array[1][0]
+	signal_a_host.get_child(-1).replace_self_with_alternate(structure_array[2][0])
+	signal_b_host.get_child(-1).replace_self_with_alternate(structure_array[3][0])
+	await get_tree().process_frame
+	signal_a_host.get_child(-1).set_logic_structure(structure_array[2])
+	signal_b_host.get_child(-1).set_logic_structure(structure_array[3])
+
+func replace_self_with_alternate(_index_of_replacement: int) -> void:
 	var parent = get_parent()
 	if not (parent is Control):
 		return
+#	var path = ""
+#	match index_of_replacement:
+#		2:
+#			path = trigger_selector_path
 	var instance = load(trigger_selector_path).instantiate()
 	parent.add_child(instance)
 	queue_free()
@@ -40,6 +60,6 @@ func _on_logic_gate_item_selected(index: int) -> void:
 		3: # Xor
 			signal_a_host.visible = true
 		4: # Var, revert to trigger selection dropdown
-			replace_self_with_trigger_selector()
+			replace_self_with_alternate(2)
 		_:
 			pass
