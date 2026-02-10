@@ -35,6 +35,9 @@ var level_info_dict: Dictionary = {
 	"logic_terms": {}, # format is node: ["outcome", "eval_string"]
 	"logic_menu_structure": {}, # format is arbitrary_index: [outcome_index, [object_index, [selection_indexes], [child_A_info], [child_B_info]]]
 	# Logic Object indexes are: 0=bool_constructor, 1=gen_count, 2=bool_var
+	"level_description": "",
+	"level_instructions": "",
+	"completion_rating": [false, false, false],
 }
 var trigger_zone_id_itterator: int = 0
 var active_directory: String = ""
@@ -403,7 +406,7 @@ func button_signal(singal_name: String) -> void:
 			game_camera.make_current()
 
 # File functions
-func open_level_from_local(skip_directory_prompt: bool = false) -> bool:
+func open_level_from_local(skip_directory_prompt: bool = false, prevent_zone_editing: bool = false) -> bool:
 	var open_from_directory: String = ""
 	if skip_directory_prompt and active_directory.get_extension() == "cgow":
 		open_from_directory = active_directory
@@ -420,9 +423,10 @@ func open_level_from_local(skip_directory_prompt: bool = false) -> bool:
 		return false
 	populate_cells(loaded_file.get("grid_dimensions"), loaded_file.get("live_cells"), true)
 	level_info_dict = loaded_file
-	populate_zones(loaded_file.get("can_build_zones"), loaded_file.get("no_build_zones"), loaded_file.get("trigger_zones"), true, false)
-	populate_logic_terms(loaded_file.get("logic_menu_structure"), true)
-	
+	populate_zones(loaded_file.get("can_build_zones"), loaded_file.get("no_build_zones"), loaded_file.get("trigger_zones"), true, prevent_zone_editing)
+	populate_logic_terms(loaded_file.get("logic_menu_structure"))
+	if repair_current_file_missing_parameters():
+		print("Loaded file was missing parameters" + "\n" + "Missing parameters have been filled with default values")
 	return true
 
 func save_level(level_data: Dictionary) -> void:
@@ -439,6 +443,45 @@ func save_level_as(level_data: Dictionary) -> void:
 	Global.save_to_file(level_data, active_directory)
 	menus.get("Build_menu").reset_to_saved_button.disabled = false
 
+func repair_current_file_missing_parameters() -> int:
+	# Checks if the current file is missing any parameters and fills them with the default
+	
+	var repaired_parameters: int = 0
+	
+	if not level_info_dict.has("grid_dimensions"):
+		level_info_dict["grid_dimensions"] = Vector2i.ZERO
+		repaired_parameters += 1
+	if not level_info_dict.has("live_cells"):
+		level_info_dict["live_cells"] = {}
+		clear_grid()
+		repaired_parameters += 1
+	if not level_info_dict.has("can_build_zones"):
+		level_info_dict["can_build_zones"] = {}
+		repaired_parameters += 1
+	if not level_info_dict.has("no_build_zones"):
+		level_info_dict["no_build_zones"] = {}
+		repaired_parameters += 1
+	if not level_info_dict.has("trigger_zones"):
+		level_info_dict["trigger_zones"] = {}
+		repaired_parameters += 1
+	if not level_info_dict.has("logic_terms"):
+		level_info_dict["logic_terms"] = {}
+		repaired_parameters += 1
+	if not level_info_dict.has("logic_menu_structure"):
+		level_info_dict["logic_menu_structure"] = {}
+		repaired_parameters += 1
+	if not level_info_dict.has("level_description"):
+		level_info_dict["level_description"] = ""
+		repaired_parameters += 1
+	if not level_info_dict.has("level_instructions"):
+		level_info_dict["level_instructions"] = ""
+		repaired_parameters += 1
+	if not level_info_dict.has("completion_rating"):
+		level_info_dict["completion_rating"] = [false, false, false]
+		repaired_parameters += 1
+	
+	return repaired_parameters
+
 # Misc functions
 func subtract_dicts(dict_subtracting_from: Dictionary, dict_subtracting: Dictionary, only_keep_keys: bool = false) -> Dictionary:
 	var result: Dictionary = {}
@@ -450,11 +493,14 @@ func subtract_dicts(dict_subtracting_from: Dictionary, dict_subtracting: Diction
 				result[key] = dict_subtracting_from[key]
 	return result
 
-func populate_logic_terms(logic_structures: Dictionary, clear_previous: bool = true) -> void:
+func populate_logic_terms(logic_structures: Dictionary) -> void:
 	var build_menu: Node = menus.get("Build_menu")
-	if clear_previous:
-		build_menu.clear_logic_structures()
+	build_menu.clear_logic_structures()
 	build_menu.create_and_set_logic_terms(logic_structures)
+
+func remove_logic_term_from_dict(logic_term: Node) -> void:
+	level_info_dict["logic_terms"].erase(logic_term)
+	menus.get("Build_menu").logic_terms.erase(logic_term)
 
 func evaluate_string_to_bool(expr_string: String) -> bool:
 	if expr_string.is_empty():
@@ -503,20 +549,22 @@ func check_logic_conditions(trigger_id: String = "") -> void:
 					process_logic_term_outcome(logic_term[0])
 
 func process_logic_term_outcome(outcome: String) -> void:
+	print(outcome)
 	match outcome:
 		"victory":
 			pass
 		"defeat":
 			pass
 		"star_1": # ★☆☆
-			pass
+			level_info_dict["completion_rating"][0] = true
 		"star_2": # ☆★☆
-			pass
+			level_info_dict["completion_rating"][1] = true
 		"star_3": # ☆☆★
-			pass
+			level_info_dict["completion_rating"][2] = true
 		"star_1_2": # ★★☆
-			pass
+			level_info_dict["completion_rating"][0] = true
+			level_info_dict["completion_rating"][1] = true
 		"star_1_2_3": # ★★★
-			pass
+			level_info_dict["completion_rating"] = [true, true, true]
 
 # Signal functions

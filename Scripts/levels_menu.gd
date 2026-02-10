@@ -56,5 +56,5 @@ func _on_play_pressed() -> void:
 		Global.world_scene.populate_cells(level_data[0], level_data[1], true)
 
 func _on_open_from_local_pressed() -> void:
-	await Global.world_scene.open_level_from_local()
+	await Global.world_scene.open_level_from_local(false, true)
 	Global.world_scene.button_signal("play")

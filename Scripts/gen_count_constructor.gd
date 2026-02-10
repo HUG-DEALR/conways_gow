@@ -5,9 +5,12 @@ extends Control
 
 const trigger_selector_path: String = "res://Scenes/Menus/bool_var_signal_dropdown.tscn"
 
+var previous_bool_status: bool = false
+
 func _ready() -> void:
 	var target_number_line_edit = target_number.get_line_edit()
 	target_number_line_edit.add_theme_font_size_override("font_size", 30)
+	Global.world_scene.connect("generation_itterated", _on_generation_iterated)
 
 func replace_self_with_alternate(_index_of_replacement: int) -> void:
 	var parent = get_parent()
@@ -36,7 +39,30 @@ func set_logic_structure(structure_array: Array) -> void:
 		return
 	# format is [object_index, [selection_indexes], [child_A_info], [child_B_info]]
 	opperator.selected = structure_array[1][0]
-	target_number.value = structure_array[1][0]
+	target_number.value = structure_array[1][1]
+
+func get_bool_status() -> bool:
+	match opperator.selected:
+		0: # ==
+			return Global.generation_number == target_number.value
+		1: # <=
+			return Global.generation_number <= target_number.value
+		2: # >=
+			return Global.generation_number >= target_number.value
+		3: # <
+			return Global.generation_number < target_number.value
+		4: # >
+			return Global.generation_number > target_number.value
+		5: # !=
+			return Global.generation_number != target_number.value
+		_:
+			return false
+
+func _on_generation_iterated() -> void:
+	var current_bool_status: bool = get_bool_status()
+	if previous_bool_status != current_bool_status:
+		Global.world_scene.check_logic_conditions(get_bool_string_segment())
+	previous_bool_status = current_bool_status
 
 func _on_opperator_item_selected(index: int) -> void:
 	match index:

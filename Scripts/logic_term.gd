@@ -48,6 +48,7 @@ func entry_exit_animation(entering: bool, instant_clear: bool = false) -> void:
 		entry_exit_tween.kill()
 	
 	if instant_clear:
+		Global.world_scene.remove_logic_term_from_dict(self)
 		queue_free()
 	
 	entry_exit_tween = create_tween()
@@ -61,6 +62,7 @@ func entry_exit_animation(entering: bool, instant_clear: bool = false) -> void:
 		entry_exit_tween.tween_property(self, "scale", Vector2(0.0, 1.0), 0.2)
 		entry_exit_tween.play()
 		await entry_exit_tween.finished
+		Global.world_scene.remove_logic_term_from_dict(self)
 		queue_free()
 
 func _on_output_item_selected(index: int) -> void:

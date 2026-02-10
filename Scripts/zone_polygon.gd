@@ -261,71 +261,56 @@ func get_covered_active_cells(active_cells: Array) -> Array[int]:
 func get_trigger_status() -> bool:
 	if filter_id < 0 or filter_id > 6:
 		print("Trigger filter not configured for " + trigger_identifier + "\n" + str(self))
-		previous_trigger_status = false
 		return false
+	
 	match gate_id:
 		
 		0: # Zone is all
 			if filter_id == 0: # Any
-				previous_trigger_status = true
 				return true # If (Zone is all) (Any) is always true
 			var active_cell_indexes: Array = get_covered_active_cells(Global.world_scene.level_info_dict["live_cells"].keys())
 			match filter_id:
 				1: # Empty
 					if active_cell_indexes.size() == 0:
-						previous_trigger_status = true
 						return true # If there are no active cells then (Zone is all) (Empty) is true
 					else:
-						previous_trigger_status = false
 						return false # There is atleast 1 active cell
 				_: # Alive, Target, Hole, Pole, Ally
 					if active_cell_indexes.size() != total_covered_cells:
-						previous_trigger_status = false
 						return false # Number of active cells does not fill zone, atleast 1 inactive cell
 					else:
 						for cell_index in active_cell_indexes:
 							if Global.world_scene.get_cell_type(cell_index) != filter_type:
-								previous_trigger_status = false
 								return false # All cells active, atleast 1 cell of wrong type
-						previous_trigger_status = true
 						return true # All cells of right type
 		
 		1: # Zone has no
 			if filter_id == 0: # Any
-				previous_trigger_status = false
 				return false # If (Zone has no) (Any) is always false
 			var active_cell_indexes: Array = get_covered_active_cells(Global.world_scene.level_info_dict["live_cells"].keys())
 			match filter_id:
 				1: # Empty
 					if active_cell_indexes.size() == total_covered_cells:
-						previous_trigger_status = true
 						return true # All cells are live, not empty. zone has no empty
 					else:
-						previous_trigger_status = false
 						return false # Atleast 1 empty cell
 				_: # Alive, Target, Hole, Pole, Ally
 					if active_cell_indexes.size() == 0:
-						previous_trigger_status = true
 						return true # All cells empty, Zone has no of any other type
 					else:
 						for cell_index in active_cell_indexes:
 							if Global.world_scene.get_cell_type(cell_index) == filter_type:
-								previous_trigger_status = false
 								return false # Atleast 1 cell of target type
-						previous_trigger_status = true
 						return true # No cells of target type
 		
 		2: # Population change of
 			if previous_measured_population != get_population_of_covered_cell_type(filter_type):
-				previous_trigger_status = true
 				return true
 			else:
-				previous_trigger_status = false
 				return false
 		
 		_: # Fail safe
 			print("Trigger gate not configured for " + trigger_identifier + "\n" + str(self))
-			previous_trigger_status = false
 			return false
 
 func get_population_of_covered_cell_type(cell_type: String) -> int:
@@ -365,6 +350,8 @@ func toggle_lock_state(lock_state: bool) -> void:
 			bottom_right_area_2d.disconnect("input_event", Callable(self, "_on_bottom_right_area_2d_input_event"))
 		if bottom_left_area_2d.is_connected("input_event", Callable(self, "_on_bottom_left_area_2d_input_event")):
 			bottom_left_area_2d.disconnect("input_event", Callable(self, "_on_bottom_left_area_2d_input_event"))
+		if central_area_2d.is_connected("input_event", Callable(self, "_on_central_area_2d_input_event")):
+			central_area_2d.disconnect("input_event", Callable(self, "_on_central_area_2d_input_event"))
 		for node in corner_indicators:
 			node.visible = false
 	else:
@@ -376,6 +363,8 @@ func toggle_lock_state(lock_state: bool) -> void:
 			bottom_right_area_2d.connect("input_event", Callable(self, "_on_bottom_right_area_2d_input_event"))
 		if not bottom_left_area_2d.is_connected("input_event", Callable(self, "_on_bottom_left_area_2d_input_event")):
 			bottom_left_area_2d.connect("input_event", Callable(self, "_on_bottom_left_area_2d_input_event"))
+		if not central_area_2d.is_connected("input_event", Callable(self, "_on_central_area_2d_input_event")):
+			central_area_2d.connect("input_event", Callable(self, "_on_central_area_2d_input_event"))
 		for node in corner_indicators:
 			node.visible = true
 
@@ -467,9 +456,12 @@ func _on_filter_item_selected(index: int) -> void:
 
 func _on_generation_iterated() -> void:
 	if zone_type == "trigger":
-		if previous_trigger_status != get_trigger_status():
+		var current_status: bool = get_trigger_status()
+		if previous_trigger_status != current_status:
 			# Only check full bool if there is a change in status
 			Global.world_scene.check_logic_conditions(trigger_identifier)
+		
+		previous_trigger_status = current_status
 		
 		if gate_id == 2: # Population change of
 			previous_measured_population = get_population_of_covered_cell_type(filter_type)

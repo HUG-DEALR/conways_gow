@@ -10,6 +10,8 @@ extends Control
 @onready var file_name_label: Label = $Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window/File_name
 @onready var reset_options_container: HBoxContainer = $Right_GUI_Root/VBoxContainer/Restart/Reset_Options_Container
 @onready var level_settings_root: PanelContainer = $Level_Settings_Root
+@onready var level_description: TextEdit = $Level_Settings_Root/VBoxContainer/Text_Input_HBox/Description
+@onready var level_instructions: TextEdit = $Level_Settings_Root/VBoxContainer/Text_Input_HBox/Instructions
 @onready var logic_settings_root: PanelContainer = $Logic_Settings_Root
 @onready var logic_terms_vbox: VBoxContainer = $Logic_Settings_Root/VBoxContainer/ScrollContainer/VBoxContainer
 @onready var grid_width_line_edit: LineEdit = $Level_Settings_Root/VBoxContainer/Resize_Grid_HBoxContainer/Grid_Width_Line_Edit
@@ -207,6 +209,8 @@ func update_level_settings_display() -> void:
 	var grid_dimensions: Vector2i = Global.world_scene.level_info_dict["grid_dimensions"]
 	grid_width_line_edit.text = str(grid_dimensions.x)
 	grid_height_line_edit.text = str(grid_dimensions.y)
+	level_description.text = Global.world_scene.level_info_dict.get("level_description")
+	level_instructions.text = Global.world_scene.level_info_dict.get("level_instructions")
 
 func create_and_set_logic_terms(logic_structures: Dictionary) -> void:
 	for structure_array in logic_structures.values():
@@ -221,39 +225,6 @@ func clear_logic_structures() -> void:
 		node.entry_exit_animation(false, true)
 	logic_terms.clear()
 	logic_structure.clear()
-
-#func save_level(level_data: Dictionary) -> void:
-#	if Global.world_scene.active_directory:
-#		Global.save_to_file(level_data, Global.world_scene.active_directory)
-#		reset_to_saved_button.disabled = false
-#	else:
-#		save_level_as(level_data)
-
-#func save_level_as(level_data: Dictionary) -> void:
-#	Global.world_scene.active_directory = await Global.prompt_user_for_file_path()
-#	if Global.world_scene.active_directory.get_extension() != "cgow":
-#		Global.world_scene.active_directory += ".cgow"
-#	Global.save_to_file(level_data, Global.world_scene.active_directory)
-#	reset_to_saved_button.disabled = false
-
-#func open_level_from_local(skip_directory_prompt: bool = false) -> void:
-#	var open_from_directory: String = ""
-#	if skip_directory_prompt and active_directory.get_extension() == "cgow":
-#		open_from_directory = active_directory
-#	else:
-#		open_from_directory = await Global.prompt_user_for_file_path("Open", "", "", ["*.cgow"], false)
-#	
-#	var loaded_file = Global.load_from_file(open_from_directory)
-#	if loaded_file:
-#		active_directory = open_from_directory
-#		file_name_label.text = active_directory.get_file()
-#		reset_to_saved_button.disabled = false
-#	else:
-#		print("Could not open file: " + open_from_directory + "\n" + loaded_file)
-#		return
-#	Global.world_scene.populate_cells(loaded_file.get("grid_dimensions"), loaded_file.get("live_cells"), true)
-#	Global.world_scene.populate_zones(loaded_file.get("can_build_zones"), loaded_file.get("no_build_zones"), loaded_file.get("trigger_zones"), true, false)
-#	Global.world_scene.level_info_dict = loaded_file
 
 ### Signal Functions
 
@@ -391,6 +362,8 @@ func _on_apply_level_settings_pressed() -> void:
 			var target_dimensions: Vector2i = Vector2i(grid_width_line_edit.text.to_int(), grid_height_line_edit.text.to_int())
 			if target_dimensions != current_grid_dimensions:
 				Global.world_scene.resize_grid(target_dimensions, {})
+	Global.world_scene.level_info_dict["level_description"] = level_description.text
+	Global.world_scene.level_info_dict["level_instructions"] = level_instructions.text
 	toggle_expand_level_settings(false)
 
 func _on_logic_option_pressed() -> void:
