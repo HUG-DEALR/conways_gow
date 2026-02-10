@@ -6,7 +6,8 @@ extends Polygon2D
 @onready var bottom_left_area_2d: Area2D = $Bottom_Left_Area2D
 @onready var gui_parent: Control = $GUI_Parent
 @onready var tab_container: TabContainer = $GUI_Parent/PanelContainer/VBoxContainer/TabContainer
-@onready var zone_name_line_edit: LineEdit = $GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer/Zone_Name_LineEdit
+#@onready var zone_name_line_edit: LineEdit = $GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer/Zone_Name_LineEdit
+@onready var trigger_id_label: Label = $GUI_Parent/PanelContainer/VBoxContainer/TabContainer/Trigger/VBoxContainer/Trigger_ID_label
 @onready var can_build_zone_option_filter: OptionButton = $GUI_Parent/PanelContainer/VBoxContainer/TabContainer/Can_Build_Here/VBoxContainer/HBoxContainer/OptionButton2
 @onready var no_build_zone_option_filter: OptionButton = $GUI_Parent/PanelContainer/VBoxContainer/TabContainer/No_Build_Here/VBoxContainer/HBoxContainer/OptionButton2
 @onready var trigger_zone_option_gate: OptionButton = $GUI_Parent/PanelContainer/VBoxContainer/TabContainer/Trigger/VBoxContainer/HBoxContainer/Gate
@@ -221,6 +222,7 @@ func get_bool_string_segment() -> String:
 
 func set_trigger_identifier(identifier: String) -> void:
 	trigger_identifier = identifier
+	trigger_id_label.text = trigger_identifier
 
 func get_covered_active_cells(active_cells: Array) -> Array[int]:
 	var output_list: Array[int] = []
@@ -404,7 +406,7 @@ func apply_zone_options() -> void:
 			self_destruct()
 			return
 	
-	zone_name = zone_name_line_edit.text
+#	zone_name = zone_name_line_edit.text
 	
 	if target_type != zone_type:
 		Global.world_scene.remove_zone_from_lists(self)
@@ -412,6 +414,8 @@ func apply_zone_options() -> void:
 	Global.world_scene.update_or_add_zone_info(self)
 
 func update_zone_options() -> void:
+#	zone_name_line_edit.text = zone_name
+	
 	match zone_type:
 		"can build here":
 			tab_container.current_tab = 0
@@ -419,8 +423,6 @@ func update_zone_options() -> void:
 			tab_container.current_tab = 1
 		"trigger":
 			tab_container.current_tab = 2
-	
-	zone_name_line_edit.text = zone_name
 
 func self_destruct() -> void:
 	toggle_zone_menu_visible(false)

@@ -1,9 +1,9 @@
 extends Node
 
 # To do list
-# Check logic conditions function
-# Populate logic terms function
 # Outcomes from bool eval
+# Description and instructions integration
+# pre-play level info in load level in levels menu
 
 var alive_colour: Color = Color(0.0,0.5,0.7,1.0)
 var dead_colour: Color = Color(0.1,0.1,0.1,1.0)
@@ -47,29 +47,21 @@ func load_from_file(file_path: String) -> Dictionary:
 		return {}
 
 func prompt_user_for_directory(prompt: String = "Select Directory", current_directory: String = "") -> String:
-	# Create the dialog
 	var dialog := FileDialog.new()
 	dialog.use_native_dialog = true
 	dialog.file_mode = FileDialog.FILE_MODE_OPEN_DIR
 	dialog.access = FileDialog.ACCESS_FILESYSTEM
 	dialog.title = prompt
-	if current_directory:
+	
+	if current_directory.is_empty():
+		dialog.current_dir = OS.get_system_dir(OS.SYSTEM_DIR_DESKTOP)
+	else:
 		dialog.current_dir = current_directory
-	dialog.current_dir = OS.get_user_data_dir()
 	
-	# Add dialog to the scene tree temporarily
 	get_tree().root.add_child(dialog)
-	
-	# Show dialog
 	dialog.popup_centered()
-	
-	# Wait for user to pick a directory
 	var result: String = await dialog.dir_selected
-	
-	# Clean up
 	dialog.queue_free()
-	
-	# Ensure trailing slash for convenience
 	if not result.ends_with("/"):
 		result += "/"
 	
@@ -92,10 +84,12 @@ func prompt_user_for_file_path(
 	dialog.use_native_dialog = true
 	dialog.title = prompt
 	
-	# Set starting path
-	if current_directory:
+	if current_directory.is_empty():
+		dialog.current_dir = OS.get_system_dir(OS.SYSTEM_DIR_DESKTOP)
+	else:
 		dialog.current_dir = current_directory
-	if not default_file_name:
+	
+	if default_file_name == "":
 		default_file_name = "new_level.cgow"
 	dialog.current_file = default_file_name
 	
@@ -103,12 +97,8 @@ func prompt_user_for_file_path(
 	for f in filters:
 		dialog.add_filter(f)
 	
-	# Add to scene while waiting
 	get_tree().root.add_child(dialog)
-	
 	dialog.popup_centered()
-	
-	# Wait for file selection
 	var result: String = await dialog.file_selected
 	
 	dialog.queue_free()

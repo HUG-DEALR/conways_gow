@@ -131,7 +131,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="TabContainer" type="TabContainer" parent="GUI_Parent/PanelContainer/VBoxContainer"]
-custom_minimum_size = Vector2(600, 200)
+custom_minimum_size = Vector2(600, 250)
 layout_mode = 2
 tab_alignment = 1
 current_tab = 2
@@ -358,6 +358,14 @@ popup/item_5/id = 5
 popup/item_6/text = "Ally"
 popup/item_6/id = 6
 
+[node name="Trigger_ID_label" type="Label" parent="GUI_Parent/PanelContainer/VBoxContainer/TabContainer/Trigger/VBoxContainer"]
+custom_minimum_size = Vector2(450, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
 [node name="Delete" type="ColorRect" parent="GUI_Parent/PanelContainer/VBoxContainer/TabContainer"]
 visible = false
 custom_minimum_size = Vector2(100, 100)
@@ -402,8 +410,10 @@ autowrap_mode = 3
 custom_minimum_size = Vector2(450, 0)
 layout_mode = 2
 theme_override_constants/separation = 10
+alignment = 2
 
 [node name="Zone_Name_LineEdit" type="LineEdit" parent="GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 30

@@ -249,18 +249,19 @@ func clear_grid() -> void:
 
 func clear_zones() -> void:
 	clear_zones_called.emit()
-	await get_tree().process_frame
+#	await get_tree().process_frame
 	# Zones remove themselves from the level_info_dict
 	# The following code is vestigial and a back up just in case a zone failed to connect the signal
-	for zone in level_info_dict["no_build_zones"]:
-		if zone is Polygon2D:
-			zone.self_destruct()
-	for zone in level_info_dict["can_build_zones"]:
-		if zone is Polygon2D:
-			zone.self_destruct()
-	for zone in level_info_dict["trigger_zones"]:
-		if zone is Polygon2D:
-			zone.self_destruct()
+#	for zone in level_info_dict["no_build_zones"]:
+#		if zone is Polygon2D:
+#			zone.self_destruct()
+#	for zone in level_info_dict["can_build_zones"]:
+#		if zone is Polygon2D:
+#			zone.self_destruct()
+#	for zone in level_info_dict["trigger_zones"]:
+#		if zone is Polygon2D:
+#			zone.self_destruct()
+	# I'm keep this extra code for now because signals haven't worked perfectly in the past
 
 func get_cell_type(cell_index: int) -> String:
 	if level_info_dict["live_cells"].has(cell_index):
@@ -491,9 +492,31 @@ func evaluate_string_to_bool(expr_string: String) -> bool:
 func check_logic_conditions(trigger_id: String = "") -> void:
 	if trigger_id == "":
 		# check all
-		pass
+		for logic_term in level_info_dict.get("logic_terms").values():
+			if evaluate_string_to_bool(logic_term[1]):
+				process_logic_term_outcome(logic_term[0])
 	else:
 		# check only logic conditions containing trigger_id
-		pass
+		for logic_term in level_info_dict.get("logic_terms").values():
+			if logic_term[1].contains(trigger_id):
+				if evaluate_string_to_bool(logic_term[1]):
+					process_logic_term_outcome(logic_term[0])
+
+func process_logic_term_outcome(outcome: String) -> void:
+	match outcome:
+		"victory":
+			pass
+		"defeat":
+			pass
+		"star_1": # ★☆☆
+			pass
+		"star_2": # ☆★☆
+			pass
+		"star_3": # ☆☆★
+			pass
+		"star_1_2": # ★★☆
+			pass
+		"star_1_2_3": # ★★★
+			pass
 
 # Signal functions

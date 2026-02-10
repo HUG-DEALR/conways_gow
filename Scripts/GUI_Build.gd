@@ -128,13 +128,13 @@ func toggle_expand_new_item_window(set_to_expand: bool) -> void:
 	new_item_window_tween.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_CUBIC)
 	if set_to_expand:
 		new_item_window_tween.tween_property(add_item_panel, "scale", Vector2(0.0,0.21), 0.0)
-		new_item_window_tween.tween_property(add_item_panel, "scale", Vector2(1.0,0.21), 0.2)
-		new_item_window_tween.tween_property(add_item_panel, "scale", Vector2.ONE, 0.2)
+		new_item_window_tween.tween_property(add_item_panel, "scale", Vector2(1.0,0.21), 0.1)
+		new_item_window_tween.tween_property(add_item_panel, "scale", Vector2.ONE, 0.1)
 		add_item_window.visible = true
 		new_item_window_tween.play()
 	else:
-		new_item_window_tween.tween_property(add_item_panel, "scale", Vector2(1.0,0.21), 0.2)
-		new_item_window_tween.tween_property(add_item_panel, "scale", Vector2(0.0,0.21), 0.2)
+		new_item_window_tween.tween_property(add_item_panel, "scale", Vector2(1.0,0.21), 0.1)
+		new_item_window_tween.tween_property(add_item_panel, "scale", Vector2(0.0,0.21), 0.1)
 		new_item_window_tween.play()
 		await new_item_window_tween.finished
 		add_item_window.visible = false
