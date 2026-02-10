@@ -28,12 +28,17 @@ func set_logic_structure(structure_array: Array) -> void:
 	# format is [object_index, [selection_indexes], [child_A_info], [child_B_info]]
 	target_trigger = structure_array[1][0]
 	refresh_trigger_list()
-	
-	if item_count > 5:
-		for item_index in range(item_count):
-			if target_trigger == get_item_text(item_index):
-				select(item_index)
-				break
+	match target_trigger:
+		"true":
+			select(2)
+		"false":
+			select(3)
+		_: # A trigger identifier
+			if item_count > 5:
+				for item_index in range(5, item_count):
+					if target_trigger == get_item_text(item_index):
+						select(item_index)
+						break
 
 func replace_self_with_alternate(index_of_replacement: int) -> void:
 	var parent = get_parent()
@@ -72,8 +77,8 @@ func _on_item_selected(index: int) -> void:
 		4: # Seperator
 			pass
 			# This code is unreachable
-		_: # trigger
-			pass # WIP
+		_: # trigger identifiers
+			target_trigger = get_item_text(index)
 
 func _on_pressed() -> void:
 	refresh_trigger_list()

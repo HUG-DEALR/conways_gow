@@ -1,6 +1,7 @@
 extends Node2D
 
 signal generation_itterated
+signal clear_zones_called
 
 @onready var grid: MultiMeshInstance2D = $Grid
 @onready var grid_multimesh: MultiMesh = grid.multimesh
@@ -247,6 +248,10 @@ func clear_grid() -> void:
 	level_info_dict["live_cells"].clear()
 
 func clear_zones() -> void:
+	clear_zones_called.emit()
+	await get_tree().process_frame
+	# Zones remove themselves from the level_info_dict
+	# The following code is vestigial and a back up just in case a zone failed to connect the signal
 	for zone in level_info_dict["no_build_zones"]:
 		if zone is Polygon2D:
 			zone.self_destruct()

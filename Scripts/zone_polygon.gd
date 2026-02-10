@@ -58,6 +58,7 @@ func _ready() -> void:
 		Global.world_scene.update_or_add_zone_info(self)
 		single_cell_grid_rect.size = Vector2.ONE * (Global.world_scene.cell_size + Global.world_scene.cell_margin)
 		Global.world_scene.connect("generation_itterated", _on_generation_iterated)
+		Global.world_scene.connect("clear_zones_called", self_destruct)
 	else:
 		print("World scene not found through Global, option window failed to reparent for node:" + "\n" + str(self))
 	
