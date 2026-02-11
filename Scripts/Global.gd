@@ -19,7 +19,7 @@ var game_camera: Camera2D
 var generation_number: int = 0
 
 func save_to_file(data_to_save: Dictionary, file_path: String) -> void:
-	var file := FileAccess.open(file_path, FileAccess.WRITE)
+	var file = FileAccess.open(file_path, FileAccess.WRITE)
 	if file == null:
 		push_error("Failed to open file for writing: " + file_path)
 		return

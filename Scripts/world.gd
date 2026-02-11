@@ -35,6 +35,7 @@ var level_info_dict: Dictionary = {
 	"logic_terms": {}, # format is node: ["outcome", "eval_string"]
 	"logic_menu_structure": {}, # format is arbitrary_index: [outcome_index, [object_index, [selection_indexes], [child_A_info], [child_B_info]]]
 	# Logic Object indexes are: 0=bool_constructor, 1=gen_count, 2=bool_var
+	"level_name": "",
 	"level_description": "",
 	"level_instructions": "",
 	"completion_rating": [false, false, false],
@@ -388,7 +389,7 @@ func button_signal(singal_name: String) -> void:
 			menus.get("GUI").set_play_pause(false)
 			Global.generation_number = 0
 			populate_cells(Vector2i(50,50), {}, true)
-			game_camera.position = Vector2.ZERO
+			game_camera.position = (cell_size + cell_margin) * level_info_dict["grid_dimensions"]/2.0
 			game_camera.zoom = Vector2.ONE * 2.0
 			game_camera.make_current()
 		"exit":
@@ -401,12 +402,12 @@ func button_signal(singal_name: String) -> void:
 			menus.get("GUI").set_play_pause(false)
 			Global.generation_number = 0
 			menus.get("GUI").set_gui_visible(true)
-			game_camera.position = Vector2.ZERO
+			game_camera.position = (cell_size + cell_margin) * level_info_dict["grid_dimensions"]/2.0
 			game_camera.zoom = Vector2.ONE * 2.0
 			game_camera.make_current()
 
 # File functions
-func open_level_from_local(skip_directory_prompt: bool = false, prevent_zone_editing: bool = false) -> bool:
+func open_level_from_local(skip_directory_prompt: bool = false, prevent_zone_editing: bool = false, populate_level: bool = true) -> bool:
 	var open_from_directory: String = ""
 	if skip_directory_prompt and active_directory.get_extension() == "cgow":
 		open_from_directory = active_directory
@@ -421,13 +422,23 @@ func open_level_from_local(skip_directory_prompt: bool = false, prevent_zone_edi
 	else:
 		print("Could not open file: " + open_from_directory + "\n" + loaded_file)
 		return false
-	populate_cells(loaded_file.get("grid_dimensions"), loaded_file.get("live_cells"), true)
-	level_info_dict = loaded_file
-	populate_zones(loaded_file.get("can_build_zones"), loaded_file.get("no_build_zones"), loaded_file.get("trigger_zones"), true, prevent_zone_editing)
-	populate_logic_terms(loaded_file.get("logic_menu_structure"))
+#	populate_cells(loaded_file.get("grid_dimensions"), loaded_file.get("live_cells"), true)
+#	level_info_dict = loaded_file
+#	populate_zones(loaded_file.get("can_build_zones"), loaded_file.get("no_build_zones"), loaded_file.get("trigger_zones"), true, prevent_zone_editing)
+#	populate_logic_terms(loaded_file.get("logic_menu_structure"))
 	if repair_current_file_missing_parameters():
 		print("Loaded file was missing parameters" + "\n" + "Missing parameters have been filled with default values")
+	
+	if populate_level:
+		full_populate_level(loaded_file, prevent_zone_editing)
+	
 	return true
+
+func full_populate_level(level_dict: Dictionary = level_info_dict, prevent_zone_editing: bool = false) -> void:
+	populate_cells(level_dict.get("grid_dimensions"), level_dict.get("live_cells"), true)
+	level_info_dict = level_dict
+	populate_zones(level_dict.get("can_build_zones"), level_dict.get("no_build_zones"), level_dict.get("trigger_zones"), true, prevent_zone_editing)
+	populate_logic_terms(level_dict.get("logic_menu_structure"))
 
 func save_level(level_data: Dictionary) -> void:
 	if active_directory:
@@ -469,6 +480,9 @@ func repair_current_file_missing_parameters() -> int:
 		repaired_parameters += 1
 	if not level_info_dict.has("logic_menu_structure"):
 		level_info_dict["logic_menu_structure"] = {}
+		repaired_parameters += 1
+	if not level_info_dict.has("level_name"):
+		level_info_dict["level_name"] = ""
 		repaired_parameters += 1
 	if not level_info_dict.has("level_description"):
 		level_info_dict["level_description"] = ""

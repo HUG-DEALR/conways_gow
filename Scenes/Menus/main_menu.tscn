@@ -65,7 +65,7 @@ hover_size = Vector2(160, 50)
 entrance_delay = 0.75
 entrance_transition = 7
 entrance_easing = 2
-entrance_rotation = 10.0
+entrance_rotation = 8.0
 entrance_size = Vector2(160, 50)
 metadata/_custom_type_script = "uid://bmgpsk2dcdkx8"
 
@@ -82,7 +82,7 @@ hover_size = Vector2(160, 50)
 wait_for = NodePath("../../Levels/AnimatedControl")
 entrance_transition = 7
 entrance_easing = 2
-entrance_rotation = 10.0
+entrance_rotation = 8.0
 entrance_size = Vector2(160, 50)
 metadata/_custom_type_script = "uid://bmgpsk2dcdkx8"
 
@@ -99,7 +99,7 @@ hover_size = Vector2(160, 50)
 wait_for = NodePath("../../Settings/AnimatedControl")
 entrance_transition = 7
 entrance_easing = 2
-entrance_rotation = 10.0
+entrance_rotation = 8.0
 entrance_size = Vector2(160, 50)
 metadata/_custom_type_script = "uid://bmgpsk2dcdkx8"
 
@@ -116,7 +116,7 @@ hover_size = Vector2(160, 50)
 wait_for = NodePath("../../Build/AnimatedControl")
 entrance_transition = 7
 entrance_easing = 2
-entrance_rotation = 10.0
+entrance_rotation = 8.0
 entrance_size = Vector2(160, 50)
 metadata/_custom_type_script = "uid://bmgpsk2dcdkx8"
 

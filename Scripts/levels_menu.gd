@@ -3,10 +3,14 @@ extends Control
 signal level_selected
 
 @onready var level_source_tab_container: TabContainer = $PanelContainer/MarginContainer/TabContainer
-@onready var play_button: Button = $PanelContainer/MarginContainer/TabContainer/Campaign_Levels/VBoxContainer/HBoxContainer/Play
-@onready var level_name_info_tab: Label = $PanelContainer/MarginContainer/TabContainer/Campaign_Levels/VBoxContainer2/Level_Name
-@onready var level_rating_info_tab: Label = $PanelContainer/MarginContainer/TabContainer/Campaign_Levels/VBoxContainer2/Level_Rating
-@onready var level_description_info_tab: Label = $PanelContainer/MarginContainer/TabContainer/Campaign_Levels/VBoxContainer2/Level_Description
+@onready var campaign_play_button: Button = $PanelContainer/MarginContainer/TabContainer/Campaign_Levels/VBoxContainer/HBoxContainer/Play
+@onready var campaign_level_name_info_tab: Label = $PanelContainer/MarginContainer/TabContainer/Campaign_Levels/VBoxContainer2/Level_Name
+@onready var campaign_level_rating_info_tab: Label = $PanelContainer/MarginContainer/TabContainer/Campaign_Levels/VBoxContainer2/Level_Rating
+@onready var campaign_level_description_info_tab: Label = $PanelContainer/MarginContainer/TabContainer/Campaign_Levels/VBoxContainer2/Level_Description
+@onready var load_from_local_play_button: Button = $PanelContainer/MarginContainer/TabContainer/Load_From_Local/VBoxContainer/HBoxContainer/Play
+@onready var load_from_local_level_name_info_tab: Label = $PanelContainer/MarginContainer/TabContainer/Load_From_Local/VBoxContainer2/Level_Name
+@onready var load_from_local_level_rating_info_tab: Label = $PanelContainer/MarginContainer/TabContainer/Load_From_Local/VBoxContainer2/Level_Rating
+@onready var load_from_local_level_description_info_tab: Label = $PanelContainer/MarginContainer/TabContainer/Load_From_Local/VBoxContainer2/Level_Description
 
 var levels_dict: Dictionary = { # Grid dimension, layout_dict, unlocked, Name, Rating, Description
 	"blank50": [Vector2i(50,50),{}, true, "Sandbox", "★★★", "An empty world to experiment in"],
@@ -17,7 +21,6 @@ var levels_dict: Dictionary = { # Grid dimension, layout_dict, unlocked, Name, R
 
 var focus_owner: Control = self
 var selected_level_id: String = ""
-var entry_exit_tween: Tween
 
 func _ready() -> void:
 	level_selected.connect(_on_level_selected)
@@ -28,6 +31,7 @@ func _ready() -> void:
 	level_source_tab_bar.set_tab_title(2, " Open From Local ")
 	
 	level_source_tab_bar.set_tab_disabled(1, true)
+	level_source_tab_container.current_tab = 0
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
@@ -41,15 +45,15 @@ func _input(event: InputEvent) -> void:
 
 func _on_level_selected() -> void:
 	var level_info: Array = levels_dict.get(selected_level_id)
-	play_button.disabled = !level_info[2]
-	level_name_info_tab.text = level_info[3]
-	level_rating_info_tab.text = level_info[4]
-	level_description_info_tab.text = level_info[5]
+	campaign_play_button.disabled = !level_info[2]
+	campaign_level_name_info_tab.text = level_info[3]
+	campaign_level_rating_info_tab.text = level_info[4]
+	campaign_level_description_info_tab.text = level_info[5]
 
 func _on_back_pressed() -> void:
 	Global.world_scene.button_signal("main")
 
-func _on_play_pressed() -> void:
+func _on_campaign_play_pressed() -> void:
 	if selected_level_id:
 		Global.world_scene.button_signal("play")
 		var level_data: Array = levels_dict.get(selected_level_id)
@@ -58,3 +62,7 @@ func _on_play_pressed() -> void:
 func _on_open_from_local_pressed() -> void:
 	await Global.world_scene.open_level_from_local(false, true)
 	Global.world_scene.button_signal("play")
+#	load_from_local_play_button.disabled = false
+#	load_from_local_level_name_info_tab.text = Global.world_scene.level_info_dict["level_name"]
+#	load_from_local_level_description_info_tab.text = Global.world_scene.level_info_dict["level_description"]
+#	load_from_local_level_rating_info_tab.text = "☆☆☆"
