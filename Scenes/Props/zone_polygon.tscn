@@ -90,7 +90,7 @@ script = ExtResource("2_2eug0")
 
 [node name="Drag_Button" type="Button" parent="GUI_Parent"]
 modulate = Color(1, 1, 1, 0)
-custom_minimum_size = Vector2(685, 400)
+custom_minimum_size = Vector2(685, 450)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

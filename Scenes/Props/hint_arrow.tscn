@@ -1,0 +1,143 @@
+[gd_scene load_steps=7 format=3 uid="uid://c0wi0t81i3x76"]
+
+[ext_resource type="Script" uid="uid://c3qruic8t62pk" path="res://Scripts/hint_arrow.gd" id="1_igand"]
+[ext_resource type="StyleBox" uid="uid://bvp8auwdu5u7l" path="res://Resources/general_menu_stylebox.tres" id="2_2ckbn"]
+[ext_resource type="Script" uid="uid://dm2oufac1ju6f" path="res://Scripts/hint_arrow_menu.gd" id="2_w7hgg"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_igand"]
+radius = 5.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_2ckbn"]
+radius = 5.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_w7hgg"]
+size = Vector2(40, 10)
+
+[node name="Hint_Arrow" type="Node2D"]
+script = ExtResource("1_igand")
+
+[node name="Shaft" type="Line2D" parent="."]
+position = Vector2(50, 0)
+points = PackedVector2Array(0, 0, -50, 0)
+width = 5.0
+
+[node name="Head" type="Line2D" parent="Shaft"]
+points = PackedVector2Array(0, 0, -10, -10, 0, 0, -10, 10)
+width = 5.0
+
+[node name="Head_Area" type="Area2D" parent="Shaft"]
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Shaft/Head_Area"]
+shape = SubResource("CircleShape2D_igand")
+
+[node name="Tail_Area" type="Area2D" parent="."]
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Tail_Area"]
+shape = SubResource("CircleShape2D_2ckbn")
+
+[node name="Body_Area" type="Area2D" parent="."]
+position = Vector2(25, 0)
+
+[node name="Body_Area_Shape" type="CollisionShape2D" parent="Body_Area"]
+shape = SubResource("RectangleShape2D_w7hgg")
+
+[node name="GUI_Parent" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("2_w7hgg")
+
+[node name="Drag_Button" type="Button" parent="GUI_Parent"]
+modulate = Color(1, 1, 1, 0)
+custom_minimum_size = Vector2(410, 260)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+
+[node name="PanelContainer" type="PanelContainer" parent="GUI_Parent"]
+custom_minimum_size = Vector2(360, 150)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -177.0
+offset_top = -75.0
+offset_right = 177.0
+offset_bottom = 75.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = ExtResource("2_2ckbn")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GUI_Parent/PanelContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GUI_Parent/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Label" type="Label" parent="GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Arrow Colour"
+
+[node name="ColorPickerButton" type="ColorPickerButton" parent="GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+text = "Arrow Colour"
+color = Color(1, 1, 1, 1)
+edit_alpha = false
+
+[node name="OptionButton" type="OptionButton" parent="GUI_Parent/PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 30
+alignment = 1
+selected = 0
+allow_reselect = true
+item_count = 3
+popup/item_0/text = "Don't Hide"
+popup/item_0/id = 0
+popup/item_1/text = "Hide After Gen 0"
+popup/item_1/id = 1
+popup/item_2/text = "Don't Show"
+popup/item_2/id = 2
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="GUI_Parent/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Apply" type="Button" parent="GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer2"]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Apply"
+
+[node name="Cancel" type="Button" parent="GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer2"]
+custom_minimum_size = Vector2(110, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Cancel"
+
+[connection signal="input_event" from="Shaft/Head_Area" to="." method="_on_head_area_input_event"]
+[connection signal="input_event" from="Tail_Area" to="." method="_on_tail_area_input_event"]
+[connection signal="input_event" from="Body_Area" to="." method="_on_body_area_input_event"]
+[connection signal="button_down" from="GUI_Parent/Drag_Button" to="GUI_Parent" method="_on_drag_button_button_down"]
+[connection signal="button_up" from="GUI_Parent/Drag_Button" to="GUI_Parent" method="_on_drag_button_button_up"]
+[connection signal="pressed" from="GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer2/Cancel" to="." method="_on_cancel_pressed"]
