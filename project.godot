@@ -13,7 +13,7 @@ config_version=5
 config/name="Conways Army"
 run/main_scene="uid://43wu14oo2txe"
 config/features=PackedStringArray("4.4", "GL Compatibility")
-boot_splash/show_image=false
+boot_splash/image="uid://t0uogkkinput"
 config/icon="res://icon.svg"
 
 [autoload]
