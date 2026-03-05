@@ -38,7 +38,8 @@ var level_info_dict: Dictionary = {
 	"level_name": "",
 	"level_description": "",
 	"level_instructions": "",
-	"completion_rating": [false, false, false],
+	"completion_rating": [false, false, false], # This is the best co,pletion rating across runs
+	"current_rating": [false, false, false], # This is completion rating in current run
 }
 var trigger_zone_id_itterator: int = 0
 var active_directory: String = ""
@@ -454,7 +455,7 @@ func save_level_as(level_data: Dictionary) -> void:
 	Global.save_to_file(level_data, active_directory)
 	menus.get("Build_menu").reset_to_saved_button.disabled = false
 
-func repair_current_file_missing_parameters() -> int:
+func repair_current_file_missing_parameters() -> int: # Returns number of repaired parameters
 	# Checks if the current file is missing any parameters and fills them with the default
 	
 	var repaired_parameters: int = 0
@@ -492,6 +493,9 @@ func repair_current_file_missing_parameters() -> int:
 		repaired_parameters += 1
 	if not level_info_dict.has("completion_rating"):
 		level_info_dict["completion_rating"] = [false, false, false]
+		repaired_parameters += 1
+	if not level_info_dict.has("current_rating"):
+		level_info_dict["current_rating"] = [false, false, false]
 		repaired_parameters += 1
 	
 	return repaired_parameters
@@ -565,20 +569,23 @@ func check_logic_conditions(trigger_id: String = "") -> void:
 func process_logic_term_outcome(outcome: String) -> void:
 	print(outcome)
 	match outcome:
-		"victory":
-			pass
+		"star_1": # ★☆☆
+			level_info_dict["current_rating"][0] = true
+		"star_2": # ☆★☆
+			level_info_dict["current_rating"][1] = true
+		"star_3": # ☆☆★
+			level_info_dict["current_rating"][2] = true
+		"star_1_2": # ★★☆
+			level_info_dict["current_rating"][0] = true
+			level_info_dict["current_rating"][1] = true
+		"star_1_2_3": # ★★★
+			level_info_dict["current_rating"] = [true, true, true]
 		"defeat":
 			pass
-		"star_1": # ★☆☆
-			level_info_dict["completion_rating"][0] = true
-		"star_2": # ☆★☆
-			level_info_dict["completion_rating"][1] = true
-		"star_3": # ☆☆★
-			level_info_dict["completion_rating"][2] = true
-		"star_1_2": # ★★☆
-			level_info_dict["completion_rating"][0] = true
-			level_info_dict["completion_rating"][1] = true
-		"star_1_2_3": # ★★★
-			level_info_dict["completion_rating"] = [true, true, true]
+		"victory":
+			var count_completion_rating: int = int(level_info_dict["completion_rating"][0]) + int(level_info_dict["completion_rating"][1]) + int(level_info_dict["completion_rating"][2])
+			var count_current_rating: int = int(level_info_dict["current_rating"][0]) + int(level_info_dict["current_rating"][1]) + int(level_info_dict["current_rating"][2])
+			if count_current_rating >= count_completion_rating:
+				level_info_dict["completion_rating"] = level_info_dict["current_rating"]
 
 # Signal functions
