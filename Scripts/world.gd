@@ -9,6 +9,7 @@ signal clear_zones_called
 @onready var menu_camera: Camera2D = $Rot_Parent/Menu_Camera
 @onready var rot_parent_menu_camera: Node2D = $Rot_Parent
 @onready var canvas_layer: CanvasLayer = $CanvasLayer
+@onready var outcome_overlay: Control = $CanvasLayer/outcome_overlay
 @onready var menus: Dictionary = {
 	"GUI": $CanvasLayer/GUI_Standard,
 	"Main_menu": $CanvasLayer/MainMenu,
@@ -52,6 +53,7 @@ func _ready():
 	menus.get("GUI").set_gui_visible(false)
 	current_menu = menus.get("Main_menu")
 	switch_to_menu("Main_menu", true)
+	outcome_overlay.visible = true
 
 func _process(delta: float) -> void:
 	if menus_active:
@@ -427,8 +429,10 @@ func open_level_from_local(skip_directory_prompt: bool = false, prevent_zone_edi
 #	level_info_dict = loaded_file
 #	populate_zones(loaded_file.get("can_build_zones"), loaded_file.get("no_build_zones"), loaded_file.get("trigger_zones"), true, prevent_zone_editing)
 #	populate_logic_terms(loaded_file.get("logic_menu_structure"))
-	if repair_current_file_missing_parameters():
-		print("Loaded file was missing parameters" + "\n" + "Missing parameters have been filled with default values")
+#	if repair_current_file_missing_parameters():
+#		print("Loaded file was missing parameters" + "\n" + "Missing parameters have been filled with default values")
+	
+	print("Missing parameters in loaded file:" + "\n" + str(repair_current_file_missing_parameters()) + "\n" + "Missing parameters are automatically filled with default values")
 	
 	if populate_level:
 		full_populate_level(loaded_file, prevent_zone_editing)
@@ -567,7 +571,6 @@ func check_logic_conditions(trigger_id: String = "") -> void:
 					process_logic_term_outcome(logic_term[0])
 
 func process_logic_term_outcome(outcome: String) -> void:
-	print(outcome)
 	match outcome:
 		"star_1": # ★☆☆
 			level_info_dict["current_rating"][0] = true
@@ -587,5 +590,6 @@ func process_logic_term_outcome(outcome: String) -> void:
 			var count_current_rating: int = int(level_info_dict["current_rating"][0]) + int(level_info_dict["current_rating"][1]) + int(level_info_dict["current_rating"][2])
 			if count_current_rating >= count_completion_rating:
 				level_info_dict["completion_rating"] = level_info_dict["current_rating"]
+	outcome_overlay.queue_outcome_to_print(outcome)
 
 # Signal functions

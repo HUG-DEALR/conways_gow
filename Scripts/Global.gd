@@ -4,6 +4,9 @@ extends Node
 # Outcomes from bool eval
 # Description and instructions integration
 # pre-play level info in load level in levels menu
+# Pressing reset in play reverts to loaded info
+# Victory and defeat mutually exclusive
+# Gen number is saved with outcome
 
 var alive_colour: Color = Color(0.0,0.5,0.7,1.0)
 var dead_colour: Color = Color(0.1,0.1,0.1,1.0)
