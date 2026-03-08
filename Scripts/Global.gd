@@ -3,7 +3,6 @@ extends Node
 # To do list
 # Outcomes from bool eval
 # Description and instructions integration
-# pre-play level info in load level in levels menu
 # Pressing reset in play reverts to loaded info
 # Victory and defeat mutually exclusive
 # Gen number is saved with outcome
