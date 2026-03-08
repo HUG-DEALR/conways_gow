@@ -7,6 +7,7 @@ extends Node
 # Pressing reset in play reverts to loaded info
 # Victory and defeat mutually exclusive
 # Gen number is saved with outcome
+# Delink triggers when level inactive
 
 var alive_colour: Color = Color(0.0,0.5,0.7,1.0)
 var dead_colour: Color = Color(0.1,0.1,0.1,1.0)

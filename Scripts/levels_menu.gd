@@ -54,15 +54,25 @@ func _on_back_pressed() -> void:
 	Global.world_scene.button_signal("main")
 
 func _on_campaign_play_pressed() -> void:
-	if selected_level_id:
+	if selected_level_id: # This needs to be changed to be similar to _on_play_open_from_local_pressed()
 		Global.world_scene.button_signal("play")
 		var level_data: Array = levels_dict.get(selected_level_id)
 		Global.world_scene.populate_cells(level_data[0], level_data[1], true)
 
 func _on_open_from_local_pressed() -> void:
-	await Global.world_scene.open_level_from_local(false, true)
-	Global.world_scene.button_signal("play")
-#	load_from_local_play_button.disabled = false
-#	load_from_local_level_name_info_tab.text = Global.world_scene.level_info_dict["level_name"]
-#	load_from_local_level_description_info_tab.text = Global.world_scene.level_info_dict["level_description"]
-#	load_from_local_level_rating_info_tab.text = "☆☆☆"
+	await Global.world_scene.open_level_from_local(false, true, false)
+#	Global.world_scene.button_signal("play")
+	load_from_local_play_button.disabled = false
+	load_from_local_level_name_info_tab.text = Global.world_scene.pre_loaded_level_info_dict["level_name"]
+	load_from_local_level_description_info_tab.text = Global.world_scene.pre_loaded_level_info_dict["level_description"]
+	var completion_rating_string: String = ""
+	var completion_rating_array: Array = Global.world_scene.pre_loaded_level_info_dict["completion_rating"]
+	for i in completion_rating_array.size(): # Should always be 3
+		if completion_rating_array[i]:
+			completion_rating_string += "★"
+		else:
+			completion_rating_string += "☆"
+	load_from_local_level_rating_info_tab.text = completion_rating_string
+
+func _on_play_open_from_local_pressed() -> void:
+	Global.world_scene.button_signal("populate_then_play")

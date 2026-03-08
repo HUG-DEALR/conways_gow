@@ -42,6 +42,10 @@ var level_info_dict: Dictionary = {
 	"completion_rating": [false, false, false], # This is the best co,pletion rating across runs
 	"current_rating": [false, false, false], # This is completion rating in current run
 }
+var pre_loaded_level_info_dict: Dictionary = {
+	# Level info goes here before the world becomes populated by it
+	# After population, level info is copied to level_info_dict
+}
 var trigger_zone_id_itterator: int = 0
 var active_directory: String = ""
 
@@ -256,19 +260,6 @@ func clear_grid() -> void:
 
 func clear_zones() -> void:
 	clear_zones_called.emit()
-#	await get_tree().process_frame
-	# Zones remove themselves from the level_info_dict
-	# The following code is vestigial and a back up just in case a zone failed to connect the signal
-#	for zone in level_info_dict["no_build_zones"]:
-#		if zone is Polygon2D:
-#			zone.self_destruct()
-#	for zone in level_info_dict["can_build_zones"]:
-#		if zone is Polygon2D:
-#			zone.self_destruct()
-#	for zone in level_info_dict["trigger_zones"]:
-#		if zone is Polygon2D:
-#			zone.self_destruct()
-	# I'm keep this extra code for now because signals haven't worked perfectly in the past
 
 func get_cell_type(cell_index: int) -> String:
 	if level_info_dict["live_cells"].has(cell_index):
@@ -408,6 +399,9 @@ func button_signal(singal_name: String) -> void:
 			game_camera.position = (cell_size + cell_margin) * level_info_dict["grid_dimensions"]/2.0
 			game_camera.zoom = Vector2.ONE * 2.0
 			game_camera.make_current()
+		"populate_then_play": # Only for when level data has been set to the pre_loaded_level_info_dict
+			full_populate_level(pre_loaded_level_info_dict, true)
+			button_signal("play")
 
 # File functions
 func open_level_from_local(skip_directory_prompt: bool = false, prevent_zone_editing: bool = false, populate_level: bool = true) -> bool:
@@ -421,21 +415,18 @@ func open_level_from_local(skip_directory_prompt: bool = false, prevent_zone_edi
 	if loaded_file:
 		active_directory = open_from_directory
 		menus.get("Build_menu").file_name_label.text = active_directory.get_file()
+		loaded_file["level_name"] = active_directory.get_file().get_basename().c_escape().capitalize()
 		menus.get("Build_menu").reset_to_saved_button.disabled = false
 	else:
 		print("Could not open file: " + open_from_directory + "\n" + loaded_file)
 		return false
-#	populate_cells(loaded_file.get("grid_dimensions"), loaded_file.get("live_cells"), true)
-#	level_info_dict = loaded_file
-#	populate_zones(loaded_file.get("can_build_zones"), loaded_file.get("no_build_zones"), loaded_file.get("trigger_zones"), true, prevent_zone_editing)
-#	populate_logic_terms(loaded_file.get("logic_menu_structure"))
-#	if repair_current_file_missing_parameters():
-#		print("Loaded file was missing parameters" + "\n" + "Missing parameters have been filled with default values")
 	
 	print("Missing parameters in loaded file:" + "\n" + str(repair_current_file_missing_parameters()) + "\n" + "Missing parameters are automatically filled with default values")
 	
 	if populate_level:
 		full_populate_level(loaded_file, prevent_zone_editing)
+	else:
+		pre_loaded_level_info_dict = loaded_file
 	
 	return true
 
@@ -456,6 +447,7 @@ func save_level_as(level_data: Dictionary) -> void:
 	active_directory = await Global.prompt_user_for_file_path()
 	if active_directory.get_extension() != "cgow":
 		active_directory += ".cgow"
+	level_data["level_name"] = active_directory.get_file().get_basename().c_escape().capitalize()
 	Global.save_to_file(level_data, active_directory)
 	menus.get("Build_menu").reset_to_saved_button.disabled = false
 
