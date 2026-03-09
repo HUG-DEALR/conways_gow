@@ -11,7 +11,7 @@ radius = 5.0
 radius = 5.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_w7hgg"]
-size = Vector2(40, 10)
+size = Vector2(40, 5)
 
 [node name="Hint_Arrow" type="Node2D"]
 script = ExtResource("1_igand")
@@ -28,13 +28,13 @@ width = 5.0
 [node name="Head_Area" type="Area2D" parent="Shaft"]
 monitorable = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Shaft/Head_Area"]
+[node name="Head_Collision_Shape" type="CollisionShape2D" parent="Shaft/Head_Area"]
 shape = SubResource("CircleShape2D_igand")
 
 [node name="Tail_Area" type="Area2D" parent="."]
 monitorable = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Tail_Area"]
+[node name="Tail_Collision_Shape" type="CollisionShape2D" parent="Tail_Area"]
 shape = SubResource("CircleShape2D_2ckbn")
 
 [node name="Body_Area" type="Area2D" parent="."]
@@ -44,19 +44,22 @@ position = Vector2(25, 0)
 shape = SubResource("RectangleShape2D_w7hgg")
 
 [node name="GUI_Parent" type="Control" parent="."]
-visible = false
 layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 1
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 2
 script = ExtResource("2_w7hgg")
 
 [node name="Drag_Button" type="Button" parent="GUI_Parent"]
 modulate = Color(1, 1, 1, 0)
-custom_minimum_size = Vector2(410, 260)
+custom_minimum_size = Vector2(410, 310)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -103,20 +106,43 @@ text = "Arrow Colour"
 color = Color(1, 1, 1, 1)
 edit_alpha = false
 
-[node name="OptionButton" type="OptionButton" parent="GUI_Parent/PanelContainer/VBoxContainer"]
+[node name="HBoxContainer3" type="HBoxContainer" parent="GUI_Parent/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Label" type="Label" parent="GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Arrow Width"
+
+[node name="Weight_Spin_Box" type="SpinBox" parent="GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+min_value = 0.5
+max_value = 20.0
+step = 0.1
+value = 5.0
+alignment = 1
+custom_arrow_step = 0.1
+
+[node name="Behaviour_Option" type="OptionButton" parent="GUI_Parent/PanelContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 30
 alignment = 1
 selected = 0
 allow_reselect = true
-item_count = 3
+item_count = 5
 popup/item_0/text = "Don't Hide"
 popup/item_0/id = 0
 popup/item_1/text = "Hide After Gen 0"
 popup/item_1/id = 1
 popup/item_2/text = "Don't Show"
 popup/item_2/id = 2
+popup/item_3/text = "Show on Hint"
+popup/item_3/id = 3
+popup/item_4/text = "Delete"
+popup/item_4/id = 4
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="GUI_Parent/PanelContainer/VBoxContainer"]
 layout_mode = 2
@@ -140,4 +166,7 @@ text = "Cancel"
 [connection signal="input_event" from="Body_Area" to="." method="_on_body_area_input_event"]
 [connection signal="button_down" from="GUI_Parent/Drag_Button" to="GUI_Parent" method="_on_drag_button_button_down"]
 [connection signal="button_up" from="GUI_Parent/Drag_Button" to="GUI_Parent" method="_on_drag_button_button_up"]
+[connection signal="color_changed" from="GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer/ColorPickerButton" to="." method="_on_color_picker_button_color_changed"]
+[connection signal="value_changed" from="GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer3/Weight_Spin_Box" to="." method="_on_weight_spin_box_value_changed"]
+[connection signal="pressed" from="GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer2/Apply" to="." method="_on_apply_pressed"]
 [connection signal="pressed" from="GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer2/Cancel" to="." method="_on_cancel_pressed"]

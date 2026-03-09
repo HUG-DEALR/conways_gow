@@ -1,6 +1,7 @@
 extends Control
 
 @onready var panel_container: PanelContainer = $PanelContainer
+@onready var weight_spin_box: SpinBox = $PanelContainer/VBoxContainer/HBoxContainer3/Weight_Spin_Box
 
 var dragging: bool = false
 var drag_offset: Vector2 = Vector2.ZERO
@@ -8,6 +9,7 @@ var glide_tween: Tween
 
 func _ready() -> void:
 	set_process(false)
+	weight_spin_box.get_line_edit().add_theme_font_size_override("font_size", 30)
 
 func _process(_delta: float) -> void:
 	position = get_global_mouse_position() - drag_offset

@@ -12,28 +12,28 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	position = get_global_mouse_position() - drag_offset
 
-func clamp_to_screen() -> void:
-	# Get the screen rectangle
-	var screen_rect: Rect2 = get_viewport().get_visible_rect()
-	
-	# Get this Control's global rect
-	var rect: Rect2 = get_global_rect()
-	
-	var new_pos: Vector2 = global_position
-	
-	# Clamp X
-	if rect.position.x < screen_rect.position.x:
-		new_pos.x = screen_rect.position.x
-	elif rect.position.x + rect.size.x > screen_rect.position.x + screen_rect.size.x:
-		new_pos.x = screen_rect.position.x + screen_rect.size.x - rect.size.x
-	
-	# Clamp Y
-	if rect.position.y < screen_rect.position.y:
-		new_pos.y = screen_rect.position.y
-	elif rect.position.y + rect.size.y > screen_rect.position.y + screen_rect.size.y:
-		new_pos.y = screen_rect.position.y + screen_rect.size.y - rect.size.y
-	
-	global_position = new_pos
+#func clamp_to_screen() -> void:
+#	# Get the screen rectangle
+#	var screen_rect: Rect2 = get_viewport().get_visible_rect()
+#	
+#	# Get this Control's global rect
+#	var rect: Rect2 = get_global_rect()
+#	
+#	var new_pos: Vector2 = global_position
+#	
+#	# Clamp X
+#	if rect.position.x < screen_rect.position.x:
+#		new_pos.x = screen_rect.position.x
+#	elif rect.position.x + rect.size.x > screen_rect.position.x + screen_rect.size.x:
+#		new_pos.x = screen_rect.position.x + screen_rect.size.x - rect.size.x
+#	
+#	# Clamp Y
+#	if rect.position.y < screen_rect.position.y:
+#		new_pos.y = screen_rect.position.y
+#	elif rect.position.y + rect.size.y > screen_rect.position.y + screen_rect.size.y:
+#		new_pos.y = screen_rect.position.y + screen_rect.size.y - rect.size.y
+#	
+#	global_position = new_pos
 
 func _on_drag_button_button_down() -> void:
 	dragging = true

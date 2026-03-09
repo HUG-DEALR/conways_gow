@@ -21,6 +21,7 @@ extends Control
 @onready var file_options_window: HBoxContainer = $Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window
 @onready var reset_to_saved_button: Button = $Right_GUI_Root/VBoxContainer/Restart/Reset_Options_Container/Reset_To_Saved
 @onready var generic_zone = preload("res://Scenes/Props/zone_polygon.tscn")
+@onready var generic_hint_arrow = preload("res://Scenes/Props/hint_arrow.tscn")
 
 const logic_term_path: String = "res://Scenes/Menus/logic_term.tscn"
 
@@ -331,6 +332,7 @@ func _on_reset_options_container_mouse_exited() -> void:
 func _on_reset_to_clear_pressed() -> void:
 	Global.world_scene.clear_grid()
 	Global.world_scene.clear_zones()
+	Global.world_scene.clear_arrows()
 	Global.generation_number = 0
 	set_generation_number(0)
 	set_play_pause(false)
@@ -346,6 +348,12 @@ func _on_new_zone_button_pressed() -> void:
 	Global.world_scene.add_child(new_zone)
 	new_zone.visible = true
 	new_zone.global_position = Global.game_camera.global_position
+
+func _on_new_hint_arrow_button_pressed() -> void:
+	var new_arrow = generic_hint_arrow.instantiate()
+	Global.world_scene.add_child(new_arrow)
+	new_arrow.visible = true
+	new_arrow.global_position = Global.game_camera.global_position
 
 func _on_level_settings_pressed() -> void:
 	toggle_expand_level_settings(!level_settings_root.visible)

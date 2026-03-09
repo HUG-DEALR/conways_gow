@@ -2,6 +2,8 @@ extends Node2D
 
 signal generation_itterated
 signal clear_zones_called
+signal clear_arrows_called
+#signal hint_button_pressed # WIP
 
 @onready var grid: MultiMeshInstance2D = $Grid
 @onready var grid_multimesh: MultiMesh = grid.multimesh
@@ -41,6 +43,8 @@ var level_info_dict: Dictionary = {
 	"level_instructions": "",
 	"completion_rating": [false, false, false], # This is the best co,pletion rating across runs
 	"current_rating": [false, false, false], # This is completion rating in current run
+	"hint_arrows": {},
+	"hint_text_boxes": {},
 }
 var pre_loaded_level_info_dict: Dictionary = {
 	# Level info goes here before the world becomes populated by it
@@ -98,11 +102,11 @@ func populate_zones(can_build_zones: Dictionary, no_build_zones: Dictionary, tri
 	if clear_previous:
 		clear_zones()
 	
-	var generic_zone = preload("res://Scenes/Props/zone_polygon.tscn")
+	var generic_zone: Resource = preload("res://Scenes/Props/zone_polygon.tscn")
 	
 	var new_can_build_dict: Dictionary = {}
 	for zone in can_build_zones:
-		var new_zone = generic_zone.instantiate()
+		var new_zone: Node = generic_zone.instantiate()
 		add_child(new_zone)
 		if prevent_zone_editing:
 			new_zone.toggle_lock_state(true)
@@ -144,6 +148,23 @@ func populate_zones(can_build_zones: Dictionary, no_build_zones: Dictionary, tri
 	level_info_dict["can_build_zones"] = new_can_build_dict
 	level_info_dict["no_build_zones"] = new_no_build_dict
 	level_info_dict["trigger_zones"] = new_trigger_dict
+
+func populate_arrows(arrows_dict: Dictionary, clear_previous: bool = true, prevent_arrow_editing: bool = true) -> void:
+	if clear_previous:
+		clear_arrows()
+	
+	var generic_arrow: Resource = preload("res://Scenes/Props/hint_arrow.tscn")
+	
+	var new_arrows_dict: Dictionary = {}
+	for arrow in arrows_dict:
+		var new_arrow: Node = generic_arrow.instantiate()
+		add_child(new_arrow)
+		if prevent_arrow_editing:
+			new_arrow.toggle_lock_state(true)
+		new_arrow.visible = true
+		new_arrow.set_arrow_info(arrows_dict.get(arrow))
+		new_arrows_dict[new_arrow] = arrows_dict[arrow]
+	level_info_dict["hint_arrows"] = new_arrows_dict
 
 func resize_grid(new_grid_size: Vector2i, cells_dict: Dictionary) -> void:
 	if cells_dict.is_empty():
@@ -254,12 +275,17 @@ func handle_cell_clicked(cell_index: int) -> void:
 				set_cell_type(cell_index, "dead")
 
 func clear_grid() -> void:
+	var grid_size: int = grid_multimesh.instance_count
 	for key in level_info_dict["live_cells"].keys():
-		grid_multimesh.set_instance_color(key, Global.dead_colour)
+		if key < grid_size:
+			grid_multimesh.set_instance_color(key, Global.dead_colour)
 	level_info_dict["live_cells"].clear()
 
 func clear_zones() -> void:
 	clear_zones_called.emit()
+
+func clear_arrows() -> void:
+	clear_arrows_called.emit()
 
 func get_cell_type(cell_index: int) -> String:
 	if level_info_dict["live_cells"].has(cell_index):
@@ -323,6 +349,12 @@ func update_or_add_zone_info(zone_node: Polygon2D) -> void:
 				var new_id: String = "trigger_" + str(trigger_zone_id_itterator)
 				level_info_dict["trigger_zones"][zone_node][3] = new_id
 				zone_node.set_trigger_identifier(new_id)
+
+func remove_hint_arrow_from_lists(arrow_node: Node2D) -> void:
+	level_info_dict["hint_arrows"].erase(arrow_node)
+
+func update_or_add_hint_arrow_info(arrow_node: Node2D) -> void:
+	level_info_dict["hint_arrows"][arrow_node] = arrow_node.get_arrow_info()
 
 func set_play_pause(set_to_play: bool) -> void:
 	menus.get("GUI").set_play_pause(set_to_play)
@@ -430,11 +462,12 @@ func open_level_from_local(skip_directory_prompt: bool = false, prevent_zone_edi
 	
 	return true
 
-func full_populate_level(level_dict: Dictionary = level_info_dict, prevent_zone_editing: bool = false) -> void:
+func full_populate_level(level_dict: Dictionary = level_info_dict, prevent_editing: bool = false) -> void:
 	populate_cells(level_dict.get("grid_dimensions"), level_dict.get("live_cells"), true)
 	level_info_dict = level_dict
-	populate_zones(level_dict.get("can_build_zones"), level_dict.get("no_build_zones"), level_dict.get("trigger_zones"), true, prevent_zone_editing)
+	populate_zones(level_dict.get("can_build_zones"), level_dict.get("no_build_zones"), level_dict.get("trigger_zones"), true, prevent_editing)
 	populate_logic_terms(level_dict.get("logic_menu_structure"))
+	populate_arrows(level_dict.get("hint_arrows"), true, prevent_editing)
 
 func save_level(level_data: Dictionary) -> void:
 	if active_directory:
@@ -450,6 +483,7 @@ func save_level_as(level_data: Dictionary) -> void:
 	level_data["level_name"] = active_directory.get_file().get_basename().c_escape().capitalize()
 	Global.save_to_file(level_data, active_directory)
 	menus.get("Build_menu").reset_to_saved_button.disabled = false
+	menus.get("Build_menu").file_name_label.text = active_directory.get_file()
 
 func repair_current_file_missing_parameters() -> int: # Returns number of repaired parameters
 	# Checks if the current file is missing any parameters and fills them with the default
@@ -492,6 +526,12 @@ func repair_current_file_missing_parameters() -> int: # Returns number of repair
 		repaired_parameters += 1
 	if not level_info_dict.has("current_rating"):
 		level_info_dict["current_rating"] = [false, false, false]
+		repaired_parameters += 1
+	if not level_info_dict.has("hint_arrows"):
+		level_info_dict["hint_arrows"] = {}
+		repaired_parameters += 1
+	if not level_info_dict.has("hint_text_boxes"):
+		level_info_dict["hint_text_boxes"] = {}
 		repaired_parameters += 1
 	
 	return repaired_parameters

@@ -334,6 +334,8 @@ func toggle_zone_menu_visible(make_visible: bool) -> void:
 		menu_tween.tween_property(gui_parent, "scale", Vector2.ONE, 0.3)
 		gui_parent.visible = true
 		menu_tween.play()
+		await menu_tween.finished
+		gui_parent._on_drag_button_button_up()
 	else:
 		menu_tween.tween_property(gui_parent, "scale", Vector2.ZERO, 0.3)
 		menu_tween.play()
