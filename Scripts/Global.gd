@@ -7,7 +7,8 @@ extends Node
 # Victory and defeat mutually exclusive
 # Gen number is saved with outcome
 # Delink triggers when level inactive
-# Hint button
+
+signal generations_reset_to_0
 
 var alive_colour: Color = Color(0.0,0.5,0.7,1.0)
 var dead_colour: Color = Color(0.1,0.1,0.1,1.0)
@@ -122,3 +123,8 @@ func get_offset_to_be_fully_visible(control: Control) -> Vector2:
 	elif rect.position.y + rect.size.y > viewport_size.y:
 		offset.y = viewport_size.y - (rect.position.y + rect.size.y)
 	return offset
+
+func reset_generation_to_0() -> void:
+	generation_number = 0
+#	generations_reset_to_0.emit()
+	emit_signal("generations_reset_to_0")

@@ -5,6 +5,7 @@ extends Control
 @onready var generation_timer: Timer = $MarginContainer/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations/GenerationTimer
 @onready var play_generations: Button = $MarginContainer/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations
 @onready var step_generation: Button = $MarginContainer/VBoxContainer/Step_Generation
+@onready var hint_button: Button = $MarginContainer/VBoxContainer/Hint_Button
 @onready var restart: Button = $MarginContainer/VBoxContainer/Restart
 @onready var generation_counter: Label = $MarginContainer/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations/HBoxContainer/Generation_Counter
 
@@ -21,6 +22,11 @@ func _ready() -> void:
 func set_gui_visible(set_to_visible: bool) -> void:
 	self.visible = set_to_visible
 	set_generation_number(Global.generation_number)
+	
+	if Global.world_scene.level_info_dict["hint_arrows"].is_empty() and Global.world_scene.level_info_dict["hint_text_boxes"].is_empty():
+		hint_button.visible = false
+	else:
+		hint_button.visible = true
 
 func toggle_expand_speed_slider(set_to_expand: bool) -> void:
 	if speed_slider_tween:
@@ -125,5 +131,8 @@ func _on_zoom_slider_value_changed(value: float) -> void:
 
 func _on_restart_pressed() -> void:
 	Global.world_scene.clear_grid()
-	Global.generation_number = 0
+	Global.reset_generation_to_0()
 	set_play_pause(false)
+
+func _on_hint_button_pressed() -> void:
+	Global.world_scene.hint_requested()

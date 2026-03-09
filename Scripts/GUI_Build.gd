@@ -308,7 +308,7 @@ func _on_save_as_pressed() -> void:
 func _on_new_file_pressed() -> void:
 	Global.world_scene.clear_grid()
 	Global.world_scene.clear_zones()
-	Global.generation_number = 0
+	Global.reset_generation_to_0()
 	set_generation_number(0)
 	set_play_pause(false)
 	file_name_label.text = "new_level.cgow"
@@ -333,13 +333,13 @@ func _on_reset_to_clear_pressed() -> void:
 	Global.world_scene.clear_grid()
 	Global.world_scene.clear_zones()
 	Global.world_scene.clear_arrows()
-	Global.generation_number = 0
+	Global.reset_generation_to_0()
 	set_generation_number(0)
 	set_play_pause(false)
 
 func _on_reset_to_saved_pressed() -> void:
 	Global.world_scene.open_level_from_local(true)
-	Global.generation_number = 0
+	Global.reset_generation_to_0()
 	set_generation_number(0)
 	set_play_pause(false)
 

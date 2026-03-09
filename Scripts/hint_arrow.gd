@@ -32,6 +32,8 @@ func _ready() -> void:
 		Global.world_scene.connect("clear_arrows_called", self_destruct)
 	else:
 		print("World scene not found through Global, option window failed to reparent for node:" + "\n" + str(self))
+	Global.generations_reset_to_0.connect(_on_generations_reset_to_0)
+	_on_generations_reset_to_0()
 
 func _process(_delta: float) -> void:
 	match dragging_area:
@@ -49,6 +51,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		set_process(false)
 		dragging_area = 0
 		Global.world_scene.update_or_add_hint_arrow_info(self)
+	if behaviour_option.selected == 3: # Show on hint
+		if Global.world_scene.current_sub_menu == "play":
+			if event is InputEventMouseButton and event.pressed:
+				self.visible = false
 
 func _handle_area_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
@@ -107,17 +113,36 @@ func set_arrow_info(info_array: Array) -> void:
 	_on_color_picker_button_color_changed(info_array[0])
 	_on_weight_spin_box_value_changed(info_array[1])
 	behaviour_option.selected = info_array[2]
-	if behaviour_option.selected == 1: # Hide after gen 0
-		Global.world_scene.connect("generation_itterated", _on_generation_iterated)
-	else:
-		if Global.world_scene.is_connected("generation_itterated", _on_generation_iterated):
-			Global.world_scene.disconnect("generation_itterated", _on_generation_iterated)
+	configure_hide_show_behaviour()
 	reposition_tail(info_array[3])
 	reposition_head(info_array[4])
 	
 	pre_edit_arrow_width = arrow_width
 	pre_edit_arrow_colour = arrow_colour
 	pre_edit_behaviour_option = behaviour_option.selected
+
+func configure_hide_show_behaviour() -> void:
+	# This is a suboptimal logic structure, but given the small scale, it is preferable
+	if behaviour_option.selected == 1: # Hide after gen 0
+		if not Global.world_scene.is_connected("generation_itterated", _on_generation_iterated):
+			Global.world_scene.connect("generation_itterated", _on_generation_iterated)
+	#	if not Global.is_connected("generations_reset_to_0", _on_generations_reset_to_0):
+	#		Global.connect("generations_reset_to_0", _on_generations_reset_to_0)
+	else:
+		if Global.world_scene.is_connected("generation_itterated", _on_generation_iterated):
+			Global.world_scene.disconnect("generation_itterated", _on_generation_iterated)
+	#	if Global.is_connected("generations_reset_to_0", _on_generations_reset_to_0):
+	#		Global.disconnect("generations_reset_to_0", _on_generations_reset_to_0)
+	if behaviour_option.selected == 2: # Don't Show
+		modulate = Color(1.0, 1.0, 1.0, 0.5)
+	else:
+		modulate = Color.WHITE
+	if behaviour_option.selected == 3: # Show on hint
+		if not Global.world_scene.is_connected("hint_button_pressed", _on_hint_button_pressed):
+			Global.world_scene.connect("hint_button_pressed", _on_hint_button_pressed)
+	else:
+		if Global.world_scene.is_connected("hint_button_pressed", _on_hint_button_pressed):
+			Global.world_scene.disconnect("hint_button_pressed", _on_hint_button_pressed)
 
 func toggle_lock_state(lock_state: bool) -> void:
 	if lock_state:
@@ -151,8 +176,18 @@ func self_destruct() -> void:
 	self.queue_free()
 
 func _on_generation_iterated() -> void:
-	visible = false
-	toggle_lock_state(false)
+	if Global.world_scene.current_sub_menu == "play":
+		visible = false
+		toggle_arrow_menu_visible(false)
+
+func _on_generations_reset_to_0() -> void:
+#	print("gen reset")
+#	print(Global.world_scene.current_sub_menu)
+	if Global.world_scene.current_sub_menu == "play":
+		if behaviour_option.selected == 1: # Hide after gen 0
+			visible = true
+		elif behaviour_option.selected == 3: # Show on hint
+			visible = false
 
 func _on_tail_area_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 	dragging_area = 1
@@ -184,6 +219,10 @@ func _on_color_picker_button_color_changed(color: Color) -> void:
 	shaft.default_color = color
 	head.default_color = color
 
+func _on_hint_button_pressed() -> void:
+	# Assumes that the "show on hint" option is selected
+	self.visible = true
+
 func _on_cancel_pressed() -> void:
 	toggle_arrow_menu_visible(false)
 	_on_weight_spin_box_value_changed(pre_edit_arrow_width)
@@ -200,22 +239,6 @@ func _on_apply_pressed() -> void:
 	pre_edit_arrow_colour = arrow_colour
 	pre_edit_behaviour_option = behaviour_option.selected
 	
-	# This is a suboptimal logic structure, but given the small scale, it is preferable
-	if behaviour_option.selected == 1: # Hide after gen 0
-		Global.world_scene.connect("generation_itterated", _on_generation_iterated)
-	else:
-		if Global.world_scene.is_connected("generation_itterated", _on_generation_iterated):
-			Global.world_scene.disconnect("generation_itterated", _on_generation_iterated)
-	if behaviour_option.selected == 2: # Don't Show
-		modulate = Color(1.0, 1.0, 1.0, 0.5)
-	else:
-		modulate = Color.WHITE
-	if behaviour_option.selected == 3: # Show on hint
-		pass
-	#	Global.world_scene.connect("hint_button_pressed", _on_hint_button_pressed)
-	else:
-		pass
-	#	if Global.world_scene.is_connected("hint_button_pressed", _on_hint_button_pressed):
-	#		Global.world_scene.disconnect("hint_button_pressed", _on_hint_button_pressed)
+	configure_hide_show_behaviour()
 	
 	Global.world_scene.update_or_add_hint_arrow_info(self)

@@ -3,7 +3,7 @@ extends Node2D
 signal generation_itterated
 signal clear_zones_called
 signal clear_arrows_called
-#signal hint_button_pressed # WIP
+signal hint_button_pressed
 
 @onready var grid: MultiMeshInstance2D = $Grid
 @onready var grid_multimesh: MultiMesh = grid.multimesh
@@ -413,7 +413,7 @@ func button_signal(singal_name: String) -> void:
 			current_sub_menu = "build"
 			switch_to_menu("Build_menu")
 			menus.get("GUI").set_play_pause(false)
-			Global.generation_number = 0
+			Global.reset_generation_to_0()
 			populate_cells(Vector2i(50,50), {}, true)
 			game_camera.position = (cell_size + cell_margin) * level_info_dict["grid_dimensions"]/2.0
 			game_camera.zoom = Vector2.ONE * 2.0
@@ -426,7 +426,7 @@ func button_signal(singal_name: String) -> void:
 			current_sub_menu = "play"
 			switch_to_menu("GUI")
 			menus.get("GUI").set_play_pause(false)
-			Global.generation_number = 0
+			Global.reset_generation_to_0()
 			menus.get("GUI").set_gui_visible(true)
 			game_camera.position = (cell_size + cell_margin) * level_info_dict["grid_dimensions"]/2.0
 			game_camera.zoom = Vector2.ONE * 2.0
@@ -434,6 +434,9 @@ func button_signal(singal_name: String) -> void:
 		"populate_then_play": # Only for when level data has been set to the pre_loaded_level_info_dict
 			full_populate_level(pre_loaded_level_info_dict, true)
 			button_signal("play")
+
+func hint_requested() -> void:
+	hint_button_pressed.emit()
 
 # File functions
 func open_level_from_local(skip_directory_prompt: bool = false, prevent_zone_editing: bool = false, populate_level: bool = true) -> bool:
@@ -453,7 +456,7 @@ func open_level_from_local(skip_directory_prompt: bool = false, prevent_zone_edi
 		print("Could not open file: " + open_from_directory + "\n" + loaded_file)
 		return false
 	
-	print("Missing parameters in loaded file:" + "\n" + str(repair_current_file_missing_parameters()) + "\n" + "Missing parameters are automatically filled with default values")
+	print("Missing parameters in loaded file: " + str(repair_current_file_missing_parameters()) + "\n" + "Missing parameters are automatically filled with default values")
 	
 	if populate_level:
 		full_populate_level(loaded_file, prevent_zone_editing)
