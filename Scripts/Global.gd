@@ -6,7 +6,6 @@ extends Node
 # Pressing reset in play reverts to loaded info
 # Victory and defeat mutually exclusive
 # Gen number is saved with outcome
-# Delink triggers when level inactive
 
 signal generations_reset_to_0
 

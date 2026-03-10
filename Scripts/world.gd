@@ -74,6 +74,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			handle_cell_clicked(get_cell_index_from_position(last_click_location))
 	if event.is_action_pressed("ui_cancel"):
 		if current_menu != menus.get("Main_menu"):
+			set_play_pause(false)
 			button_signal("main")
 
 # Grid functions
@@ -284,6 +285,9 @@ func clear_grid() -> void:
 func clear_zones() -> void:
 	clear_zones_called.emit()
 
+func clear_level_logic() -> void:
+	menus.get("Build_menu").clear_logic_structures()
+
 func clear_arrows() -> void:
 	clear_arrows_called.emit()
 
@@ -400,6 +404,7 @@ func button_signal(singal_name: String) -> void:
 			current_sub_menu = "main"
 			switch_to_menu("Main_menu")
 			clear_zones()
+			clear_arrows()
 			menu_camera.make_current()
 			menus.get("Main_menu")._on_background_reset_timer_timeout()
 			set_play_pause(true)

@@ -11,6 +11,7 @@ func _ready() -> void:
 	var target_number_line_edit = target_number.get_line_edit()
 	target_number_line_edit.add_theme_font_size_override("font_size", 30)
 	Global.world_scene.connect("generation_itterated", _on_generation_iterated)
+	Global.world_scene.connect("clear_zones_called", self_destruct)
 
 func replace_self_with_alternate(_index_of_replacement: int) -> void:
 	var parent = get_parent()
@@ -57,6 +58,9 @@ func get_bool_status() -> bool:
 			return Global.generation_number != target_number.value
 		_:
 			return false
+
+func self_destruct() -> void:
+	queue_free()
 
 func _on_generation_iterated() -> void:
 	var current_bool_status: bool = get_bool_status()
