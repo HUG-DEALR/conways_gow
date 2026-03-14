@@ -132,7 +132,7 @@ func _on_zoom_slider_value_changed(value: float) -> void:
 	Global.game_camera.set_zoom_clamped(value, false)
 
 func _on_restart_pressed() -> void:
-	Global.world_scene.clear_grid()
+	Global.world_scene.full_populate_level(Global.world_scene.pre_loaded_level_info_dict, true)
 	Global.reset_generation_to_0()
 	set_play_pause(false)
 

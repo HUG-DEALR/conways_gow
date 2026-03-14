@@ -508,13 +508,13 @@ func open_level_from_local(skip_directory_prompt: bool = false, prevent_zone_edi
 	if populate_level:
 		full_populate_level(loaded_file, prevent_zone_editing)
 	else:
-		pre_loaded_level_info_dict = loaded_file
+		pre_loaded_level_info_dict = loaded_file.duplicate(true)
 	
 	return true
 
 func full_populate_level(level_dict: Dictionary = level_info_dict, prevent_editing: bool = false) -> void:
 	populate_cells(level_dict.get("grid_dimensions"), level_dict.get("live_cells"), true)
-	level_info_dict = level_dict
+	level_info_dict = level_dict.duplicate(true)
 	populate_zones(level_dict.get("can_build_zones"), level_dict.get("no_build_zones"), level_dict.get("trigger_zones"), true, prevent_editing)
 	populate_logic_terms(level_dict.get("logic_menu_structure"))
 	populate_arrows(level_dict.get("hint_arrows"), true, prevent_editing)

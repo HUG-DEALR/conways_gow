@@ -3,8 +3,8 @@ extends Node
 # To do list
 # Outcomes from bool eval
 # Description and instructions integration
-# Pressing reset in play reverts to loaded info
-# Victory and defeat mutually exclusive
+# Loading levels in levels menu utilises correct data structure
+# Pressing reset in campaign play reverts to loaded info
 # Gen number is saved with outcome
 
 signal generations_reset_to_0
