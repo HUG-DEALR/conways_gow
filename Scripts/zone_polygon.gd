@@ -238,7 +238,7 @@ func get_covered_active_cells(active_cells: Array) -> Array[int]:
 		var end_column: int = int(ceil((rect.position.x + rect.size.x - grid_origin.x) / step)) - 1
 		var end_row: int = int(ceil((rect.position.y + rect.size.y - grid_origin.y) / step)) - 1
 		
-		var grid_dimensions: Vector2i = Global.world_scene["grid_dimensions"]
+		var grid_dimensions: Vector2i = Global.world_scene.level_info_dict["grid_dimensions"]
 		
 		start_column = clamp(start_column, 0, grid_dimensions.x - 1)
 		start_row = clamp(start_row, 0, grid_dimensions.y - 1)

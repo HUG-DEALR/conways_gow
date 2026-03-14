@@ -1,0 +1,52 @@
+[gd_scene load_steps=4 format=3 uid="uid://dlmu6rrrca3kv"]
+
+[ext_resource type="StyleBox" uid="uid://bvp8auwdu5u7l" path="res://Resources/general_menu_stylebox.tres" id="1_2xmna"]
+[ext_resource type="StyleBox" uid="uid://df5o2c2vvx3fn" path="res://Resources/text_box_style.tres" id="2_s1h7k"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_s1h7k"]
+viewport_path = NodePath("Sprite2D/SubViewport")
+
+[node name="Hint_Text_Box" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = SubResource("ViewportTexture_s1h7k")
+centered = false
+
+[node name="SubViewport" type="SubViewport" parent="Sprite2D"]
+disable_3d = true
+transparent_bg = true
+handle_input_locally = false
+
+[node name="Control" type="Control" parent="Sprite2D/SubViewport"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="Sprite2D/SubViewport/Control"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -70.0
+offset_top = -72.0
+offset_right = 70.0
+offset_bottom = 72.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = ExtResource("1_2xmna")
+
+[node name="TextEdit" type="TextEdit" parent="Sprite2D/SubViewport/Control/PanelContainer"]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = ExtResource("2_s1h7k")
+theme_override_styles/read_only = ExtResource("2_s1h7k")
+text = "This is a hint and more info talking more"
+placeholder_text = "Your text here"
+wrap_mode = 1
+scroll_fit_content_height = true

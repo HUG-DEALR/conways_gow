@@ -9,7 +9,7 @@ func _ready() -> void:
 	entry_exit_animation(true)
 	await get_tree().process_frame
 	if get_index() == 0:
-		option_button_output.get_popup().set_item_disabled(7, true)
+		option_button_output.get_popup().set_item_disabled(10, true)
 
 func get_bool_info() -> Array:
 	var outcome_string: String = ""
@@ -18,17 +18,23 @@ func get_bool_info() -> Array:
 			outcome_string = "victory"
 		1: # Defeat
 			outcome_string = "defeat"
-		2: # ★☆☆
-			outcome_string = "star_1"
-		3: # ☆★☆
-			outcome_string = "star_2"
-		4: # ☆☆★
-			outcome_string = "star_3"
-		5: # ★★☆
-			outcome_string = "star_1_2"
-		6: # ★★★
-			outcome_string = "star_1_2_3"
-		7: # Delete self
+		2: # ★ _ _
+			outcome_string = "star_P1"
+		3: # _ ★ _
+			outcome_string = "star_P2"
+		4: # _ _ ★
+			outcome_string = "star_P3"
+		5: # ☆ _ _
+			outcome_string = "star_N1"
+		6: # _ ☆ _
+			outcome_string = "star_N2"
+		7: # _ _ ☆
+			outcome_string = "star_N3"
+		8: # ★★★
+			outcome_string = "star_P1_P2_P3"
+		9: # ☆☆☆
+			outcome_string = "star_N1_N2_N3"
+		10: # Delete self
 			return ["",""] # This should never trigger
 	var bool_string: String = h_box_container.get_child(-1).get_bool_string_segment()
 	return [outcome_string, bool_string]
@@ -67,9 +73,9 @@ func entry_exit_animation(entering: bool, instant_clear: bool = false) -> void:
 
 func _on_output_item_selected(index: int) -> void:
 	match index:
-		7: # Delete term
+		10: # Delete term
 			if get_index() != 0:
 				entry_exit_animation(false)
 			else: # Is first child and should not be deleted
 				option_button_output.select(-1)
-				option_button_output.get_popup().set_item_disabled(7, true)
+				option_button_output.get_popup().set_item_disabled(10, true)

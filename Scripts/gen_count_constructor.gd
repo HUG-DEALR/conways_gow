@@ -3,7 +3,7 @@ extends Control
 @onready var target_number: SpinBox = $HBoxContainer/Target_Number
 @onready var opperator: OptionButton = $HBoxContainer/Opperator
 
-const trigger_selector_path: String = "res://Scenes/Menus/bool_var_signal_dropdown.tscn"
+const trigger_selector_path: String = "res://Scenes/Constructors/bool_var_signal_dropdown.tscn"
 
 var previous_bool_status: bool = false
 

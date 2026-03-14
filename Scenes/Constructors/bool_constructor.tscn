@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://fclbao06pncw"]
 
 [ext_resource type="Script" uid="uid://8subygq14o23" path="res://Scripts/bool_constructor.gd" id="1_uajyb"]
-[ext_resource type="PackedScene" uid="uid://dcb70fckbe53y" path="res://Scenes/Menus/bool_var_signal_dropdown.tscn" id="2_6qrd3"]
+[ext_resource type="PackedScene" uid="uid://dcb70fckbe53y" path="res://Scenes/Constructors/bool_var_signal_dropdown.tscn" id="2_6qrd3"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tgoav"]
 content_margin_left = 10.0

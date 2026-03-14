@@ -7,6 +7,7 @@ signal hint_button_pressed
 
 @onready var grid: MultiMeshInstance2D = $Grid
 @onready var grid_multimesh: MultiMesh = grid.multimesh
+@onready var generation_timer: Timer = $Generation_Timer
 @onready var game_camera: Camera2D = $Game_Camera
 @onready var menu_camera: Camera2D = $Rot_Parent/Menu_Camera
 @onready var rot_parent_menu_camera: Node2D = $Rot_Parent
@@ -14,10 +15,12 @@ signal hint_button_pressed
 @onready var outcome_overlay: Control = $CanvasLayer/outcome_overlay
 @onready var menus: Dictionary = {
 	"GUI": $CanvasLayer/GUI_Standard,
+	"Play_Esc_menu": $CanvasLayer/PlayEscMenu,
 	"Main_menu": $CanvasLayer/MainMenu,
 	"Levels_menu": $CanvasLayer/Levels_Menu,
 	"Settings_menu": $CanvasLayer/Settings,
-	"Build_menu": $CanvasLayer/GUI_Standard2,
+	"Build_menu": $CanvasLayer/GUI_Build,
+	"Build_Esc_menu": $CanvasLayer/BuildEscMenu,
 }
 
 const cell_size: float = 10.0
@@ -26,7 +29,7 @@ const cell_margin: float = 0.0
 var current_cell_count: int
 var last_click_location: Vector2 = Vector2.ZERO
 var current_menu: Control
-var current_sub_menu: String = "main"
+var current_sub_menu: String = "main" # main levels settings build build_esc exit play play_esc
 var menu_transition_tween: Tween
 var menus_active: bool = true
 var level_info_dict: Dictionary = {
@@ -52,13 +55,13 @@ var pre_loaded_level_info_dict: Dictionary = {
 }
 var trigger_zone_id_itterator: int = 0
 var active_directory: String = ""
+var status_of_active_level: String = "inactive" # playing, victory, defeat, inactive
 
 func _ready():
 	Global.world_scene = self
 	Global.menu_camera = menu_camera
 	Global.game_camera = game_camera
 	menu_camera.make_current()
-	menus.get("GUI").set_gui_visible(false)
 	current_menu = menus.get("Main_menu")
 	switch_to_menu("Main_menu", true)
 	outcome_overlay.visible = true
@@ -73,9 +76,30 @@ func _unhandled_input(event: InputEvent) -> void:
 			last_click_location = get_global_mouse_position()
 			handle_cell_clicked(get_cell_index_from_position(last_click_location))
 	if event.is_action_pressed("ui_cancel"):
-		if current_menu != menus.get("Main_menu"):
-			set_play_pause(false)
-			button_signal("main")
+	#	if current_menu != menus.get("Main_menu"):
+	#		set_play_pause(false)
+	#		button_signal("main")
+		match current_sub_menu:
+			"main":
+				pass
+			# Routing for levels and settings menu is same as catch all case
+		#	"levels":
+		#		pass
+		#	"settings":
+		#		pass
+			"build":
+				button_signal("build_esc")
+			"build_esc":
+				button_signal("build", "resume")
+			"exit":
+				pass
+			"play":
+				button_signal("play_esc")
+			"play_esc":
+				button_signal("play", "resume")
+			_: # Catch all
+				set_play_pause(false)
+				button_signal("main")
 
 # Grid functions
 func populate_cells(grid_size: Vector2i, cells_dict: Dictionary = {}, clear_previous: bool = true) -> void:
@@ -361,7 +385,10 @@ func update_or_add_hint_arrow_info(arrow_node: Node2D) -> void:
 	level_info_dict["hint_arrows"][arrow_node] = arrow_node.get_arrow_info()
 
 func set_play_pause(set_to_play: bool) -> void:
-	menus.get("GUI").set_play_pause(set_to_play)
+	if set_to_play:
+		generation_timer.start()
+	else:
+		generation_timer.stop()
 
 # Menu functions
 func switch_to_menu(menu_name: String, instant_transition: bool = false) -> void:
@@ -375,9 +402,9 @@ func switch_to_menu(menu_name: String, instant_transition: bool = false) -> void
 	
 	if instant_transition:
 		for menu in menus.values():
-			menu.visible = false
+			menu.set_gui_visible(false)
 			menu.position.x = -1 * (get_viewport().size.x + new_menu.size.x)
-		new_menu.visible = true
+		new_menu.set_gui_visible(true)
 		new_menu.position = Vector2.ZERO
 	else:
 		menu_transition_tween = get_tree().root.create_tween()
@@ -389,16 +416,16 @@ func switch_to_menu(menu_name: String, instant_transition: bool = false) -> void
 		menu_transition_tween.tween_property(current_menu, "position", transition_vector, 0.5)
 		
 		new_menu.position = -1 * transition_vector
-		new_menu.visible = true
+		new_menu.set_gui_visible(true)
 		menu_transition_tween.parallel().tween_property(new_menu, "position", Vector2.ZERO, 0.5)
 		
 		menu_transition_tween.play()
 		menu_transition_tween.tween_callback(func():
-			current_menu.visible = false
+			current_menu.set_gui_visible(false)
 			current_menu = new_menu
 			)
 
-func button_signal(singal_name: String) -> void:
+func button_signal(singal_name: String, conditional: String = "") -> void:
 	match singal_name:
 		"main":
 			current_sub_menu = "main"
@@ -416,29 +443,44 @@ func button_signal(singal_name: String) -> void:
 			switch_to_menu("Settings_menu")
 		"build":
 			current_sub_menu = "build"
+			set_play_pause(false)
+			if conditional == "resume":
+				pass
+			else:
+				Global.reset_generation_to_0()
+				populate_cells(Vector2i(50,50), {}, true)
+				game_camera.position = (cell_size + cell_margin) * level_info_dict["grid_dimensions"]/2.0
+				game_camera.zoom = Vector2.ONE * 2.0
 			switch_to_menu("Build_menu")
-			menus.get("GUI").set_play_pause(false)
-			Global.reset_generation_to_0()
-			populate_cells(Vector2i(50,50), {}, true)
-			game_camera.position = (cell_size + cell_margin) * level_info_dict["grid_dimensions"]/2.0
-			game_camera.zoom = Vector2.ONE * 2.0
 			game_camera.make_current()
+		"build_esc":
+			current_sub_menu = "build_esc"
+			set_play_pause(false)
+			switch_to_menu("Build_Esc_menu")
 		"exit":
 			current_sub_menu = "exit"
 			get_tree().paused = true
 			get_tree().call_deferred("quit")
 		"play":
 			current_sub_menu = "play"
+			status_of_active_level = "playing"
+			set_play_pause(false)
+			if conditional == "resume":
+				pass
+			else:
+				Global.reset_generation_to_0()
+				game_camera.position = (cell_size + cell_margin) * level_info_dict["grid_dimensions"]/2.0
+				game_camera.zoom = Vector2.ONE * 2.0
 			switch_to_menu("GUI")
-			menus.get("GUI").set_play_pause(false)
-			Global.reset_generation_to_0()
-			menus.get("GUI").set_gui_visible(true)
-			game_camera.position = (cell_size + cell_margin) * level_info_dict["grid_dimensions"]/2.0
-			game_camera.zoom = Vector2.ONE * 2.0
+		#	menus.get("GUI").set_gui_visible(true)
 			game_camera.make_current()
 		"populate_then_play": # Only for when level data has been set to the pre_loaded_level_info_dict
 			full_populate_level(pre_loaded_level_info_dict, true)
 			button_signal("play")
+		"play_esc":
+			current_sub_menu = "play_esc"
+			set_play_pause(false)
+			switch_to_menu("Play_Esc_menu")
 
 func hint_requested() -> void:
 	hint_button_pressed.emit()
@@ -611,21 +653,30 @@ func check_logic_conditions(trigger_id: String = "") -> void:
 					process_logic_term_outcome(logic_term[0])
 
 func process_logic_term_outcome(outcome: String) -> void:
+	if status_of_active_level != "playing":
+		return
+	
 	match outcome:
-		"star_1": # ★☆☆
+		"star_P1": # ★ _ _
 			level_info_dict["current_rating"][0] = true
-		"star_2": # ☆★☆
+		"star_P2": # _ ★ _
 			level_info_dict["current_rating"][1] = true
-		"star_3": # ☆☆★
+		"star_P3": # _ _ ★
 			level_info_dict["current_rating"][2] = true
-		"star_1_2": # ★★☆
-			level_info_dict["current_rating"][0] = true
-			level_info_dict["current_rating"][1] = true
-		"star_1_2_3": # ★★★
+		"star_N1": # ☆ _ _
+			level_info_dict["current_rating"][0] = false
+		"star_N2": # _ ☆ _
+			level_info_dict["current_rating"][1] = false
+		"star_N3": # _ _ ☆
+			level_info_dict["current_rating"][2] = false
+		"star_P1_P2_P3": # ★★★
 			level_info_dict["current_rating"] = [true, true, true]
+		"star_N1_N2_N3": # ☆☆☆
+			level_info_dict["current_rating"] = [false, false, false]
 		"defeat":
-			pass
+			status_of_active_level = "defeat"
 		"victory":
+			status_of_active_level = "victory"
 			var count_completion_rating: int = int(level_info_dict["completion_rating"][0]) + int(level_info_dict["completion_rating"][1]) + int(level_info_dict["completion_rating"][2])
 			var count_current_rating: int = int(level_info_dict["current_rating"][0]) + int(level_info_dict["current_rating"][1]) + int(level_info_dict["current_rating"][2])
 			if count_current_rating >= count_completion_rating:
@@ -633,3 +684,6 @@ func process_logic_term_outcome(outcome: String) -> void:
 	outcome_overlay.queue_outcome_to_print(outcome)
 
 # Signal functions
+
+func _on_generation_timer_timeout() -> void:
+	iterate_generation()

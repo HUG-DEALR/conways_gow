@@ -2,7 +2,6 @@ extends Control
 
 @onready var speed_slider: VSlider = $Right_GUI_Root/VBoxContainer/Auto_Play_Container/VBoxContainer/Speed_Slider
 @onready var zoom_slider: HSlider = $Right_GUI_Root/VBoxContainer/Control/Zoom_Options_Container/Zoom_Slider
-@onready var generation_timer: Timer = $Right_GUI_Root/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations/GenerationTimer
 @onready var play_generations: Button = $Right_GUI_Root/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations
 @onready var step_generation: Button = $Right_GUI_Root/VBoxContainer/Step_Generation
 @onready var generation_counter: Label = $Right_GUI_Root/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations/HBoxContainer/Generation_Counter
@@ -23,7 +22,7 @@ extends Control
 @onready var generic_zone = preload("res://Scenes/Props/zone_polygon.tscn")
 @onready var generic_hint_arrow = preload("res://Scenes/Props/hint_arrow.tscn")
 
-const logic_term_path: String = "res://Scenes/Menus/logic_term.tscn"
+const logic_term_path: String = "res://Scenes/Constructors/logic_term.tscn"
 
 var speed_slider_tween: Tween
 var zoom_slider_tween: Tween
@@ -52,6 +51,9 @@ func _ready() -> void:
 	logic_settings_root.visible = false
 	
 	_on_new_bool_pressed()
+	
+	await get_tree().process_frame
+	Global.world_scene.generation_itterated.connect(_on_generation_itterated)
 
 func set_gui_visible(set_to_visible: bool) -> void:
 	self.visible = set_to_visible
@@ -111,11 +113,11 @@ func set_play_pause(set_to_play: bool) -> void:
 	if set_to_play:
 		play_generations.text = "◼"
 		playing_generations = true
-		generation_timer.start(1.0 / speed_slider.value)
+		Global.world_scene.generation_timer.start(1.0 / speed_slider.value)
 	else:
 		play_generations.text = "❯❯"
 		playing_generations = false
-		generation_timer.stop()
+		Global.world_scene.generation_timer.stop()
 
 func set_generation_number(generation_num: int) -> void:
 	if generation_num > 0:
@@ -230,15 +232,15 @@ func clear_logic_structures() -> void:
 ### Signal Functions
 
 func _on_speed_slider_value_changed(value: float) -> void:
-	generation_timer.wait_time = 1.0 / speed_slider.value
+	Global.world_scene.generation_timer.wait_time = 1.0 / speed_slider.value
 
 func _on_step_generation_pressed() -> void:
 	Global.world_scene.iterate_generation()
 	set_generation_number(Global.generation_number)
 	set_play_pause(false)
 
-func _on_generation_timer_timeout() -> void:
-	Global.world_scene.iterate_generation()
+func _on_generation_itterated() -> void:
+	# connected by a function in _ready()
 	set_generation_number(Global.generation_number)
 
 func _on_play_generations_pressed() -> void:
@@ -273,11 +275,9 @@ func _on_zoom_options_container_mouse_exited() -> void:
 			focus_owner.release_focus()
 
 func _on_increase_zoom_pressed() -> void:
-#	camera.set_zoom_clamped(1.1,true) # zoom slider signal function handles set_zoom
 	zoom_slider.value = Global.game_camera.zoom.x * 1.1
 
 func _on_decrease_zoom_pressed() -> void:
-#	camera.set_zoom_clamped(1.0/1.1,true) # zoom slider signal function handles set_zoom
 	zoom_slider.value = Global.game_camera.zoom.x / 1.1
 
 func _on_zoom_slider_value_changed(value: float) -> void:

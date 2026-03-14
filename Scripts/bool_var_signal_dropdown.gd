@@ -1,7 +1,7 @@
 extends OptionButton
 
-const bool_constructor_path: String = "res://Scenes/Menus/bool_constructor.tscn"
-const gen_count_constructor_path: String = "res://Scenes/Menus/gen_count_constructor.tscn"
+const bool_constructor_path: String = "res://Scenes/Constructors/bool_constructor.tscn"
+const gen_count_constructor_path: String = "res://Scenes/Constructors/gen_count_constructor.tscn"
 
 var target_trigger # This can be a node or a string
 

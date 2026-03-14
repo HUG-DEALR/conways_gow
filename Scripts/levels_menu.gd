@@ -43,6 +43,9 @@ func _input(event: InputEvent) -> void:
 					selected_level_id = focus_owner.get_meta("level_id")
 					level_selected.emit()
 
+func set_gui_visible(set_to_visible: bool) -> void:
+	visible = set_to_visible
+
 func _on_level_selected() -> void:
 	var level_info: Array = levels_dict.get(selected_level_id)
 	campaign_play_button.disabled = !level_info[2]

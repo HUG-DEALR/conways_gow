@@ -4,7 +4,7 @@ extends Control
 @onready var signal_b_host: PanelContainer = $HBoxContainer/Signal_B_Host
 @onready var logic_gate: OptionButton = $HBoxContainer/Logic_Gate
 
-const trigger_selector_path: String = "res://Scenes/Menus/bool_var_signal_dropdown.tscn"
+const trigger_selector_path: String = "res://Scenes/Constructors/bool_var_signal_dropdown.tscn"
 
 func get_bool_string_segment() -> String:
 	var bool_A: String = signal_a_host.get_child(-1).get_bool_string_segment()

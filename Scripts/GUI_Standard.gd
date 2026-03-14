@@ -2,7 +2,6 @@ extends Control
 
 @onready var speed_slider: VSlider = $MarginContainer/VBoxContainer/Auto_Play_Container/VBoxContainer/Speed_Slider
 @onready var zoom_slider: HSlider = $MarginContainer/VBoxContainer/Control/HBoxContainer/Zoom_Slider
-@onready var generation_timer: Timer = $MarginContainer/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations/GenerationTimer
 @onready var play_generations: Button = $MarginContainer/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations
 @onready var step_generation: Button = $MarginContainer/VBoxContainer/Step_Generation
 @onready var hint_button: Button = $MarginContainer/VBoxContainer/Hint_Button
@@ -18,6 +17,9 @@ var mouse_over_zoom_options: bool = false
 func _ready() -> void:
 	speed_slider.visible = false
 	zoom_slider.visible = false
+	
+	await get_tree().process_frame
+	Global.world_scene.generation_itterated.connect(_on_generation_itterated)
 
 func set_gui_visible(set_to_visible: bool) -> void:
 	self.visible = set_to_visible
@@ -65,11 +67,11 @@ func set_play_pause(set_to_play: bool) -> void:
 	if set_to_play:
 		play_generations.text = "◼"
 		playing_generations = true
-		generation_timer.start(1.0 / speed_slider.value)
+		Global.world_scene.generation_timer.start(1.0 / speed_slider.value)
 	else:
 		play_generations.text = "❯❯"
 		playing_generations = false
-		generation_timer.stop()
+		Global.world_scene.generation_timer.stop()
 
 func set_generation_number(generation_num: int) -> void:
 	if generation_num > 0:
@@ -78,15 +80,15 @@ func set_generation_number(generation_num: int) -> void:
 		generation_counter.text = ""
 
 func _on_speed_slider_value_changed(value: float) -> void:
-	generation_timer.wait_time = 1.0 / speed_slider.value
+	Global.world_scene.generation_timer.wait_time = 1.0 / speed_slider.value
 
 func _on_step_generation_pressed() -> void:
 	Global.world_scene.iterate_generation()
 	set_generation_number(Global.generation_number)
 	set_play_pause(false)
 
-func _on_generation_timer_timeout() -> void:
-	Global.world_scene.iterate_generation()
+func _on_generation_itterated() -> void:
+	# connected by a function in _ready()
 	set_generation_number(Global.generation_number)
 
 func _on_play_generations_pressed() -> void:

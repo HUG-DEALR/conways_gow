@@ -8,6 +8,7 @@ extends Node
 # Gen number is saved with outcome
 
 signal generations_reset_to_0
+signal build_saved
 
 var alive_colour: Color = Color(0.0,0.5,0.7,1.0)
 var dead_colour: Color = Color(0.1,0.1,0.1,1.0)
@@ -23,6 +24,7 @@ var game_camera: Camera2D
 var generation_number: int = 0
 
 func save_to_file(data_to_save: Dictionary, file_path: String) -> void:
+	print("Saving to " + file_path)
 	var file = FileAccess.open(file_path, FileAccess.WRITE)
 	if file == null:
 		push_error("Failed to open file for writing: " + file_path)
@@ -30,6 +32,7 @@ func save_to_file(data_to_save: Dictionary, file_path: String) -> void:
 	
 	file.store_var(data_to_save)
 	file.close()
+	build_saved.emit()
 
 func load_from_file(file_path: String) -> Dictionary:
 	if not FileAccess.file_exists(file_path):
@@ -125,5 +128,4 @@ func get_offset_to_be_fully_visible(control: Control) -> Vector2:
 
 func reset_generation_to_0() -> void:
 	generation_number = 0
-#	generations_reset_to_0.emit()
-	emit_signal("generations_reset_to_0")
+	generations_reset_to_0.emit()

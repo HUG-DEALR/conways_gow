@@ -39,19 +39,20 @@ func toggled_deployed(deploy: bool) -> void:
 	intro_exit_tween.pause()
 	intro_exit_tween.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_CUBIC)
 	if deploy:
-		intro_exit_tween.tween_property(panel_container, "position", Vector2(50.0,-1.5 * margin_container.size.y), 0.0)
-		intro_exit_tween.tween_property(panel_container, "position", Vector2.ONE * 50.0, 0.3)
+		intro_exit_tween.tween_property(panel_container, "position", Vector2(50.0, 1.5 * margin_container.size.y), 0.0)
+		intro_exit_tween.tween_property(panel_container, "position", Vector2(50.0, 50.0), 0.3)
 		intro_exit_tween.play()
 		await get_tree().process_frame
 		panel_container.visible = true
 	else:
-		intro_exit_tween.tween_property(panel_container, "position", Vector2(50.0,-1.5 * margin_container.size.y), 0.3)
+		intro_exit_tween.tween_property(panel_container, "position", Vector2(50.0, 1.5 * margin_container.size.y), 0.3)
 		intro_exit_tween.play()
 		await intro_exit_tween.finished
 		panel_container.visible = false
 		advance_outcome_queue()
 
 func print_outcome(outcome: String, use_raw_input: bool = false) -> void:
+	
 	if use_raw_input:
 		label.text = outcome
 	else:
