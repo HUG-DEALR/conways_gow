@@ -55,10 +55,9 @@ custom_minimum_size = Vector2(920, 540)
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 tab_alignment = 1
-current_tab = 2
+current_tab = 0
 
 [node name="Campaign_Levels" type="HBoxContainer" parent="PanelContainer/MarginContainer/TabContainer"]
-visible = false
 layout_mode = 2
 alignment = 1
 metadata/_tab_index = 0
@@ -392,6 +391,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Load_From_Local" type="HBoxContainer" parent="PanelContainer/MarginContainer/TabContainer"]
+visible = false
 layout_mode = 2
 theme_override_constants/separation = 10
 alignment = 1

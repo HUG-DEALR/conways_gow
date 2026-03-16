@@ -343,7 +343,7 @@ size_flags_vertical = 0
 theme_override_font_sizes/font_size = 30
 text = "X"
 
-[node name="Label" type="Label" parent="."]
+[node name="Title" type="Label" parent="."]
 custom_minimum_size = Vector2(0, 150)
 layout_mode = 1
 anchors_preset = 5
@@ -357,5 +357,28 @@ theme_override_font_sizes/font_size = 60
 text = "SETTINGS"
 horizontal_alignment = 1
 vertical_alignment = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -53.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="Version_Label" type="Label" parent="MarginContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "CGOW 1.0.1 Closed Beta"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [connection signal="pressed" from="PanelContainer/MarginContainer/Back" to="." method="_on_back_pressed"]

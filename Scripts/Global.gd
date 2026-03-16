@@ -5,6 +5,9 @@ extends Node
 # Pressing reset in campaign play reverts to loaded info
 # Gen number is saved with outcome
 
+const read_only_level_default_source_directory: String = "res://level_defaults/"
+const local_campaign_levels_directory: String = "user://campaign_levels/"
+
 signal generations_reset_to_0
 signal build_saved
 
@@ -37,7 +40,7 @@ func load_from_file(file_path: String) -> Dictionary:
 		push_error("File does not exist: " + file_path)
 		return {}
 	
-	var file := FileAccess.open(file_path, FileAccess.READ)
+	var file: FileAccess = FileAccess.open(file_path, FileAccess.READ)
 	if file == null:
 		push_error("Failed to open file for reading: " + file_path)
 		return {}
@@ -52,7 +55,7 @@ func load_from_file(file_path: String) -> Dictionary:
 		return {}
 
 func prompt_user_for_directory(prompt: String = "Select Directory", current_directory: String = "") -> String:
-	var dialog := FileDialog.new()
+	var dialog: FileDialog = FileDialog.new()
 	dialog.use_native_dialog = true
 	dialog.file_mode = FileDialog.FILE_MODE_OPEN_DIR
 	dialog.access = FileDialog.ACCESS_FILESYSTEM
@@ -80,7 +83,7 @@ func prompt_user_for_file_path(
 		save_instead_of_open: bool = true
 	) -> String:
 	
-	var dialog := FileDialog.new()
+	var dialog: FileDialog = FileDialog.new()
 	if save_instead_of_open:
 		dialog.file_mode = FileDialog.FILE_MODE_SAVE_FILE
 	else:
@@ -108,6 +111,38 @@ func prompt_user_for_file_path(
 	
 	dialog.queue_free()
 	return result
+
+func sync_default_levels() -> void:
+	DirAccess.make_dir_recursive_absolute(local_campaign_levels_directory)
+	
+	var level_default_files: PackedStringArray = DirAccess.get_files_at(read_only_level_default_source_directory)
+	for file_name in level_default_files:
+		if not file_name.ends_with(".cgow"):
+			continue
+		
+		var target_path: String = local_campaign_levels_directory + file_name
+		if FileAccess.file_exists(target_path):
+			continue # Skip if user already has the file
+		var source_path: String = read_only_level_default_source_directory + file_name
+		
+		var source_file: FileAccess = FileAccess.open(source_path, FileAccess.READ)
+		if source_file == null:
+			push_error("Failed to open source file: " + source_path)
+			continue
+		
+		var destination_file: FileAccess = FileAccess.open(target_path, FileAccess.WRITE)
+		if destination_file == null:
+			push_error("Failed to create target file: " + target_path)
+			source_file.close()
+			continue
+		
+		source_file.seek(0)
+		destination_file.store_buffer(source_file.get_buffer(source_file.get_length()))
+		
+		source_file.close()
+		destination_file.close()
+		
+		print("Copied default level: " + file_name + "\n" + "to " + target_path)
 
 func get_offset_to_be_fully_visible(control: Control) -> Vector2:
 	var rect: Rect2 = control.get_global_rect()

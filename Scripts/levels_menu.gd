@@ -46,6 +46,25 @@ func _input(event: InputEvent) -> void:
 func set_gui_visible(set_to_visible: bool) -> void:
 	visible = set_to_visible
 
+func load_to_pre_loaded_level_info_dict(level_name: String = selected_level_id) -> void:
+	var level_directory: String = Global.local_campaign_levels_directory + level_name
+	if not DirAccess.dir_exists_absolute(level_directory):
+		push_error("Level directory: " + level_directory + "\n" + "cannot be found")
+		return
+	Global.world_scene.active_directory = level_directory
+	Global.world_scene.open_level_from_local(true, true, false)
+	# Need a new way to determine if level is locked
+	campaign_level_name_info_tab.text = Global.world_scene.pre_loaded_level_info_dict["level_name"]
+	campaign_level_description_info_tab.text = Global.world_scene.pre_loaded_level_info_dict["level_description"]
+	var completion_rating_string: String = ""
+	var completion_rating_array: Array = Global.world_scene.pre_loaded_level_info_dict["completion_rating"]
+	for i in completion_rating_array.size(): # Should always be 3
+		if completion_rating_array[i]:
+			completion_rating_string += "★"
+		else:
+			completion_rating_string += "☆"
+	campaign_level_rating_info_tab.text = completion_rating_string
+
 func _on_level_selected() -> void:
 	var level_info: Array = levels_dict.get(selected_level_id)
 	campaign_play_button.disabled = !level_info[2]

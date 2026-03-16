@@ -67,6 +67,8 @@ func _ready():
 	current_menu = menus.get("Main_menu")
 	switch_to_menu("Main_menu", true)
 	outcome_overlay.visible = true
+	
+	Global.sync_default_levels()
 
 func _process(delta: float) -> void:
 	if menus_active:
@@ -488,7 +490,7 @@ func hint_requested() -> void:
 	hint_button_pressed.emit()
 
 # File functions
-func open_level_from_local(skip_directory_prompt: bool = false, prevent_zone_editing: bool = false, populate_level: bool = true) -> bool:
+func open_level_from_local(skip_directory_prompt: bool = false, prevent_editing: bool = false, populate_level: bool = true) -> bool:
 	var open_from_directory: String = ""
 	if skip_directory_prompt and active_directory.get_extension() == "cgow":
 		open_from_directory = active_directory
@@ -508,7 +510,7 @@ func open_level_from_local(skip_directory_prompt: bool = false, prevent_zone_edi
 	print("Missing parameters in loaded file: " + str(repair_current_file_missing_parameters(loaded_file)) + "\n" + "Missing parameters are automatically filled with default values")
 	
 	if populate_level:
-		full_populate_level(loaded_file, prevent_zone_editing)
+		full_populate_level(loaded_file, prevent_editing)
 	else:
 		pre_loaded_level_info_dict = loaded_file.duplicate(true)
 	
@@ -704,6 +706,5 @@ func process_logic_term_outcome(outcome: String) -> void:
 	outcome_overlay.queue_outcome_to_print(outcome)
 
 # Signal functions
-
 func _on_generation_timer_timeout() -> void:
 	iterate_generation()
