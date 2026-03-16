@@ -13,7 +13,8 @@ signal hint_button_pressed
 @onready var rot_parent_menu_camera: Node2D = $Rot_Parent
 @onready var canvas_layer: CanvasLayer = $CanvasLayer
 @onready var outcome_overlay: Control = $CanvasLayer/outcome_overlay
-@onready var menus: Dictionary = {
+@onready var level_end_sub_menu: Control = $CanvasLayer/level_end_sub_menu
+@onready var menus: Dictionary = { # Only for mutually exclusive menus
 	"GUI": $CanvasLayer/GUI_Standard,
 	"Play_Esc_menu": $CanvasLayer/PlayEscMenu,
 	"Main_menu": $CanvasLayer/MainMenu,
@@ -44,7 +45,7 @@ var level_info_dict: Dictionary = {
 	"level_name": "",
 	"level_description": "",
 	"level_instructions": "",
-	"completion_rating": [false, false, false], # This is the best co,pletion rating across runs
+	"completion_rating": [false, false, false], # This is the best completion rating across runs
 	"current_rating": [false, false, false], # This is completion rating in current run
 	"hint_arrows": {},
 	"hint_text_boxes": {},
@@ -675,12 +676,14 @@ func process_logic_term_outcome(outcome: String) -> void:
 			level_info_dict["current_rating"] = [false, false, false]
 		"defeat":
 			status_of_active_level = "defeat"
+			level_end_sub_menu.toggled_deployed(true, false)
 		"victory":
 			status_of_active_level = "victory"
 			var count_completion_rating: int = int(level_info_dict["completion_rating"][0]) + int(level_info_dict["completion_rating"][1]) + int(level_info_dict["completion_rating"][2])
 			var count_current_rating: int = int(level_info_dict["current_rating"][0]) + int(level_info_dict["current_rating"][1]) + int(level_info_dict["current_rating"][2])
 			if count_current_rating >= count_completion_rating:
 				level_info_dict["completion_rating"] = level_info_dict["current_rating"]
+			level_end_sub_menu.toggled_deployed(true, true)
 	outcome_overlay.queue_outcome_to_print(outcome)
 
 # Signal functions

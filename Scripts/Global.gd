@@ -1,8 +1,6 @@
 extends Node
 
 # To do list
-# Outcomes from bool eval
-# Description and instructions integration
 # Loading levels in levels menu utilises correct data structure
 # Pressing reset in campaign play reverts to loaded info
 # Gen number is saved with outcome
