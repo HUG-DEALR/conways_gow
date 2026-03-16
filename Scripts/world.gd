@@ -47,6 +47,7 @@ var level_info_dict: Dictionary = {
 	"level_instructions": "",
 	"completion_rating": [false, false, false], # This is the best completion rating across runs
 	"current_rating": [false, false, false], # This is completion rating in current run
+	"outcome_generations": [-1, -1, [-1, -1, -1], [-1, -1, -1]], # -1 means not achieved, other int is gen at outcome; [current vic/def, fastest victory, [current star 1, 2, 3], [best star 1, 2, 3]
 	"hint_arrows": {},
 	"hint_text_boxes": {},
 }
@@ -504,7 +505,7 @@ func open_level_from_local(skip_directory_prompt: bool = false, prevent_zone_edi
 		print("Could not open file: " + open_from_directory + "\n" + loaded_file)
 		return false
 	
-	print("Missing parameters in loaded file: " + str(repair_current_file_missing_parameters()) + "\n" + "Missing parameters are automatically filled with default values")
+	print("Missing parameters in loaded file: " + str(repair_current_file_missing_parameters(loaded_file)) + "\n" + "Missing parameters are automatically filled with default values")
 	
 	if populate_level:
 		full_populate_level(loaded_file, prevent_zone_editing)
@@ -536,53 +537,56 @@ func save_level_as(level_data: Dictionary) -> void:
 	menus.get("Build_menu").reset_to_saved_button.disabled = false
 	menus.get("Build_menu").file_name_label.text = active_directory.get_file()
 
-func repair_current_file_missing_parameters() -> int: # Returns number of repaired parameters
+func repair_current_file_missing_parameters(level_dict: Dictionary) -> int: # Returns number of repaired parameters
 	# Checks if the current file is missing any parameters and fills them with the default
 	
 	var repaired_parameters: int = 0
 	
-	if not level_info_dict.has("grid_dimensions"):
-		level_info_dict["grid_dimensions"] = Vector2i.ZERO
+	if not level_dict.has("grid_dimensions"):
+		level_dict["grid_dimensions"] = Vector2i.ZERO
 		repaired_parameters += 1
-	if not level_info_dict.has("live_cells"):
-		level_info_dict["live_cells"] = {}
+	if not level_dict.has("live_cells"):
+		level_dict["live_cells"] = {}
 		clear_grid()
 		repaired_parameters += 1
-	if not level_info_dict.has("can_build_zones"):
-		level_info_dict["can_build_zones"] = {}
+	if not level_dict.has("can_build_zones"):
+		level_dict["can_build_zones"] = {}
 		repaired_parameters += 1
-	if not level_info_dict.has("no_build_zones"):
-		level_info_dict["no_build_zones"] = {}
+	if not level_dict.has("no_build_zones"):
+		level_dict["no_build_zones"] = {}
 		repaired_parameters += 1
-	if not level_info_dict.has("trigger_zones"):
-		level_info_dict["trigger_zones"] = {}
+	if not level_dict.has("trigger_zones"):
+		level_dict["trigger_zones"] = {}
 		repaired_parameters += 1
-	if not level_info_dict.has("logic_terms"):
-		level_info_dict["logic_terms"] = {}
+	if not level_dict.has("logic_terms"):
+		level_dict["logic_terms"] = {}
 		repaired_parameters += 1
-	if not level_info_dict.has("logic_menu_structure"):
-		level_info_dict["logic_menu_structure"] = {}
+	if not level_dict.has("logic_menu_structure"):
+		level_dict["logic_menu_structure"] = {}
 		repaired_parameters += 1
-	if not level_info_dict.has("level_name"):
-		level_info_dict["level_name"] = ""
+	if not level_dict.has("level_name"):
+		level_dict["level_name"] = ""
 		repaired_parameters += 1
-	if not level_info_dict.has("level_description"):
-		level_info_dict["level_description"] = ""
+	if not level_dict.has("level_description"):
+		level_dict["level_description"] = ""
 		repaired_parameters += 1
-	if not level_info_dict.has("level_instructions"):
-		level_info_dict["level_instructions"] = ""
+	if not level_dict.has("level_instructions"):
+		level_dict["level_instructions"] = ""
 		repaired_parameters += 1
-	if not level_info_dict.has("completion_rating"):
-		level_info_dict["completion_rating"] = [false, false, false]
+	if not level_dict.has("completion_rating"):
+		level_dict["completion_rating"] = [false, false, false]
 		repaired_parameters += 1
-	if not level_info_dict.has("current_rating"):
-		level_info_dict["current_rating"] = [false, false, false]
+	if not level_dict.has("current_rating"):
+		level_dict["current_rating"] = [false, false, false]
 		repaired_parameters += 1
-	if not level_info_dict.has("hint_arrows"):
-		level_info_dict["hint_arrows"] = {}
+	if not level_dict.has("outcome_generations"):
+		level_dict["outcome_generations"] = [-1, -1, [-1, -1, -1], [-1, -1, -1]]
 		repaired_parameters += 1
-	if not level_info_dict.has("hint_text_boxes"):
-		level_info_dict["hint_text_boxes"] = {}
+	if not level_dict.has("hint_arrows"):
+		level_dict["hint_arrows"] = {}
+		repaired_parameters += 1
+	if not level_dict.has("hint_text_boxes"):
+		level_dict["hint_text_boxes"] = {}
 		repaired_parameters += 1
 	
 	return repaired_parameters
@@ -657,32 +661,45 @@ func process_logic_term_outcome(outcome: String) -> void:
 	if status_of_active_level != "playing":
 		return
 	
+	var current_generation_number: int = Global.generation_number
 	match outcome:
 		"star_P1": # ★ _ _
 			level_info_dict["current_rating"][0] = true
+			level_info_dict["outcome_generations"][2][0] = current_generation_number
 		"star_P2": # _ ★ _
 			level_info_dict["current_rating"][1] = true
+			level_info_dict["outcome_generations"][2][1] = current_generation_number
 		"star_P3": # _ _ ★
 			level_info_dict["current_rating"][2] = true
+			level_info_dict["outcome_generations"][2][2] = current_generation_number
 		"star_N1": # ☆ _ _
 			level_info_dict["current_rating"][0] = false
+			level_info_dict["outcome_generations"][2][0] = current_generation_number
 		"star_N2": # _ ☆ _
 			level_info_dict["current_rating"][1] = false
+			level_info_dict["outcome_generations"][2][1] = current_generation_number
 		"star_N3": # _ _ ☆
 			level_info_dict["current_rating"][2] = false
+			level_info_dict["outcome_generations"][2][2] = current_generation_number
 		"star_P1_P2_P3": # ★★★
 			level_info_dict["current_rating"] = [true, true, true]
+			level_info_dict["outcome_generations"][2] = [current_generation_number, current_generation_number, current_generation_number]
 		"star_N1_N2_N3": # ☆☆☆
 			level_info_dict["current_rating"] = [false, false, false]
+			level_info_dict["outcome_generations"][2] = [current_generation_number, current_generation_number, current_generation_number]
 		"defeat":
 			status_of_active_level = "defeat"
+			level_info_dict["outcome_generations"][0] = current_generation_number
 			level_end_sub_menu.toggled_deployed(true, false)
 		"victory":
 			status_of_active_level = "victory"
+			level_info_dict["outcome_generations"][0] = current_generation_number
 			var count_completion_rating: int = int(level_info_dict["completion_rating"][0]) + int(level_info_dict["completion_rating"][1]) + int(level_info_dict["completion_rating"][2])
 			var count_current_rating: int = int(level_info_dict["current_rating"][0]) + int(level_info_dict["current_rating"][1]) + int(level_info_dict["current_rating"][2])
 			if count_current_rating >= count_completion_rating:
 				level_info_dict["completion_rating"] = level_info_dict["current_rating"]
+				level_info_dict["outcome_generations"][1] = level_info_dict["outcome_generations"][0]
+				level_info_dict["outcome_generations"][3] = level_info_dict["outcome_generations"][2]
 			level_end_sub_menu.toggled_deployed(true, true)
 	outcome_overlay.queue_outcome_to_print(outcome)
 

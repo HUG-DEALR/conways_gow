@@ -31,10 +31,10 @@ func toggled_deployed(deploy: bool, is_victorious: bool) -> void:
 			else:
 				rating_string += "☆"
 			
-			status_label.text = "VICTORY" + "\n" + rating_string
+			status_label.text = "VICTORY " + str(Global.world_scene.level_info_dict["outcome_generations"][0]) + "\n" + rating_string
 			next_level_button.disabled = false
 		else:
-			status_label.text = "DEFEAT"
+			status_label.text = "DEFEAT " + str(Global.world_scene.level_info_dict["outcome_generations"][0])
 			next_level_button.disabled = true
 		
 		intro_exit_tween.tween_property(panel_container, "position", Vector2(50.0, 1.5 * margin_container.size.y), 0.0)

@@ -20,6 +20,7 @@ func _ready() -> void:
 	
 	await get_tree().process_frame
 	Global.world_scene.generation_itterated.connect(_on_generation_itterated)
+	Global.generations_reset_to_0.connect(set_generation_number)
 
 func set_gui_visible(set_to_visible: bool) -> void:
 	self.visible = set_to_visible
@@ -73,7 +74,7 @@ func set_play_pause(set_to_play: bool) -> void:
 		playing_generations = false
 		Global.world_scene.generation_timer.stop()
 
-func set_generation_number(generation_num: int) -> void:
+func set_generation_number(generation_num: int = Global.generation_number) -> void:
 	if generation_num > 0:
 		generation_counter.text = str(generation_num)
 	else:
