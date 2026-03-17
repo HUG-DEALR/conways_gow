@@ -303,6 +303,14 @@ func handle_cell_clicked(cell_index: int) -> void:
 			"alive": # Black
 				set_cell_type(cell_index, "dead")
 
+func clear_all_to_blank() -> void:
+	clear_grid()
+	clear_zones()
+	clear_level_logic()
+	clear_arrows()
+	level_info_dict.clear()
+	print("Reset to default all " + str(repair_current_file_missing_parameters(level_info_dict)) + " level parameters")
+
 func clear_grid() -> void:
 	var grid_size: int = grid_multimesh.instance_count
 	for key in level_info_dict["live_cells"].keys():
@@ -501,7 +509,10 @@ func open_level_from_local(skip_directory_prompt: bool = false, prevent_editing:
 	if loaded_file:
 		active_directory = open_from_directory
 		menus.get("Build_menu").file_name_label.text = active_directory.get_file()
-		loaded_file["level_name"] = active_directory.get_file().get_basename().c_escape().capitalize()
+		if active_directory.get_file().length() >= 20:
+			menus.get("Build_menu").file_name_label.tooltip_text = active_directory.get_file()
+		if loaded_file["level_name"].is_empty():
+			loaded_file["level_name"] = active_directory.get_file().get_basename().c_escape().capitalize()
 		menus.get("Build_menu").reset_to_saved_button.disabled = false
 	else:
 		print("Could not open file: " + open_from_directory + "\n" + loaded_file)
@@ -534,10 +545,13 @@ func save_level_as(level_data: Dictionary) -> void:
 	active_directory = await Global.prompt_user_for_file_path()
 	if active_directory.get_extension() != "cgow":
 		active_directory += ".cgow"
-	level_data["level_name"] = active_directory.get_file().get_basename().c_escape().capitalize()
+	if level_data["level_name"].is_empty():
+		level_data["level_name"] = active_directory.get_file().get_basename().c_escape().capitalize()
 	Global.save_to_file(level_data, active_directory)
 	menus.get("Build_menu").reset_to_saved_button.disabled = false
 	menus.get("Build_menu").file_name_label.text = active_directory.get_file()
+	if active_directory.get_file().length() >= 20:
+		menus.get("Build_menu").file_name_label.tooltip_text = active_directory.get_file()
 
 func repair_current_file_missing_parameters(level_dict: Dictionary) -> int: # Returns number of repaired parameters
 	# Checks if the current file is missing any parameters and fills them with the default

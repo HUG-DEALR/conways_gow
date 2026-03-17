@@ -9,6 +9,7 @@ extends Control
 @onready var file_name_label: Label = $Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window/File_name
 @onready var reset_options_container: HBoxContainer = $Right_GUI_Root/VBoxContainer/Restart/Reset_Options_Container
 @onready var level_settings_root: PanelContainer = $Level_Settings_Root
+@onready var level_name_line_edit: LineEdit = $Level_Settings_Root/VBoxContainer/Level_Name_LineEdit
 @onready var level_description: TextEdit = $Level_Settings_Root/VBoxContainer/Text_Input_HBox/Description
 @onready var level_instructions: TextEdit = $Level_Settings_Root/VBoxContainer/Text_Input_HBox/Instructions
 @onready var logic_settings_root: PanelContainer = $Logic_Settings_Root
@@ -211,6 +212,7 @@ func write_all_logic_term_info_to_world_dict() -> void:
 
 func update_level_settings_display() -> void:
 	var grid_dimensions: Vector2i = Global.world_scene.level_info_dict["grid_dimensions"]
+	level_name_line_edit.text = Global.world_scene.level_info_dict["level_name"]
 	grid_width_line_edit.text = str(grid_dimensions.x)
 	grid_height_line_edit.text = str(grid_dimensions.y)
 	level_description.text = Global.world_scene.level_info_dict.get("level_description")
@@ -307,14 +309,16 @@ func _on_save_as_pressed() -> void:
 	Global.world_scene.save_level_as(Global.world_scene.level_info_dict)
 
 func _on_new_file_pressed() -> void:
-	Global.world_scene.clear_grid()
-	Global.world_scene.clear_zones()
+	Global.world_scene.clear_all_to_blank()
+	Global.world_scene.resize_grid(Vector2i(50,50), {})
 	Global.reset_generation_to_0()
 	set_generation_number(0)
 	set_play_pause(false)
 	file_name_label.text = "new_level.cgow"
+	file_name_label.tooltip_text = "Build name"
 	Global.world_scene.active_directory = ""
 	reset_to_saved_button.disabled = true
+	update_level_settings_display()
 
 func _on_reset_build_to_clear_mouse_entered() -> void:
 	toggle_expand_reset_options(true)
@@ -371,6 +375,8 @@ func _on_apply_level_settings_pressed() -> void:
 			var target_dimensions: Vector2i = Vector2i(grid_width_line_edit.text.to_int(), grid_height_line_edit.text.to_int())
 			if target_dimensions != current_grid_dimensions:
 				Global.world_scene.resize_grid(target_dimensions, {})
+	if not level_name_line_edit.text.is_empty():
+		Global.world_scene.level_info_dict["level_name"] = level_name_line_edit.text
 	Global.world_scene.level_info_dict["level_description"] = level_description.text
 	Global.world_scene.level_info_dict["level_instructions"] = level_instructions.text
 	toggle_expand_level_settings(false)

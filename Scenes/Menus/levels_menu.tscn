@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://hpbibvj47tnf"]
+[gd_scene load_steps=6 format=3 uid="uid://hpbibvj47tnf"]
 
 [ext_resource type="Script" uid="uid://uo7k5msg0rg6" path="res://Scripts/levels_menu.gd" id="1_7de7r"]
 [ext_resource type="Script" uid="uid://bmgpsk2dcdkx8" path="res://Scripts/class_definitions/animated_control.gd" id="1_b7idg"]
 [ext_resource type="StyleBox" uid="uid://bvp8auwdu5u7l" path="res://Resources/general_menu_stylebox.tres" id="2_4bvo2"]
+[ext_resource type="PackedScene" uid="uid://0wdu03cm2rwr" path="res://Scenes/Props/example_level_card.tscn" id="3_ecqyg"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b7idg"]
 bg_color = Color(0, 0, 0, 0.392157)
@@ -87,53 +88,9 @@ theme_override_constants/h_separation = 20
 theme_override_constants/v_separation = 20
 columns = 4
 
-[node name="Example_Level_Card" type="PanelContainer" parent="PanelContainer/MarginContainer/TabContainer/Campaign_Levels/VBoxContainer/ScrollContainer/MarginContainer/GridContainer"]
+[node name="Example_Level_Card" parent="PanelContainer/MarginContainer/TabContainer/Campaign_Levels/VBoxContainer/ScrollContainer/MarginContainer/GridContainer" instance=ExtResource("3_ecqyg")]
 visible = false
-custom_minimum_size = Vector2(150, 150)
 layout_mode = 2
-focus_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_b7idg")
-metadata/level_id = ""
-
-[node name="AnimatedControl" type="Node" parent="PanelContainer/MarginContainer/TabContainer/Campaign_Levels/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Example_Level_Card"]
-script = ExtResource("1_b7idg")
-ignore_position = true
-hover_transition = 7
-hover_easing = 2
-hover_scale = Vector2(1.1, 1.1)
-metadata/_custom_type_script = "uid://bmgpsk2dcdkx8"
-
-[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/TabContainer/Campaign_Levels/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Example_Level_Card"]
-layout_mode = 2
-theme_override_constants/margin_left = 5
-theme_override_constants/margin_top = 5
-theme_override_constants/margin_right = 5
-theme_override_constants/margin_bottom = 5
-
-[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer/TabContainer/Campaign_Levels/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Example_Level_Card/MarginContainer"]
-layout_mode = 2
-alignment = 1
-
-[node name="Name" type="Label" parent="PanelContainer/MarginContainer/TabContainer/Campaign_Levels/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Example_Level_Card/MarginContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 30
-text = "Level N"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Rating" type="Label" parent="PanelContainer/MarginContainer/TabContainer/Campaign_Levels/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Example_Level_Card/MarginContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 45
-text = "★☆☆"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Lock" type="Label" parent="PanelContainer/MarginContainer/TabContainer/Campaign_Levels/VBoxContainer/ScrollContainer/MarginContainer/GridContainer/Example_Level_Card"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 80
-text = "🔒"
-horizontal_alignment = 1
-vertical_alignment = 1
 
 [node name="Blank_Level" type="PanelContainer" parent="PanelContainer/MarginContainer/TabContainer/Campaign_Levels/VBoxContainer/ScrollContainer/MarginContainer/GridContainer"]
 custom_minimum_size = Vector2(150, 150)
