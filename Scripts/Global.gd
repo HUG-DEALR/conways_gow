@@ -1,9 +1,12 @@
 extends Node
 
 # To do list
-# Pressing reset in campaign play reverts to loaded info
+# Pressing reset in campaign play reverts to loaded info - maybe already done
 # Gen number is saved with outcome
 # Hint boxes
+# Zones can be hidden
+# Optimise load vs preload usage
+# Settings
 
 const read_only_level_default_source_directory: String = "res://level_defaults/"
 const local_campaign_levels_directory: String = "user://campaign_levels/"
@@ -49,6 +52,7 @@ func load_from_file(file_path: String) -> Dictionary:
 	file.close()
 	
 	if typeof(data) == TYPE_DICTIONARY:
+		print("Loading from " + file_path)
 		return data
 	else:
 		push_error("Failed to parse file: " + file_path + "\n" + str(typeof(data)) + "\n" + data)
@@ -143,6 +147,40 @@ func sync_default_levels() -> void:
 		destination_file.close()
 		
 		print("Copied default level: " + file_name + "\n" + "to " + target_path)
+
+func repair_all_cgow_files(target_directory: String) -> void:
+	if target_directory.begins_with("res://") and not OS.has_feature("editor"):
+		push_error("DirAccess to project directory is not possible outside the project editor")
+		return
+	var directory_acess: DirAccess = DirAccess.open(target_directory)
+	if directory_acess == null:
+		push_error("Failed to open directory: " + target_directory)
+		return
+	
+	directory_acess.list_dir_begin()
+	var file_name: String = directory_acess.get_next()
+	
+	while file_name != "":
+		if not directory_acess.current_is_dir():
+			if file_name.get_extension() == "cgow":
+				var full_path: String = target_directory.path_join(file_name)
+				
+				# Load file data
+				var data: Dictionary = load_from_file(full_path)
+				if data.is_empty():
+					push_error("Skipping invalid or empty file: " + full_path)
+					file_name = directory_acess.get_next()
+					continue
+				
+				# Repair data
+				print(str(world_scene.repair_current_file_missing_parameters(data)) + " missing parameters repaired in " + file_name)
+				
+				# Save repaired data back
+				save_to_file(data, full_path)
+		
+		file_name = directory_acess.get_next()
+	
+	directory_acess.list_dir_end()
 
 func get_offset_to_be_fully_visible(control: Control) -> Vector2:
 	var rect: Rect2 = control.get_global_rect()

@@ -46,7 +46,6 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = ExtResource("2_s1h7k")
 theme_override_styles/read_only = ExtResource("2_s1h7k")
-text = "This is a hint and more info talking more"
 placeholder_text = "Your text here"
 wrap_mode = 1
 scroll_fit_content_height = true

@@ -455,7 +455,6 @@ text = "WIP"
 autowrap_mode = 3
 
 [node name="Level_Settings_Root" type="PanelContainer" parent="."]
-visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5

@@ -34,6 +34,7 @@ var current_sub_menu: String = "main" # main levels settings build build_esc exi
 var menu_transition_tween: Tween
 var menus_active: bool = true
 var level_info_dict: Dictionary = {
+	"editable": true,
 	"grid_dimensions": Vector2i.ZERO,
 	"live_cells": {}, # format is index: ["cell type", number of live neighbours]
 	"can_build_zones": {}, # format is node: ["filter", Rect2]
@@ -558,6 +559,9 @@ func repair_current_file_missing_parameters(level_dict: Dictionary) -> int: # Re
 	
 	var repaired_parameters: int = 0
 	
+	if not level_dict.has("editable"):
+		level_dict["editable"] = true
+		repaired_parameters += 1
 	if not level_dict.has("grid_dimensions"):
 		level_dict["grid_dimensions"] = Vector2i.ZERO
 		repaired_parameters += 1
