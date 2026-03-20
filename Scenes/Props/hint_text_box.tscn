@@ -1,23 +1,26 @@
-[gd_scene load_steps=4 format=3 uid="uid://dlmu6rrrca3kv"]
+[gd_scene load_steps=7 format=3 uid="uid://dlmu6rrrca3kv"]
 
 [ext_resource type="StyleBox" uid="uid://bvp8auwdu5u7l" path="res://Resources/general_menu_stylebox.tres" id="1_2xmna"]
+[ext_resource type="Script" uid="uid://da80pyvq5ywf7" path="res://Scripts/hint_textbox.gd" id="1_bwylo"]
 [ext_resource type="StyleBox" uid="uid://df5o2c2vvx3fn" path="res://Resources/text_box_style.tres" id="2_s1h7k"]
+[ext_resource type="Script" uid="uid://dvwbbha71qtyx" path="res://Scripts/hint_textbox_menu.gd" id="4_n7vla"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_s1h7k"]
-viewport_path = NodePath("Sprite2D/SubViewport")
+viewport_path = NodePath("SubViewport")
 
-[node name="Hint_Text_Box" type="Node2D"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bwylo"]
+size = Vector2(140, 144)
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D"]
+scale = Vector2(0.5, 0.5)
 texture = SubResource("ViewportTexture_s1h7k")
-centered = false
+script = ExtResource("1_bwylo")
 
-[node name="SubViewport" type="SubViewport" parent="Sprite2D"]
+[node name="SubViewport" type="SubViewport" parent="."]
 disable_3d = true
 transparent_bg = true
-handle_input_locally = false
 
-[node name="Control" type="Control" parent="Sprite2D/SubViewport"]
+[node name="Control" type="Control" parent="SubViewport"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -25,7 +28,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="PanelContainer" type="PanelContainer" parent="Sprite2D/SubViewport/Control"]
+[node name="PanelContainer" type="PanelContainer" parent="SubViewport/Control"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -40,7 +43,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = ExtResource("1_2xmna")
 
-[node name="TextEdit" type="TextEdit" parent="Sprite2D/SubViewport/Control/PanelContainer"]
+[node name="Display_Text" type="TextEdit" parent="SubViewport/Control/PanelContainer"]
 custom_minimum_size = Vector2(100, 100)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
@@ -49,3 +52,112 @@ theme_override_styles/read_only = ExtResource("2_s1h7k")
 placeholder_text = "Your text here"
 wrap_mode = 1
 scroll_fit_content_height = true
+
+[node name="Area2D" type="Area2D" parent="."]
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("RectangleShape2D_bwylo")
+
+[node name="GUI_Parent" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -256.0
+offset_top = -256.0
+offset_right = -256.0
+offset_bottom = -256.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("4_n7vla")
+
+[node name="Drag_Button" type="Button" parent="GUI_Parent"]
+self_modulate = Color(1, 1, 1, 0)
+custom_minimum_size = Vector2(365, 460)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -157.5
+offset_top = -205.0
+offset_right = 157.5
+offset_bottom = 205.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="GUI_Parent"]
+custom_minimum_size = Vector2(315, 410)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -157.5
+offset_top = -205.0
+offset_right = 157.5
+offset_bottom = 205.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = ExtResource("1_2xmna")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GUI_Parent/PanelContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Menu_Text" type="TextEdit" parent="GUI_Parent/PanelContainer/VBoxContainer"]
+custom_minimum_size = Vector2(100, 250)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+placeholder_text = "Your text here"
+wrap_mode = 1
+
+[node name="Bheaviour_Option" type="OptionButton" parent="GUI_Parent/PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 30
+alignment = 1
+selected = 0
+allow_reselect = true
+item_count = 5
+popup/item_0/text = "Don't Hide"
+popup/item_0/id = 0
+popup/item_1/text = "Hide After Gen 0"
+popup/item_1/id = 1
+popup/item_2/text = "Don't Show"
+popup/item_2/id = 2
+popup/item_3/text = "Show on Hint"
+popup/item_3/id = 3
+popup/item_4/text = "Delete"
+popup/item_4/id = 4
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GUI_Parent/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Apply" type="Button" parent="GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(125, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Apply"
+
+[node name="Cancel" type="Button" parent="GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(125, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Cancel"
+
+[connection signal="input_event" from="Area2D" to="." method="_on_area_2d_input_event"]
+[connection signal="button_down" from="GUI_Parent/Drag_Button" to="GUI_Parent" method="_on_drag_button_button_down"]
+[connection signal="button_up" from="GUI_Parent/Drag_Button" to="GUI_Parent" method="_on_drag_button_button_up"]
+[connection signal="text_changed" from="GUI_Parent/PanelContainer/VBoxContainer/Menu_Text" to="." method="_on_menu_text_text_changed"]
+[connection signal="pressed" from="GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer/Apply" to="." method="_on_apply_pressed"]
+[connection signal="pressed" from="GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer/Cancel" to="." method="_on_cancel_pressed"]

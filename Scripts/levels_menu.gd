@@ -106,6 +106,7 @@ func populate_campaign_level_cards(clear_previous: bool = false) -> void:
 		campaign_level_card_grid_container.add_child(new_level_card)
 		campaign_level_card_grid_container.move_child(new_level_card, campaign_level_card_grid_container.get_child_count() - 1)
 		new_level_card.set_level_card_info(level_data["level_name"], level_data["completion_rating"], false, file_name)
+		level_data = {} # Clears the loaded file from RAM
 
 func _on_back_pressed() -> void:
 	Global.world_scene.button_signal("main")

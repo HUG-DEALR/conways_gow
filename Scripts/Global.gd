@@ -4,6 +4,7 @@ extends Node
 # Pressing reset in campaign play reverts to loaded info - maybe already done
 # Gen number is saved with outcome
 # Hint boxes
+#	hint box width can be changed
 # Zones can be hidden
 # Optimise load vs preload usage
 # Settings

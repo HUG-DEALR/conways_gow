@@ -410,7 +410,6 @@ tooltip_text = "Create a text box
 Right mouse button to interact with text box"
 mouse_filter = 1
 theme_override_font_sizes/font_size = 30
-disabled = true
 text = "Text Box"
 autowrap_mode = 3
 
@@ -684,6 +683,7 @@ text = "Cancel"
 [connection signal="mouse_exited" from="Left_GUI_Root/VBoxContainer/Add_Item/Add_item_window" to="." method="_on_add_item_window_mouse_exited"]
 [connection signal="pressed" from="Left_GUI_Root/VBoxContainer/Add_Item/Add_item_window/Add_item_panel/add_item_scroll_container/MarginContainer/GridContainer/New_Zone_Button" to="." method="_on_new_zone_button_pressed"]
 [connection signal="pressed" from="Left_GUI_Root/VBoxContainer/Add_Item/Add_item_window/Add_item_panel/add_item_scroll_container/MarginContainer/GridContainer/New_Arrow_Button" to="." method="_on_new_hint_arrow_button_pressed"]
+[connection signal="pressed" from="Left_GUI_Root/VBoxContainer/Add_Item/Add_item_window/Add_item_panel/add_item_scroll_container/MarginContainer/GridContainer/New_Text_Box_Button" to="." method="_on_new_text_box_button_pressed"]
 [connection signal="pressed" from="Level_Settings_Root/VBoxContainer/HBoxContainer/Apply_Level_Settings" to="." method="_on_apply_level_settings_pressed"]
 [connection signal="pressed" from="Level_Settings_Root/VBoxContainer/HBoxContainer/Cancel_Level_Settings" to="." method="_on_cancel_level_settings_pressed"]
 [connection signal="pressed" from="Logic_Settings_Root/VBoxContainer/ScrollContainer/VBoxContainer/New_Bool" to="." method="_on_new_bool_pressed"]

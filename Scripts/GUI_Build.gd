@@ -20,9 +20,10 @@ extends Control
 @onready var add_item_window: HBoxContainer = $Left_GUI_Root/VBoxContainer/Add_Item/Add_item_window
 @onready var file_options_window: HBoxContainer = $Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window
 @onready var reset_to_saved_button: Button = $Right_GUI_Root/VBoxContainer/Restart/Reset_Options_Container/Reset_To_Saved
-@onready var generic_zone = preload("res://Scenes/Props/zone_polygon.tscn")
-@onready var generic_hint_arrow = preload("res://Scenes/Props/hint_arrow.tscn")
 
+const generic_zone_path: String = "res://Scenes/Props/zone_polygon.tscn"
+const generic_hint_arrow_path: String = "res://Scenes/Props/hint_arrow.tscn"
+const generic_hint_textbox_path: String = "res://Scenes/Props/hint_text_box.tscn"
 const logic_term_path: String = "res://Scenes/Constructors/logic_term.tscn"
 
 var speed_slider_tween: Tween
@@ -349,16 +350,22 @@ func _on_reset_to_saved_pressed() -> void:
 	set_play_pause(false)
 
 func _on_new_zone_button_pressed() -> void:
-	var new_zone = generic_zone.instantiate()
+	var new_zone: Node = load(generic_zone_path).instantiate()
 	Global.world_scene.add_child(new_zone)
 	new_zone.visible = true
 	new_zone.global_position = Global.game_camera.global_position
 
 func _on_new_hint_arrow_button_pressed() -> void:
-	var new_arrow = generic_hint_arrow.instantiate()
+	var new_arrow: Node = load(generic_hint_arrow_path).instantiate()
 	Global.world_scene.add_child(new_arrow)
 	new_arrow.visible = true
 	new_arrow.global_position = Global.game_camera.global_position
+
+func _on_new_text_box_button_pressed() -> void:
+	var new_textbox: Node = load(generic_hint_textbox_path).instantiate()
+	Global.world_scene.add_child(new_textbox)
+	new_textbox.visible = true
+	new_textbox.global_position = Global.game_camera.global_position
 
 func _on_level_settings_pressed() -> void:
 	toggle_expand_level_settings(!level_settings_root.visible)

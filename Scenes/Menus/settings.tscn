@@ -354,7 +354,7 @@ visible = false
 layout_mode = 2
 theme_override_constants/separation = 0
 alignment = 1
-metadata/_tab_index = 2
+metadata/_tab_index = 3
 
 [node name="DEV_Target_Input" type="CodeEdit" parent="PanelContainer/MarginContainer/TabContainer/Dev"]
 custom_minimum_size = Vector2(0, 40)
@@ -371,7 +371,6 @@ custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 placeholder_text = "Method"
-delimiter_strings = Array[String](["\" \"", "' '"])
 code_completion_enabled = true
 indent_automatic = true
 auto_brace_completion_enabled = true
@@ -382,7 +381,6 @@ custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 placeholder_text = "Parameters"
-delimiter_strings = Array[String](["\" \"", "' '"])
 code_completion_enabled = true
 indent_automatic = true
 auto_brace_completion_enabled = true
