@@ -1,6 +1,7 @@
 extends Sprite2D
 
-@onready var collision_shape_2d: CollisionShape2D = $Area2D/CollisionShape2D
+@onready var body_collision_shape_2d: CollisionShape2D = $Area2D/Body_CollisionShape2D
+@onready var right_border_collision_shape_2d: CollisionShape2D = $Area2D/Right_Border_CollisionShape2D
 @onready var sub_viewport: SubViewport = $SubViewport
 @onready var panel_container: PanelContainer = $SubViewport/Control/PanelContainer
 @onready var gui_parent: Control = $GUI_Parent
@@ -10,6 +11,7 @@ extends Sprite2D
 
 var menu_tween: Tween
 var draggin_display: bool = false
+var resizing: bool = false
 var drag_offset: Vector2 = Vector2.ZERO
 var pre_edit_display_text: String = ""
 
@@ -27,29 +29,36 @@ func _ready() -> void:
 	update_viewport_size()
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_LEFT:
-			if event.pressed:
-				if is_mouse_over():
-					draggin_display = true
-					drag_offset = global_position - get_global_mouse_position()
-					get_viewport().set_input_as_handled()
-			else:
-				if draggin_display:
-					draggin_display = false
-					get_viewport().set_input_as_handled()
-	elif event is InputEventMouseMotion and draggin_display:
-		global_position = get_global_mouse_position() + drag_offset
+	if event is InputEventMouseMotion:
+		if draggin_display:
+			global_position = get_global_mouse_position() + drag_offset
+		elif resizing:
+			resize_wdith(-70.0 + (to_local(get_global_mouse_position()).x)/scale.x)
+		get_viewport().set_input_as_handled()
+	elif event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
+			if draggin_display or resizing:
+				draggin_display = false
+				resizing = false
+				get_viewport().set_input_as_handled()
 
-func is_mouse_over() -> bool:
-	if texture == null:
-		return false
-	var rect = Rect2(-texture.get_size() / 2.0, texture.get_size())
-	var local_mouse = to_local(get_global_mouse_position())
-	return rect.has_point(local_mouse)
+func resize_wdith(target_width: float) -> void:
+	target_width = max(target_width, display_text.custom_minimum_size.x)
+	
+	var display_text_previous_center: Vector2 = display_text.position + (display_text.size/2.0)
+	display_text.size.x = target_width
+	display_text.position = display_text_previous_center - (display_text.size/2.0)
+	
+	var panel_container_previous_center: Vector2 = panel_container.position + (panel_container.size/2.0)
+	panel_container.size = display_text.size + Vector2.ONE * 40.0
+	panel_container.position = panel_container_previous_center - (panel_container.size/2.0)
+	
+	body_collision_shape_2d.shape.size.x = panel_container.size.x + 30.0
+	right_border_collision_shape_2d.position.x = (panel_container.size.x + 30.0)/2.0
+	update_viewport_size()
 
 func update_viewport_size() -> void:
-	sub_viewport.size = panel_container.get_combined_minimum_size() + Vector2.ONE * 130.0
+	sub_viewport.size = panel_container.size + Vector2.ONE * 130.0
 
 func toggle_menu_visible(set_to_expand: bool) -> void:
 	if set_to_expand and gui_parent.visible:
@@ -75,10 +84,26 @@ func toggle_menu_visible(set_to_expand: bool) -> void:
 		await menu_tween.finished
 		gui_parent.visible = false
 
-func _on_area_2d_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
-	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+func _on_area_2d_input_event(_viewport: Node, event: InputEvent, shape_idx: int) -> void:
+	if event is InputEventMouseButton and event.pressed:
+		
+		if event.button_index == MOUSE_BUTTON_RIGHT:
 			toggle_menu_visible(true)
+			get_viewport().set_input_as_handled()
+			sub_viewport.set_input_as_handled()
+		
+		elif event.button_index == MOUSE_BUTTON_LEFT:
+			if shape_idx == 0: # main body
+				draggin_display = true
+				drag_offset = global_position - get_global_mouse_position()
+				get_viewport().set_input_as_handled()
+				sub_viewport.set_input_as_handled()
+			
+			elif shape_idx == 1: # right border
+				resizing = true
+				drag_offset = global_position - get_global_mouse_position()
+				get_viewport().set_input_as_handled()
+				sub_viewport.set_input_as_handled()
 
 func _on_generations_reset_to_0() -> void:
 	if Global.world_scene.current_sub_menu == "play":
@@ -89,13 +114,20 @@ func _on_generations_reset_to_0() -> void:
 
 func _on_menu_text_text_changed() -> void:
 	display_text.text = menu_text.text
-	collision_shape_2d.shape.size = panel_container.size
+	body_collision_shape_2d.shape.size = panel_container.size + Vector2(30.0,50.0)
+	right_border_collision_shape_2d.shape.size.y = body_collision_shape_2d.shape.size.y
 	update_viewport_size()
 
 func _on_apply_pressed() -> void:
 	pre_edit_display_text = display_text.text
 	toggle_menu_visible(false)
+	body_collision_shape_2d.shape.size = panel_container.size + Vector2(30.0,50.0)
+	right_border_collision_shape_2d.shape.size.y = body_collision_shape_2d.shape.size.y
+	update_viewport_size()
 
 func _on_cancel_pressed() -> void:
 	display_text.text = pre_edit_display_text
 	toggle_menu_visible(false)
+	body_collision_shape_2d.shape.size = panel_container.size + Vector2(30.0,50.0)
+	right_border_collision_shape_2d.shape.size.y = body_collision_shape_2d.shape.size.y
+	update_viewport_size()

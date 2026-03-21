@@ -407,7 +407,8 @@ autowrap_mode = 3
 custom_minimum_size = Vector2(100, 100)
 layout_mode = 2
 tooltip_text = "Create a text box
-Right mouse button to interact with text box"
+Right mouse button to edit text box
+Left mouse button to move and resize"
 mouse_filter = 1
 theme_override_font_sizes/font_size = 30
 text = "Text Box"

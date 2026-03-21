@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://dlmu6rrrca3kv"]
+[gd_scene load_steps=8 format=3 uid="uid://dlmu6rrrca3kv"]
 
 [ext_resource type="StyleBox" uid="uid://bvp8auwdu5u7l" path="res://Resources/general_menu_stylebox.tres" id="1_2xmna"]
 [ext_resource type="Script" uid="uid://da80pyvq5ywf7" path="res://Scripts/hint_textbox.gd" id="1_bwylo"]
@@ -9,7 +9,10 @@
 viewport_path = NodePath("SubViewport")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bwylo"]
-size = Vector2(140, 144)
+size = Vector2(170, 190)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_n7vla"]
+size = Vector2(20, 190)
 
 [node name="Sprite2D" type="Sprite2D"]
 scale = Vector2(0.5, 0.5)
@@ -36,9 +39,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -70.0
-offset_top = -72.0
+offset_top = -70.0
 offset_right = 70.0
-offset_bottom = 72.0
+offset_bottom = 70.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = ExtResource("1_2xmna")
@@ -56,8 +59,13 @@ scroll_fit_content_height = true
 [node name="Area2D" type="Area2D" parent="."]
 monitorable = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+[node name="Body_CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(-10, 0)
 shape = SubResource("RectangleShape2D_bwylo")
+
+[node name="Right_Border_CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(85, 0)
+shape = SubResource("RectangleShape2D_n7vla")
 
 [node name="GUI_Parent" type="Control" parent="."]
 visible = false
