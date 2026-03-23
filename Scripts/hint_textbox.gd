@@ -5,7 +5,7 @@ extends Sprite2D
 @onready var sub_viewport: SubViewport = $SubViewport
 @onready var panel_container: PanelContainer = $SubViewport/Control/PanelContainer
 @onready var gui_parent: Control = $GUI_Parent
-@onready var bheaviour_option: OptionButton = $GUI_Parent/PanelContainer/VBoxContainer/Bheaviour_Option
+@onready var behaviour_option: OptionButton = $GUI_Parent/PanelContainer/VBoxContainer/Behaviour_Option
 @onready var display_text: TextEdit = $SubViewport/Control/PanelContainer/Display_Text
 @onready var menu_text: TextEdit = $GUI_Parent/PanelContainer/VBoxContainer/Menu_Text
 
@@ -14,14 +14,15 @@ var draggin_display: bool = false
 var resizing: bool = false
 var drag_offset: Vector2 = Vector2.ZERO
 var pre_edit_display_text: String = ""
+var pre_edit_behaviour_option: int = 0
 
 func _ready() -> void:
 	gui_parent.visible = false
 	await get_tree().process_frame
 	if Global.world_scene:
 		gui_parent.reparent(Global.world_scene.canvas_layer)
-	#	Global.world_scene.update_or_add_hint_arrow_info(self)
-	#	Global.world_scene.connect("clear_arrows_called", self_destruct)
+		Global.world_scene.update_or_add_hint_textbox_info(self)
+		Global.world_scene.connect("clear_textboxes_called", self_destruct)
 	else:
 		print("World scene not found through Global, option window failed to reparent for node:" + "\n" + str(self))
 	Global.generations_reset_to_0.connect(_on_generations_reset_to_0)
@@ -71,6 +72,7 @@ func toggle_menu_visible(set_to_expand: bool) -> void:
 	gui_parent.pivot_offset = get_viewport().get_canvas_transform() * (global_position) - gui_parent.position
 	if set_to_expand:
 		pre_edit_display_text = display_text.text
+		pre_edit_behaviour_option = behaviour_option.selected
 #		update_menu_options()
 		menu_tween.tween_property(gui_parent, "scale", Vector2.ZERO, 0.0)
 		menu_tween.tween_property(gui_parent, "scale", Vector2.ONE, 0.3)
@@ -83,6 +85,19 @@ func toggle_menu_visible(set_to_expand: bool) -> void:
 		menu_tween.play()
 		await menu_tween.finished
 		gui_parent.visible = false
+
+func self_destruct() -> void:
+	toggle_menu_visible(false)
+	if gui_parent.visible:
+		await gui_parent.visibility_changed
+	gui_parent.queue_free()
+	Global.world_scene.remove_hint_textbox_from_lists(self)
+	menu_tween.kill()
+	self.queue_free()
+
+func get_textbox_info() -> Array:
+	# Format is [position, width, behaviour index, text]
+	return [global_position, display_text.size.x, pre_edit_behaviour_option, pre_edit_display_text]
 
 func _on_area_2d_input_event(_viewport: Node, event: InputEvent, shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.pressed:
@@ -107,9 +122,9 @@ func _on_area_2d_input_event(_viewport: Node, event: InputEvent, shape_idx: int)
 
 func _on_generations_reset_to_0() -> void:
 	if Global.world_scene.current_sub_menu == "play":
-		if bheaviour_option.selected == 1: # Hide after gen 0
+		if behaviour_option.selected == 1: # Hide after gen 0
 			visible = true
-		elif bheaviour_option.selected == 3: # Show on hint
+		elif behaviour_option.selected == 3: # Show on hint
 			visible = false
 
 func _on_menu_text_text_changed() -> void:
@@ -120,6 +135,7 @@ func _on_menu_text_text_changed() -> void:
 
 func _on_apply_pressed() -> void:
 	pre_edit_display_text = display_text.text
+	pre_edit_behaviour_option = behaviour_option.selected
 	toggle_menu_visible(false)
 	body_collision_shape_2d.shape.size = panel_container.size + Vector2(30.0,50.0)
 	right_border_collision_shape_2d.shape.size.y = body_collision_shape_2d.shape.size.y
@@ -127,6 +143,7 @@ func _on_apply_pressed() -> void:
 
 func _on_cancel_pressed() -> void:
 	display_text.text = pre_edit_display_text
+	behaviour_option.selected = pre_edit_behaviour_option
 	toggle_menu_visible(false)
 	body_collision_shape_2d.shape.size = panel_container.size + Vector2(30.0,50.0)
 	right_border_collision_shape_2d.shape.size.y = body_collision_shape_2d.shape.size.y

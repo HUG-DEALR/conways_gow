@@ -127,7 +127,7 @@ theme_override_font_sizes/font_size = 20
 placeholder_text = "Your text here"
 wrap_mode = 1
 
-[node name="Bheaviour_Option" type="OptionButton" parent="GUI_Parent/PanelContainer/VBoxContainer"]
+[node name="Behaviour_Option" type="OptionButton" parent="GUI_Parent/PanelContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 30

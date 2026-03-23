@@ -3,6 +3,7 @@ extends Node2D
 signal generation_itterated
 signal clear_zones_called
 signal clear_arrows_called
+signal clear_textboxes_called
 signal hint_button_pressed
 
 @onready var grid: MultiMeshInstance2D = $Grid
@@ -309,6 +310,7 @@ func clear_all_to_blank() -> void:
 	clear_zones()
 	clear_level_logic()
 	clear_arrows()
+	clear_textboxes()
 	level_info_dict.clear()
 	print("Reset to default all " + str(repair_current_file_missing_parameters(level_info_dict)) + " level parameters")
 
@@ -327,6 +329,9 @@ func clear_level_logic() -> void:
 
 func clear_arrows() -> void:
 	clear_arrows_called.emit()
+
+func clear_textboxes() -> void:
+	clear_textboxes_called.emit()
 
 func get_cell_type(cell_index: int) -> String:
 	if level_info_dict["live_cells"].has(cell_index):
@@ -396,6 +401,12 @@ func remove_hint_arrow_from_lists(arrow_node: Node2D) -> void:
 
 func update_or_add_hint_arrow_info(arrow_node: Node2D) -> void:
 	level_info_dict["hint_arrows"][arrow_node] = arrow_node.get_arrow_info()
+
+func remove_hint_textbox_from_lists(textbox_node: Sprite2D) -> void:
+	level_info_dict["hint_text_boxes"].erase(textbox_node)
+
+func update_or_add_hint_textbox_info(textbox_node: Sprite2D) -> void:
+	level_info_dict["hint_text_boxes"][textbox_node] = textbox_node.get_textbox_info()
 
 func set_play_pause(set_to_play: bool) -> void:
 	if set_to_play:
