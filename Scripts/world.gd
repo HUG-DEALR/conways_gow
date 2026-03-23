@@ -27,6 +27,9 @@ signal hint_button_pressed
 
 const cell_size: float = 10.0
 const cell_margin: float = 0.0
+const generic_zone_path: String = "res://Scenes/Props/zone_polygon.tscn"
+const generic_arrow_path: String = "res://Scenes/Props/hint_arrow.tscn"
+const generic_textbox_path: String = "res://Scenes/Props/hint_text_box.tscn"
 
 var current_cell_count: int
 var last_click_location: Vector2 = Vector2.ZERO
@@ -82,9 +85,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			last_click_location = get_global_mouse_position()
 			handle_cell_clicked(get_cell_index_from_position(last_click_location))
 	if event.is_action_pressed("ui_cancel"):
-	#	if current_menu != menus.get("Main_menu"):
-	#		set_play_pause(false)
-	#		button_signal("main")
 		match current_sub_menu:
 			"main":
 				pass
@@ -133,7 +133,7 @@ func populate_zones(can_build_zones: Dictionary, no_build_zones: Dictionary, tri
 	if clear_previous:
 		clear_zones()
 	
-	var generic_zone: Resource = preload("res://Scenes/Props/zone_polygon.tscn")
+	var generic_zone: Resource = load(generic_zone_path)
 	
 	var new_can_build_dict: Dictionary = {}
 	for zone in can_build_zones:
@@ -184,7 +184,7 @@ func populate_arrows(arrows_dict: Dictionary, clear_previous: bool = true, preve
 	if clear_previous:
 		clear_arrows()
 	
-	var generic_arrow: Resource = preload("res://Scenes/Props/hint_arrow.tscn")
+	var generic_arrow: Resource = load(generic_arrow_path)
 	
 	var new_arrows_dict: Dictionary = {}
 	for arrow in arrows_dict:
@@ -196,6 +196,23 @@ func populate_arrows(arrows_dict: Dictionary, clear_previous: bool = true, preve
 		new_arrow.set_arrow_info(arrows_dict.get(arrow))
 		new_arrows_dict[new_arrow] = arrows_dict[arrow]
 	level_info_dict["hint_arrows"] = new_arrows_dict
+
+func populate_textboxes(textboxes_dict: Dictionary, clear_previous: bool = true, prevent_textbox_editing: bool = true) -> void:
+	if clear_previous:
+		clear_textboxes()
+	
+	var generic_textbox: Resource = load(generic_textbox_path)
+	
+	var new_textboxes_dict: Dictionary = {}
+	for textbox in textboxes_dict:
+		var new_textbox: Node = generic_textbox.instantiate()
+		add_child(new_textbox)
+		if prevent_textbox_editing:
+			new_textbox.toggle_lock_state(true)
+		new_textbox.visible = true
+		new_textbox.set_textbox_info(textboxes_dict.get(textbox))
+		new_textboxes_dict[new_textbox] = textboxes_dict[textbox]
+	level_info_dict["hint_text_boxes"] = new_textboxes_dict
 
 func resize_grid(new_grid_size: Vector2i, cells_dict: Dictionary) -> void:
 	if cells_dict.is_empty():
@@ -545,6 +562,7 @@ func full_populate_level(level_dict: Dictionary = level_info_dict, prevent_editi
 	populate_zones(level_dict.get("can_build_zones"), level_dict.get("no_build_zones"), level_dict.get("trigger_zones"), true, prevent_editing)
 	populate_logic_terms(level_dict.get("logic_menu_structure"))
 	populate_arrows(level_dict.get("hint_arrows"), true, prevent_editing)
+	populate_textboxes(level_dict.get("hint_text_boxes"), true, prevent_editing)
 
 func save_level(level_data: Dictionary) -> void:
 	if active_directory:

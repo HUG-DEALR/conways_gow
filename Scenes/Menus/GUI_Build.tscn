@@ -407,8 +407,7 @@ autowrap_mode = 3
 custom_minimum_size = Vector2(100, 100)
 layout_mode = 2
 tooltip_text = "Create a text box
-Right mouse button to edit text box
-Left mouse button to move and resize"
+Right mouse button to edit, move, and resize"
 mouse_filter = 1
 theme_override_font_sizes/font_size = 30
 text = "Text Box"
@@ -520,6 +519,33 @@ alignment = 1
 max_length = 5
 virtual_keyboard_type = 2
 
+[node name="Player_Edit_Rights" type="HBoxContainer" parent="Level_Settings_Root/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Label" type="Label" parent="Level_Settings_Root/VBoxContainer/Player_Edit_Rights"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Player Can Build:"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="OptionButton" type="OptionButton" parent="Level_Settings_Root/VBoxContainer/Player_Edit_Rights"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+disabled = true
+alignment = 1
+selected = 0
+allow_reselect = true
+item_count = 3
+popup/item_0/text = "Always"
+popup/item_0/id = 0
+popup/item_1/text = "Only at Gen 0"
+popup/item_1/id = 1
+popup/item_2/text = "Never"
+popup/item_2/id = 2
+
 [node name="Text_Input_HBox" type="HBoxContainer" parent="Level_Settings_Root/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 10
@@ -552,16 +578,6 @@ empty_selection_clipboard_enabled = false
 wrap_mode = 1
 scroll_smooth = true
 caret_multiple = false
-
-[node name="Start_Gen_HBox" type="HBoxContainer" parent="Level_Settings_Root/VBoxContainer"]
-visible = false
-layout_mode = 2
-theme_override_constants/separation = 10
-alignment = 1
-
-[node name="SpinBox" type="SpinBox" parent="Level_Settings_Root/VBoxContainer/Start_Gen_HBox"]
-layout_mode = 2
-alignment = 1
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Level_Settings_Root/VBoxContainer"]
 layout_mode = 2

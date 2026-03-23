@@ -3,7 +3,6 @@ extends Node
 # To do list
 # Pressing reset in campaign play reverts to loaded info - maybe already done
 # Gen number is saved with outcome
-# Hint boxes
 # Zones can be hidden
 # Logic elements cleared by signal
 # Optimise load vs preload usage

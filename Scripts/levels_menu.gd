@@ -98,8 +98,10 @@ func populate_campaign_level_cards(clear_previous: bool = false) -> void:
 			continue
 		
 		var full_path: String = Global.local_campaign_levels_directory.path_join(file_name)
+		print("Accessing " + file_name + " for initial level card set up")
 		var level_data: Dictionary = Global.load_from_file(full_path)
 		if level_data.is_empty():
+			print("Warning: " + file_name + " level data is empty")
 			continue
 		
 		var new_level_card: Node = level_card.instantiate()

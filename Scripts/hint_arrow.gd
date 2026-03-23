@@ -28,6 +28,7 @@ func _ready() -> void:
 	await get_tree().process_frame
 	if Global.world_scene:
 		gui_parent.reparent(Global.world_scene.canvas_layer)
+		gui_parent.global_position = get_viewport_rect().size * 0.5
 		Global.world_scene.update_or_add_hint_arrow_info(self)
 		Global.world_scene.connect("clear_arrows_called", self_destruct)
 	else:
@@ -71,6 +72,8 @@ func _handle_area_input(event: InputEvent) -> void:
 						set_process(true)
 
 func toggle_arrow_menu_visible(make_visible: bool) -> void:
+	if make_visible == gui_parent.visible:
+		return
 	if menu_tween:
 		menu_tween.kill()
 	menu_tween = get_tree().create_tween()
@@ -172,7 +175,8 @@ func self_destruct() -> void:
 		await gui_parent.visibility_changed
 	gui_parent.queue_free()
 	Global.world_scene.remove_hint_arrow_from_lists(self)
-	menu_tween.kill()
+	if menu_tween:
+		menu_tween.kill()
 	self.queue_free()
 
 func _on_generation_iterated() -> void:

@@ -56,6 +56,7 @@ func _ready() -> void:
 	snap_to_grid(single_cell_grid_rect)
 	if Global.world_scene:
 		gui_parent.reparent(Global.world_scene.canvas_layer)
+		gui_parent.global_position = get_viewport_rect().size * 0.5
 		Global.world_scene.update_or_add_zone_info(self)
 		single_cell_grid_rect.size = Vector2.ONE * (Global.world_scene.cell_size + Global.world_scene.cell_margin)
 		Global.world_scene.connect("generation_itterated", _on_generation_iterated)
