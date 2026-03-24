@@ -185,8 +185,6 @@ func _on_generation_iterated() -> void:
 		toggle_arrow_menu_visible(false)
 
 func _on_generations_reset_to_0() -> void:
-#	print("gen reset")
-#	print(Global.world_scene.current_sub_menu)
 	if Global.world_scene.current_sub_menu == "play":
 		if behaviour_option.selected == 1: # Hide after gen 0
 			visible = true

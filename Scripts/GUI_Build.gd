@@ -336,9 +336,7 @@ func _on_reset_options_container_mouse_exited() -> void:
 			focus_owner.release_focus()
 
 func _on_reset_to_clear_pressed() -> void:
-	Global.world_scene.clear_grid()
-	Global.world_scene.clear_zones()
-	Global.world_scene.clear_arrows()
+	Global.world_scene.clear_all_to_blank()
 	Global.reset_generation_to_0()
 	set_generation_number(0)
 	set_play_pause(false)

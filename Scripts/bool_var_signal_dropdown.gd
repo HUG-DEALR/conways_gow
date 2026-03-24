@@ -62,7 +62,7 @@ func refresh_trigger_list() -> void:
 	
 	var triggers_dict: Dictionary = Global.world_scene.level_info_dict["trigger_zones"]
 	for trigger_node in triggers_dict.keys():
-		add_item(triggers_dict[trigger_node][3], 5)
+		add_item(triggers_dict[trigger_node][4], 5)
 
 func _on_item_selected(index: int) -> void:
 	match index:

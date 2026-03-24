@@ -6,12 +6,12 @@ extends Polygon2D
 @onready var bottom_left_area_2d: Area2D = $Bottom_Left_Area2D
 @onready var gui_parent: Control = $GUI_Parent
 @onready var tab_container: TabContainer = $GUI_Parent/PanelContainer/VBoxContainer/TabContainer
-#@onready var zone_name_line_edit: LineEdit = $GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer/Zone_Name_LineEdit
 @onready var trigger_id_label: Label = $GUI_Parent/PanelContainer/VBoxContainer/TabContainer/Trigger/VBoxContainer/Trigger_ID_label
 @onready var can_build_zone_option_filter: OptionButton = $GUI_Parent/PanelContainer/VBoxContainer/TabContainer/Can_Build_Here/VBoxContainer/HBoxContainer/OptionButton2
 @onready var no_build_zone_option_filter: OptionButton = $GUI_Parent/PanelContainer/VBoxContainer/TabContainer/No_Build_Here/VBoxContainer/HBoxContainer/OptionButton2
 @onready var trigger_zone_option_gate: OptionButton = $GUI_Parent/PanelContainer/VBoxContainer/TabContainer/Trigger/VBoxContainer/HBoxContainer/Gate
 @onready var trigger_zone_option_filter: OptionButton = $GUI_Parent/PanelContainer/VBoxContainer/TabContainer/Trigger/VBoxContainer/HBoxContainer/Filter
+@onready var behaviour_option: OptionButton = $GUI_Parent/PanelContainer/VBoxContainer/Bottom_Bar/Visibility_Settings/Behaviour_Option
 @onready var central_area_2d: Area2D = $Central_Area2D
 @onready var central_collision_shape_2d: CollisionShape2D = $Central_Area2D/Central_CollisionShape2D
 @onready var corner_indicators: Array[Node] = [
@@ -59,6 +59,8 @@ func _ready() -> void:
 		gui_parent.global_position = get_viewport_rect().size * 0.5
 		Global.world_scene.update_or_add_zone_info(self)
 		single_cell_grid_rect.size = Vector2.ONE * (Global.world_scene.cell_size + Global.world_scene.cell_margin)
+		Global.generations_reset_to_0.connect(_on_generations_reset_to_0)
+		_on_generations_reset_to_0()
 		Global.world_scene.connect("generation_itterated", _on_generation_iterated)
 		Global.world_scene.connect("clear_zones_called", self_destruct)
 	else:
@@ -79,6 +81,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		dragging_corner = null
 		set_process(false)
 		snap_to_grid(single_cell_grid_rect)
+	
+	if behaviour_option.selected == 3: # Show on hint
+		if Global.world_scene.current_sub_menu == "play":
+			if event is InputEventMouseButton and event.pressed:
+				self.visible = false
 
 func _handle_corner_input(corner: Node, event: InputEvent) -> void:
 	if event is InputEventMouseButton:
@@ -173,23 +180,26 @@ func get_zone_type() -> String:
 	return zone_type
 
 func get_zone_info() -> Array:
-	var zone_info: Array = ["",Rect2()]
+	var zone_info: Array = ["", Rect2(), 0]
 	match zone_type:
-		"can build here": # format is node: ["filter", Rect2]
+		"can build here": # format is node: ["filter", Rect2, show_behaviour_index]
 			zone_info[0] = can_build_zone_option_filter.get_item_text(can_build_zone_option_filter.selected)
 			zone_info[1] = get_rect()
-		"no build here": # format is node: ["filter", Rect2]
+			zone_info[2] = behaviour_option.selected
+		"no build here": # format is node: ["filter", Rect2, show_behaviour_index]
 			zone_info[0] = no_build_zone_option_filter.get_item_text(no_build_zone_option_filter.selected)
 			zone_info[1] = get_rect()
-		"trigger": # format is node: ["filter", Rect2, "Logic Gate", "trigger_id"]
-			zone_info.resize(4)
+			zone_info[2] = behaviour_option.selected
+		"trigger": # format is node: ["filter", Rect2, show_behaviour_index, "Logic Gate", "trigger_id"]
+			zone_info.resize(5)
 			zone_info[0] = trigger_zone_option_filter.get_item_text(trigger_zone_option_filter.selected)
 			zone_info[1] = get_rect()
-			zone_info[2] = trigger_zone_option_gate.get_item_text(trigger_zone_option_gate.selected)
-			zone_info[3] = trigger_identifier
+			zone_info[2] = behaviour_option.selected
+			zone_info[3] = trigger_zone_option_gate.get_item_text(trigger_zone_option_gate.selected)
+			zone_info[4] = trigger_identifier
 	return zone_info
 
-func set_zone_options(filter: String, logic_gate: String) -> void:
+func set_zone_options(filter: String, logic_gate: String, show_behaviour_index: int = 0) -> void:
 	match filter:
 		"All":
 			filter_id = 0
@@ -214,7 +224,26 @@ func set_zone_options(filter: String, logic_gate: String) -> void:
 			gate_id = 1
 		"Pop change of":
 			gate_id = 2
+		"": # Non-trigger case
+			pass
 	trigger_zone_option_gate.select(gate_id)
+	
+	behaviour_option.selected = show_behaviour_index
+	configure_hide_show_behaviour()
+
+func configure_hide_show_behaviour() -> void:
+	# This is a suboptimal logic structure, but given the small scale, it is preferable
+	# Hide after gen 0 handled in _on_generation_iterated()
+	if behaviour_option.selected == 2: # Don't Show
+		modulate = Color(1.0, 1.0, 1.0, 0.5)
+	else:
+		modulate = Color.WHITE
+	if behaviour_option.selected == 3: # Show on hint
+		if not Global.world_scene.is_connected("hint_button_pressed", _on_hint_button_pressed):
+			Global.world_scene.connect("hint_button_pressed", _on_hint_button_pressed)
+	else:
+		if Global.world_scene.is_connected("hint_button_pressed", _on_hint_button_pressed):
+			Global.world_scene.disconnect("hint_button_pressed", _on_hint_button_pressed)
 
 func get_bool_string_segment() -> String:
 	if zone_type != "trigger" or trigger_identifier == "":
@@ -345,6 +374,9 @@ func toggle_zone_menu_visible(make_visible: bool) -> void:
 
 func toggle_lock_state(lock_state: bool) -> void:
 	if lock_state:
+		if behaviour_option.selected == 2: # Don't show
+			self.visible = false
+		
 		if top_left_area_2d.is_connected("input_event", Callable(self, "_on_top_left_area_2d_input_event")):
 			top_left_area_2d.disconnect("input_event", Callable(self, "_on_top_left_area_2d_input_event"))
 		if top_right_area_2d.is_connected("input_event", Callable(self, "_on_top_right_area_2d_input_event")):
@@ -358,6 +390,9 @@ func toggle_lock_state(lock_state: bool) -> void:
 		for node in corner_indicators:
 			node.visible = false
 	else:
+		if behaviour_option.selected == 2: # Don't show
+			self.visible = true
+		
 		if not top_left_area_2d.is_connected("input_event", Callable(self, "_on_top_left_area_2d_input_event")):
 			top_left_area_2d.connect("input_event", Callable(self, "_on_top_left_area_2d_input_event"))
 		if not top_right_area_2d.is_connected("input_event", Callable(self, "_on_top_right_area_2d_input_event")):
@@ -398,8 +433,7 @@ func apply_zone_options() -> void:
 			self_destruct()
 			return
 	
-#	zone_name = zone_name_line_edit.text
-	
+	configure_hide_show_behaviour()
 	if target_type != zone_type:
 		Global.world_scene.remove_zone_from_lists(self)
 	set_zone_type(target_type)
@@ -457,6 +491,17 @@ func _on_filter_item_selected(index: int) -> void:
 	filter_id = index
 	filter_type = trigger_zone_option_filter.get_item_text(index).to_lower()
 
+func _on_generations_reset_to_0() -> void:
+	if Global.world_scene.current_sub_menu == "play":
+		if behaviour_option.selected == 1: # Hide after gen 0
+			visible = true
+		elif behaviour_option.selected == 3: # Show on hint
+			visible = false
+
+func _on_hint_button_pressed() -> void:
+	# Assumes that the "show on hint" option is selected
+	self.visible = true
+
 func _on_generation_iterated() -> void:
 	if zone_type == "trigger":
 		var current_status: bool = get_trigger_status()
@@ -468,3 +513,8 @@ func _on_generation_iterated() -> void:
 		
 		if gate_id == 2: # Population change of
 			previous_measured_population = get_population_of_covered_cell_type(filter_type)
+	
+	if behaviour_option.selected == 1: # Hide after gen 0
+		if Global.world_scene.current_sub_menu == "play":
+			visible = false
+			toggle_zone_menu_visible(false)

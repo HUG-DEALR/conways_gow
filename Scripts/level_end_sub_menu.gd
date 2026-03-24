@@ -7,7 +7,10 @@ extends Control
 
 var intro_exit_tween: Tween
 
-func toggled_deployed(deploy: bool, is_victorious: bool) -> void:
+func _ready() -> void:
+	Global.generations_reset_to_0.connect(toggled_deployed)
+
+func toggled_deployed(deploy: bool = false, is_victorious: bool = false) -> void:
 	if intro_exit_tween:
 		intro_exit_tween.kill()
 	intro_exit_tween = get_tree().create_tween()

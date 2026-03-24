@@ -43,7 +43,7 @@ var level_info_dict: Dictionary = {
 	"live_cells": {}, # format is index: ["cell type", number of live neighbours]
 	"can_build_zones": {}, # format is node: ["filter", Rect2]
 	"no_build_zones": {}, # format is node: ["filter", Rect2]
-	"trigger_zones": {}, # format is node: ["filter", Rect2, "Logic Gate", "trigger_identifier"] # Filter types are: All, Empty, Alive, Target, Hole, Pole, Ally
+	"trigger_zones": {}, # format is node: ["filter", Rect2, hide_behaviour_index, "Logic Gate", "trigger_identifier"] # Filter types are: All, Empty, Alive, Target, Hole, Pole, Ally
 	"logic_terms": {}, # format is node: ["outcome", "eval_string"]
 	"logic_menu_structure": {}, # format is arbitrary_index: [outcome_index, [object_index, [selection_indexes], [child_A_info], [child_B_info]]]
 	# Logic Object indexes are: 0=bool_constructor, 1=gen_count, 2=bool_var
@@ -143,7 +143,9 @@ func populate_zones(can_build_zones: Dictionary, no_build_zones: Dictionary, tri
 			new_zone.toggle_lock_state(true)
 		new_zone.visible = true
 		new_zone.set_zone_type("can build here")
-		new_zone.set_rect(can_build_zones.get(zone)[1])
+		var zone_info: Array = can_build_zones.get(zone)
+		new_zone.set_zone_options(zone_info[0], "", zone_info[2])
+		new_zone.set_rect(zone_info[1])
 		new_can_build_dict[new_zone] = can_build_zones[zone]
 	
 	var new_no_build_dict: Dictionary = {}
@@ -154,7 +156,9 @@ func populate_zones(can_build_zones: Dictionary, no_build_zones: Dictionary, tri
 			new_zone.toggle_lock_state(true)
 		new_zone.visible = true
 		new_zone.set_zone_type("no build here")
-		new_zone.set_rect(no_build_zones.get(zone)[1])
+		var zone_info: Array = no_build_zones.get(zone)
+		new_zone.set_zone_options(zone_info[0], "", zone_info[2])
+		new_zone.set_rect(zone_info[1])
 		new_no_build_dict[new_zone] = no_build_zones[zone]
 	
 	var new_trigger_dict: Dictionary = {}
@@ -166,10 +170,10 @@ func populate_zones(can_build_zones: Dictionary, no_build_zones: Dictionary, tri
 		new_zone.visible = true
 		new_zone.set_zone_type("trigger")
 		var zone_info: Array = trigger_zones.get(zone)
-		new_zone.set_zone_options(zone_info[0], zone_info[2]) # Set filter and set gate
+		new_zone.set_zone_options(zone_info[0], zone_info[3], zone_info[2]) # Set filter and set gate
 		new_zone.set_rect(zone_info[1])
 		
-		var trigger_id: String = zone_info[3]
+		var trigger_id: String = zone_info[4]
 		if trigger_id == "":
 			push_error("missing a trigger id from loaded file")
 		else:
@@ -407,10 +411,10 @@ func update_or_add_zone_info(zone_node: Polygon2D) -> void:
 			level_info_dict["no_build_zones"][zone_node] = zone_node.get_zone_info()
 		"trigger":
 			level_info_dict["trigger_zones"][zone_node] = zone_node.get_zone_info()
-			if level_info_dict["trigger_zones"][zone_node][3] == "":
+			if level_info_dict["trigger_zones"][zone_node][4] == "":
 				trigger_zone_id_itterator += 1
 				var new_id: String = "trigger_" + str(trigger_zone_id_itterator)
-				level_info_dict["trigger_zones"][zone_node][3] = new_id
+				level_info_dict["trigger_zones"][zone_node][4] = new_id
 				zone_node.set_trigger_identifier(new_id)
 
 func remove_hint_arrow_from_lists(arrow_node: Node2D) -> void:
@@ -513,7 +517,6 @@ func button_signal(singal_name: String, conditional: String = "") -> void:
 				game_camera.position = (cell_size + cell_margin) * level_info_dict["grid_dimensions"]/2.0
 				game_camera.zoom = Vector2.ONE * 2.0
 			switch_to_menu("GUI")
-		#	menus.get("GUI").set_gui_visible(true)
 			game_camera.make_current()
 		"populate_then_play": # Only for when level data has been set to the pre_loaded_level_info_dict
 			full_populate_level(pre_loaded_level_info_dict, true)
@@ -547,7 +550,7 @@ func open_level_from_local(skip_directory_prompt: bool = false, prevent_editing:
 		print("Could not open file: " + open_from_directory + "\n" + loaded_file)
 		return false
 	
-	print("Missing parameters in loaded file: " + str(repair_current_file_missing_parameters(loaded_file)) + "\n" + "Missing parameters are automatically filled with default values")
+	print("Missing parameters in loaded file: " + str(repair_current_file_missing_parameters(loaded_file)))
 	
 	if populate_level:
 		full_populate_level(loaded_file, prevent_editing)
@@ -563,6 +566,8 @@ func full_populate_level(level_dict: Dictionary = level_info_dict, prevent_editi
 	populate_logic_terms(level_dict.get("logic_menu_structure"))
 	populate_arrows(level_dict.get("hint_arrows"), true, prevent_editing)
 	populate_textboxes(level_dict.get("hint_text_boxes"), true, prevent_editing)
+	if current_sub_menu == "play":
+		status_of_active_level = "playing"
 
 func save_level(level_data: Dictionary) -> void:
 	if active_directory:
@@ -669,7 +674,7 @@ func evaluate_string_to_bool(expr_string: String) -> bool:
 	var values: Array = [Global.generation_number]
 	
 	for node in level_info_dict["trigger_zones"].keys():
-		var id: String = level_info_dict["trigger_zones"][node][3]
+		var id: String = level_info_dict["trigger_zones"][node][4]
 		variable_ids.append(id)
 		values.append(node.get_trigger_status())
 	if variable_ids.size() != values.size():

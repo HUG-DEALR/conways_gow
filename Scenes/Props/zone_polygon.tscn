@@ -410,26 +410,47 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
-[node name="HBoxContainer" type="HBoxContainer" parent="GUI_Parent/PanelContainer/VBoxContainer"]
-custom_minimum_size = Vector2(450, 0)
+[node name="Bottom_Bar" type="HBoxContainer" parent="GUI_Parent/PanelContainer/VBoxContainer"]
 layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Visibility_Settings" type="HBoxContainer" parent="GUI_Parent/PanelContainer/VBoxContainer/Bottom_Bar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="Behaviour_Option" type="OptionButton" parent="GUI_Parent/PanelContainer/VBoxContainer/Bottom_Bar/Visibility_Settings"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 30
+alignment = 1
+selected = 0
+allow_reselect = true
+item_count = 4
+popup/item_0/text = "Don't Hide"
+popup/item_0/id = 0
+popup/item_1/text = "Hide After Gen 0"
+popup/item_1/id = 1
+popup/item_2/text = "Don't Show"
+popup/item_2/id = 2
+popup/item_3/text = "Show on Hint"
+popup/item_3/id = 3
+
+[node name="Exit_Buttons" type="HBoxContainer" parent="GUI_Parent/PanelContainer/VBoxContainer/Bottom_Bar"]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/separation = 10
 alignment = 2
 
-[node name="Zone_Name_LineEdit" type="LineEdit" parent="GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer"]
-visible = false
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 30
-placeholder_text = "Zone name"
-
-[node name="Apply" type="Button" parent="GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer"]
+[node name="Apply" type="Button" parent="GUI_Parent/PanelContainer/VBoxContainer/Bottom_Bar/Exit_Buttons"]
 custom_minimum_size = Vector2(110, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "Apply"
 
-[node name="Cancel" type="Button" parent="GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer"]
+[node name="Cancel" type="Button" parent="GUI_Parent/PanelContainer/VBoxContainer/Bottom_Bar/Exit_Buttons"]
 custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
@@ -444,5 +465,5 @@ text = "Cancel"
 [connection signal="button_up" from="GUI_Parent/Drag_Button" to="GUI_Parent" method="_on_drag_button_button_up"]
 [connection signal="item_selected" from="GUI_Parent/PanelContainer/VBoxContainer/TabContainer/Trigger/VBoxContainer/HBoxContainer/Gate" to="." method="_on_gate_item_selected"]
 [connection signal="item_selected" from="GUI_Parent/PanelContainer/VBoxContainer/TabContainer/Trigger/VBoxContainer/HBoxContainer/Filter" to="." method="_on_filter_item_selected"]
-[connection signal="pressed" from="GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer/Apply" to="." method="_on_apply_zone_options_pressed"]
-[connection signal="pressed" from="GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer/Cancel" to="." method="_on_cancel_pressed"]
+[connection signal="pressed" from="GUI_Parent/PanelContainer/VBoxContainer/Bottom_Bar/Exit_Buttons/Apply" to="." method="_on_apply_zone_options_pressed"]
+[connection signal="pressed" from="GUI_Parent/PanelContainer/VBoxContainer/Bottom_Bar/Exit_Buttons/Cancel" to="." method="_on_cancel_pressed"]
