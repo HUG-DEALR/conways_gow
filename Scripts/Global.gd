@@ -3,8 +3,8 @@ extends Node
 # To do list
 # Pressing reset in campaign play reverts to loaded info - maybe already done
 # Gen number is saved with outcome
-# Logic elements cleared by signal
 # Settings
+# WIP Page
 
 const read_only_level_default_source_directory: String = "res://level_defaults/"
 const local_campaign_levels_directory: String = "user://campaign_levels/"

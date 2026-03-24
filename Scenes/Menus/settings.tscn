@@ -66,28 +66,31 @@ theme_override_constants/margin_bottom = 5
 custom_minimum_size = Vector2(400, 400)
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
-current_tab = 0
+current_tab = 2
 
 [node name="Video" type="VBoxContainer" parent="PanelContainer/MarginContainer/TabContainer"]
+visible = false
 layout_mode = 2
+theme_override_constants/separation = 10
 alignment = 1
 metadata/_tab_index = 0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/TabContainer/Video"]
+[node name="Resolution" type="HBoxContainer" parent="PanelContainer/MarginContainer/TabContainer/Video"]
 layout_mode = 2
 theme_override_constants/separation = 10
 alignment = 1
 
-[node name="Label" type="Label" parent="PanelContainer/MarginContainer/TabContainer/Video/HBoxContainer"]
+[node name="Label" type="Label" parent="PanelContainer/MarginContainer/TabContainer/Video/Resolution"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "Resolution"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="xResolution" type="LineEdit" parent="PanelContainer/MarginContainer/TabContainer/Video/HBoxContainer"]
+[node name="xResolution" type="LineEdit" parent="PanelContainer/MarginContainer/TabContainer/Video/Resolution"]
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
+tooltip_text = "Resolution Width in Pixels"
 theme_override_font_sizes/font_size = 30
 text = "1600"
 placeholder_text = "X pixels"
@@ -95,22 +98,52 @@ alignment = 1
 max_length = 5
 emoji_menu_enabled = false
 
-[node name="Label2" type="Label" parent="PanelContainer/MarginContainer/TabContainer/Video/HBoxContainer"]
+[node name="Label2" type="Label" parent="PanelContainer/MarginContainer/TabContainer/Video/Resolution"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "x"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="yResolution" type="LineEdit" parent="PanelContainer/MarginContainer/TabContainer/Video/HBoxContainer"]
+[node name="yResolution" type="LineEdit" parent="PanelContainer/MarginContainer/TabContainer/Video/Resolution"]
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
+tooltip_text = "Resolution Height in Pixels"
 theme_override_font_sizes/font_size = 30
 text = "900"
 placeholder_text = "Y pixels"
 alignment = 1
 max_length = 5
 emoji_menu_enabled = false
+
+[node name="WindowMode" type="HBoxContainer" parent="PanelContainer/MarginContainer/TabContainer/Video"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Label" type="Label" parent="PanelContainer/MarginContainer/TabContainer/Video/WindowMode"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Window Mode"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="WindowMode_Options" type="OptionButton" parent="PanelContainer/MarginContainer/TabContainer/Video/WindowMode"]
+layout_mode = 2
+tooltip_text = "Window Modes
+Overides resolution"
+theme_override_font_sizes/font_size = 30
+alignment = 1
+selected = 0
+item_count = 4
+popup/item_0/text = "Windowed"
+popup/item_0/id = 0
+popup/item_1/text = "Borderless"
+popup/item_1/id = 1
+popup/item_2/text = "Maximised"
+popup/item_2/id = 2
+popup/item_3/text = "Fullscreen"
+popup/item_3/id = 3
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="PanelContainer/MarginContainer/TabContainer/Video"]
 layout_mode = 2
@@ -119,12 +152,14 @@ alignment = 1
 [node name="Apply_Video" type="Button" parent="PanelContainer/MarginContainer/TabContainer/Video/HBoxContainer2"]
 custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
+tooltip_text = "Apply Video Settings"
 theme_override_font_sizes/font_size = 30
 text = "Apply"
 
 [node name="Audio" type="VBoxContainer" parent="PanelContainer/MarginContainer/TabContainer"]
 visible = false
 layout_mode = 2
+theme_override_constants/separation = 10
 alignment = 1
 metadata/_tab_index = 1
 
@@ -136,7 +171,6 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Misc" type="VBoxContainer" parent="PanelContainer/MarginContainer/TabContainer"]
-visible = false
 layout_mode = 2
 theme_override_constants/separation = 10
 alignment = 1
@@ -330,7 +364,7 @@ vertical_alignment = 1
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/TabContainer/Misc"]
 layout_mode = 2
-theme_override_constants/separation = 50
+theme_override_constants/separation = 10
 alignment = 1
 
 [node name="Apply_Misc" type="Button" parent="PanelContainer/MarginContainer/TabContainer/Misc/HBoxContainer"]
@@ -338,16 +372,24 @@ custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 30
+disabled = true
 text = "Apply"
 
 [node name="Clear_Levels" type="Button" parent="PanelContainer/MarginContainer/TabContainer/Misc/HBoxContainer"]
-custom_minimum_size = Vector2(270, 0)
+custom_minimum_size = Vector2(190, 0)
 layout_mode = 2
 size_flags_horizontal = 4
 tooltip_text = "Clears all progress in the campaign
 CANNOT BE UNDONE"
 theme_override_font_sizes/font_size = 30
-text = "Reset Campaign"
+text = "Reset Game"
+
+[node name="Clear_Config" type="Button" parent="PanelContainer/MarginContainer/TabContainer/Misc/HBoxContainer"]
+custom_minimum_size = Vector2(190, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 30
+text = "Clear Config"
 
 [node name="Dev" type="VBoxContainer" parent="PanelContainer/MarginContainer/TabContainer"]
 visible = false
@@ -395,6 +437,7 @@ text = "Execute"
 custom_minimum_size = Vector2(100, 150)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
+text = "Function return"
 autowrap_mode = 3
 
 [node name="Back" type="Button" parent="PanelContainer/MarginContainer"]
@@ -443,6 +486,10 @@ text = "CGOW 1.0.1 Closed Beta"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[connection signal="focus_exited" from="PanelContainer/MarginContainer/TabContainer/Video/Resolution/xResolution" to="." method="_on_x_video_resolution_focus_exited"]
+[connection signal="focus_exited" from="PanelContainer/MarginContainer/TabContainer/Video/Resolution/yResolution" to="." method="_on_y_video_resolution_focus_exited"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/TabContainer/Video/HBoxContainer2/Apply_Video" to="." method="_on_apply_video_settings_pressed"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/TabContainer/Misc/HBoxContainer/Clear_Levels" to="." method="_on_clear_levels_pressed"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/TabContainer/Misc/HBoxContainer/Clear_Config" to="." method="_on_clear_config_pressed"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/TabContainer/Dev/Execute_Dev_Button" to="." method="_on_execute_dev_button_pressed"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/Back" to="." method="_on_back_pressed"]

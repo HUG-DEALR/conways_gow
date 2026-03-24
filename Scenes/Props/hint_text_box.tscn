@@ -9,13 +9,13 @@
 viewport_path = NodePath("SubViewport")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n7vla"]
-size = Vector2(20, 190)
+size = Vector2(20, 140)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hpyod"]
-size = Vector2(150, 20)
+size = Vector2(100, 20)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_batc1"]
-size = Vector2(150, 150)
+size = Vector2(100, 140)
 
 [node name="Sprite2D" type="Sprite2D"]
 scale = Vector2(0.5, 0.5)
@@ -26,19 +26,19 @@ script = ExtResource("1_bwylo")
 monitorable = false
 
 [node name="Right_Border_CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-position = Vector2(85, 0)
+position = Vector2(60, 0)
 shape = SubResource("RectangleShape2D_n7vla")
 
 [node name="Left_Border_CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-position = Vector2(-85, 0)
+position = Vector2(-60, 0)
 shape = SubResource("RectangleShape2D_n7vla")
 
 [node name="Top_Border_CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-position = Vector2(0, -85)
+position = Vector2(0, -60)
 shape = SubResource("RectangleShape2D_hpyod")
 
 [node name="Bottom_Border_CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-position = Vector2(0, 85)
+position = Vector2(0, 60)
 shape = SubResource("RectangleShape2D_hpyod")
 
 [node name="Center_CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
@@ -47,6 +47,7 @@ shape = SubResource("RectangleShape2D_batc1")
 [node name="SubViewport" type="SubViewport" parent="."]
 disable_3d = true
 transparent_bg = true
+size = Vector2i(220, 220)
 
 [node name="Control" type="Control" parent="SubViewport"]
 layout_mode = 3
@@ -63,21 +64,21 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -70.0
-offset_top = -70.0
-offset_right = 70.0
-offset_bottom = 70.0
+offset_left = -45.0
+offset_top = -45.0
+offset_right = 45.0
+offset_bottom = 45.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = ExtResource("1_2xmna")
 
 [node name="Display_Text" type="TextEdit" parent="SubViewport/Control/PanelContainer"]
-custom_minimum_size = Vector2(100, 100)
+custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = ExtResource("2_s1h7k")
 theme_override_styles/read_only = ExtResource("2_s1h7k")
-placeholder_text = "Your text here"
+placeholder_text = "text"
 wrap_mode = 1
 scroll_fit_content_height = true
 
