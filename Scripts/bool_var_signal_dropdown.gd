@@ -8,6 +8,7 @@ var target_trigger # This can be a node or a string
 func _ready() -> void:
 	await get_tree().process_frame
 	refresh_trigger_list()
+	Global.world_scene.clear_logic_elements_called.connect(queue_free)
 
 func get_bool_string_segment() -> String:
 	if target_trigger is Control:

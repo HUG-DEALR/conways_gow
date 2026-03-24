@@ -11,7 +11,7 @@ func _ready() -> void:
 	var target_number_line_edit = target_number.get_line_edit()
 	target_number_line_edit.add_theme_font_size_override("font_size", 30)
 	Global.world_scene.connect("generation_itterated", _on_generation_iterated)
-	Global.world_scene.connect("clear_zones_called", self_destruct)
+	Global.world_scene.clear_logic_elements_called.connect(self_destruct)
 
 func replace_self_with_alternate(_index_of_replacement: int) -> void:
 	var parent = get_parent()

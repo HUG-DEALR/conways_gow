@@ -2,6 +2,8 @@ extends Node2D
 
 signal generation_itterated
 signal clear_zones_called
+@warning_ignore("unused_signal") # Signal called by build menu
+signal clear_logic_elements_called
 signal clear_arrows_called
 signal clear_textboxes_called
 signal hint_button_pressed
@@ -74,6 +76,7 @@ func _ready():
 	outcome_overlay.visible = true
 	
 	Global.sync_default_levels()
+	RenderingServer.set_default_clear_color(Global.dead_colour)
 
 func _process(delta: float) -> void:
 	if menus_active:
@@ -475,9 +478,9 @@ func button_signal(singal_name: String, conditional: String = "") -> void:
 		"main":
 			current_sub_menu = "main"
 			switch_to_menu("Main_menu")
-			clear_zones()
-			clear_arrows()
+			clear_all_to_blank()
 			menu_camera.make_current()
+			RenderingServer.set_default_clear_color(Global.dead_colour)
 			menus.get("Main_menu")._on_background_reset_timer_timeout()
 			set_play_pause(true)
 		"levels":
@@ -492,11 +495,13 @@ func button_signal(singal_name: String, conditional: String = "") -> void:
 			if conditional == "resume":
 				pass
 			else:
+				clear_all_to_blank()
 				Global.reset_generation_to_0()
 				populate_cells(Vector2i(50,50), {}, true)
 				game_camera.position = (cell_size + cell_margin) * level_info_dict["grid_dimensions"]/2.0
 				game_camera.zoom = Vector2.ONE * 2.0
 			switch_to_menu("Build_menu")
+			RenderingServer.set_default_clear_color(Color(0.2, 0.2, 0.2, 1.0))
 			game_camera.make_current()
 		"build_esc":
 			current_sub_menu = "build_esc"
@@ -517,6 +522,7 @@ func button_signal(singal_name: String, conditional: String = "") -> void:
 				game_camera.position = (cell_size + cell_margin) * level_info_dict["grid_dimensions"]/2.0
 				game_camera.zoom = Vector2.ONE * 2.0
 			switch_to_menu("GUI")
+			RenderingServer.set_default_clear_color(Color(0.2, 0.2, 0.2, 1.0))
 			game_camera.make_current()
 		"populate_then_play": # Only for when level data has been set to the pre_loaded_level_info_dict
 			full_populate_level(pre_loaded_level_info_dict, true)

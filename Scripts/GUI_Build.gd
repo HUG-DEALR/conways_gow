@@ -221,15 +221,18 @@ func update_level_settings_display() -> void:
 
 func create_and_set_logic_terms(logic_structures: Dictionary) -> void:
 	for structure_array in logic_structures.values():
-		var instance = load(logic_term_path).instantiate()
-		logic_terms_vbox.add_child(instance)
-		logic_terms_vbox.move_child(instance, -2)
-		logic_terms[instance] = "" # Standin until the actual eval text is retrieved and implimented
-		instance.set_logic_structure(structure_array)
+		var new_logic_instance = load(logic_term_path).instantiate()
+		logic_terms_vbox.add_child(new_logic_instance)
+		logic_terms_vbox.move_child(new_logic_instance, -2)
+		logic_terms[new_logic_instance] = "" # Standin until the actual eval text is retrieved and implimented
+		new_logic_instance.set_logic_structure(structure_array)
 
 func clear_logic_structures() -> void:
-	for node in logic_terms.keys():
-		node.entry_exit_animation(false, true)
+#	for node in logic_terms.keys():
+#		node.entry_exit_animation(false, true)
+	
+	Global.world_scene.clear_logic_elements_called.emit()
+	
 	logic_terms.clear()
 	logic_structure.clear()
 
@@ -399,10 +402,10 @@ func _on_apply_logic_pressed() -> void:
 	toggle_expand_logic_settings(false)
 
 func _on_new_bool_pressed() -> void:
-	var instance = load(logic_term_path).instantiate()
-	logic_terms_vbox.add_child(instance)
-	logic_terms_vbox.move_child(instance, -2)
-	logic_terms[instance] = "" # Standin until the actual eval text is retrieved and implimented
+	var new_bool_instance = load(logic_term_path).instantiate()
+	logic_terms_vbox.add_child(new_bool_instance)
+	logic_terms_vbox.move_child(new_bool_instance, -2)
+	logic_terms[new_bool_instance] = "" # Standin until the actual eval text is retrieved and implimented
 
 func _on_exit_pressed() -> void:
 	Global.world_scene.button_signal("main")

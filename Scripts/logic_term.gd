@@ -10,6 +10,7 @@ func _ready() -> void:
 	await get_tree().process_frame
 	if get_index() == 0:
 		option_button_output.get_popup().set_item_disabled(10, true)
+	Global.world_scene.clear_logic_elements_called.connect(self_destruct)
 
 func get_bool_info() -> Array:
 	var outcome_string: String = ""
@@ -70,6 +71,12 @@ func entry_exit_animation(entering: bool, instant_clear: bool = false) -> void:
 		await entry_exit_tween.finished
 		Global.world_scene.remove_logic_term_from_dict(self)
 		queue_free()
+
+func self_destruct() -> void:
+	if entry_exit_tween:
+		entry_exit_tween.kill()
+	Global.world_scene.remove_logic_term_from_dict(self)
+	queue_free()
 
 func _on_output_item_selected(index: int) -> void:
 	match index:

@@ -6,6 +6,9 @@ extends Control
 
 const trigger_selector_path: String = "res://Scenes/Constructors/bool_var_signal_dropdown.tscn"
 
+func _ready() -> void:
+	Global.world_scene.clear_logic_elements_called.connect(queue_free)
+
 func get_bool_string_segment() -> String:
 	var bool_A: String = signal_a_host.get_child(-1).get_bool_string_segment()
 	var bool_B: String = signal_b_host.get_child(-1).get_bool_string_segment()
