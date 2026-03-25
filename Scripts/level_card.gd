@@ -20,6 +20,15 @@ func set_level_card_info(level_name: String, level_rating: Array, is_locked: boo
 	await get_tree().process_frame
 	scale_text_to_fit()
 
+func update_level_card_rating(new_level_rating: Array) -> void:
+	var completion_rating_string: String = ""
+	for i in new_level_rating.size(): # Should always be 3
+		if new_level_rating[i]:
+			completion_rating_string += "★"
+		else:
+			completion_rating_string += "☆"
+	level_rating_label.text = completion_rating_string
+
 func set_lock_state(is_locked: bool) -> void:
 	lock_symbol.visible = is_locked
 

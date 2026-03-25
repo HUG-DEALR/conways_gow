@@ -147,6 +147,7 @@ func reset_campaign_levels() -> void:
 	directory_access.list_dir_end()
 	Global.sync_default_levels()
 	Global.repair_all_cgow_files(Global.local_campaign_levels_directory)
+	Global.world_scene.menus.get("Levels_menu").populate_campaign_level_cards(true)
 	print("Campaign levels reset")
 	clear_campaign_levels_button.disabled = true
 	Global.world_scene.outcome_overlay.print_outcome("Campaign Reset", true)
@@ -231,7 +232,7 @@ func _on_apply_video_settings_pressed() -> void:
 	save_settings_to_local()
 
 func _on_back_pressed() -> void:
-	Global.world_scene.button_signal("main")
+	Global.world_scene.button_signal("main", "resume")
 
 func _on_clear_levels_pressed() -> void:
 	clear_campaign_levels_button.disabled = true

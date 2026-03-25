@@ -89,16 +89,17 @@ func _unhandled_input(event: InputEvent) -> void:
 			last_click_location = get_global_mouse_position()
 			handle_cell_clicked(get_cell_index_from_position(last_click_location))
 	if event.is_action_pressed("ui_cancel"):
+		if menu_transition_tween.is_running():
+			await menu_transition_tween.finished
 		match current_sub_menu:
 			"main":
 				pass
-			# Routing for levels and settings menu is same as catch all case
-		#	"levels":
-		#		pass
-		#	"settings":
-		#		pass
-		#	"WIP_page":
-		#		pass
+			"levels":
+				button_signal("main", "resume")
+			"settings":
+				button_signal("main", "resume")
+			"WIP_page":
+				button_signal("main", "resume")
 			"build":
 				button_signal("build_esc")
 			"build_esc":
@@ -481,7 +482,8 @@ func button_signal(singal_name: String, conditional: String = "") -> void:
 		"main":
 			current_sub_menu = "main"
 			switch_to_menu("Main_menu")
-			clear_all_to_blank()
+			if not conditional == "resume":
+				clear_all_to_blank()
 			menu_camera.make_current()
 			RenderingServer.set_default_clear_color(Global.dead_colour)
 			menus.get("Main_menu")._on_background_reset_timer_timeout()
@@ -766,7 +768,13 @@ func process_logic_term_outcome(outcome: String) -> void:
 				level_info_dict["completion_rating"] = level_info_dict["current_rating"]
 				level_info_dict["outcome_generations"][1] = level_info_dict["outcome_generations"][0]
 				level_info_dict["outcome_generations"][3] = level_info_dict["outcome_generations"][2]
+				menus.get("Levels_menu").update_rating_on_selected_level_card(level_info_dict["completion_rating"])
 			level_end_sub_menu.toggled_deployed(true, true)
+			
+			pre_loaded_level_info_dict["outcome_generations"] = level_info_dict["outcome_generations"]
+			pre_loaded_level_info_dict["completion_rating"] = level_info_dict["completion_rating"]
+			Global.save_to_file(pre_loaded_level_info_dict, active_directory)
+	
 	outcome_overlay.queue_outcome_to_print(outcome)
 
 # Signal functions

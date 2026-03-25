@@ -142,7 +142,7 @@ metadata/_custom_type_script = "uid://bmgpsk2dcdkx8"
 wait_time = 10.0
 
 [node name="Label" type="Label" parent="."]
-custom_minimum_size = Vector2(0, 250)
+custom_minimum_size = Vector2(0, 220)
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5

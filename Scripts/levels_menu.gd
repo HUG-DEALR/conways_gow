@@ -19,6 +19,7 @@ const level_card_path: String = "res://Scenes/Props/example_level_card.tscn"
 
 var focus_owner: Control = self
 var selected_level_id: String = ""
+var level_cards: Dictionary = {} # Format is level_id: [node, index, level_name, completion_rating, is_locked, level_description]
 
 func _ready() -> void:
 	level_selected.connect(_on_level_selected)
@@ -47,30 +48,46 @@ func _input(event: InputEvent) -> void:
 func set_gui_visible(set_to_visible: bool) -> void:
 	visible = set_to_visible
 
-func load_to_pre_loaded_level_info_dict(level_name: String = selected_level_id) -> void:
+func load_to_pre_loaded_level_info_dict(level_name: String = selected_level_id) -> bool:
 	var level_directory: String = Global.local_campaign_levels_directory + level_name
 	if not FileAccess.file_exists(level_directory):
 		push_error("Level directory: " + level_directory + " cannot be found")
-		return
+		return false
 	Global.world_scene.active_directory = level_directory
-	Global.world_scene.open_level_from_local(true, true, false)
+	await Global.world_scene.open_level_from_local(true, true, false)
+	
 	# Need a new way to determine if level is locked
-	campaign_level_name_info_tab.text = Global.world_scene.pre_loaded_level_info_dict["level_name"]
-	campaign_level_description_info_tab.text = Global.world_scene.pre_loaded_level_info_dict["level_description"]
+#	campaign_level_name_info_tab.text = Global.world_scene.pre_loaded_level_info_dict["level_name"]
+#	campaign_level_description_info_tab.text = Global.world_scene.pre_loaded_level_info_dict["level_description"]
+#	var completion_rating_string: String = ""
+#	var completion_rating_array: Array = Global.world_scene.pre_loaded_level_info_dict["completion_rating"]
+#	for i in completion_rating_array.size(): # Should always be 3
+#		if completion_rating_array[i]:
+#			completion_rating_string += "★"
+#		else:
+#			completion_rating_string += "☆"
+#	campaign_level_rating_info_tab.text = completion_rating_string
+	
+	return true
+
+func _on_level_selected() -> void:
+#	if not FileAccess.file_exists(Global.local_campaign_levels_directory.path_join(selected_level_id)):
+#		push_error("Selected level ID: " + selected_level_id + " not found")
+#		return
+#	load_to_pre_loaded_level_info_dict(selected_level_id)
+	var level_card_info: Array = level_cards.get(selected_level_id)
+	
+	campaign_level_name_info_tab.text = level_card_info[2]
+	campaign_level_description_info_tab.text = level_card_info[5]
 	var completion_rating_string: String = ""
-	var completion_rating_array: Array = Global.world_scene.pre_loaded_level_info_dict["completion_rating"]
+	var completion_rating_array: Array = level_card_info[3]
 	for i in completion_rating_array.size(): # Should always be 3
 		if completion_rating_array[i]:
 			completion_rating_string += "★"
 		else:
 			completion_rating_string += "☆"
 	campaign_level_rating_info_tab.text = completion_rating_string
-
-func _on_level_selected() -> void:
-	if not FileAccess.file_exists(Global.local_campaign_levels_directory.path_join(selected_level_id)):
-		push_error("Selected level ID: " + selected_level_id + " not found")
-		return
-	load_to_pre_loaded_level_info_dict(selected_level_id)
+	
 	campaign_play_button.disabled = false
 
 func clear_load_from_local_selection() -> void:
@@ -79,15 +96,15 @@ func clear_load_from_local_selection() -> void:
 	load_from_local_level_description_info_tab.text = ""
 	load_from_local_level_rating_info_tab.text = ""
 
-func populate_campaign_level_cards(clear_previous: bool = false) -> void:
+func populate_campaign_level_cards(clear_previous: bool = true) -> void:
 	if not DirAccess.dir_exists_absolute(Global.local_campaign_levels_directory):
 		push_error("Could not find local campaign levels directory at:" + "\n" + Global.local_campaign_levels_directory)
 		return
 	
 	if clear_previous:
-		for child in campaign_level_card_grid_container.get_children():
-			if child.get_index() != 0:
-				child.queue_free()
+		for card_info_array in level_cards.values():
+			card_info_array[0].queue_free()
+		level_cards.clear()
 	
 	var local_level_files: PackedStringArray = DirAccess.get_files_at(Global.local_campaign_levels_directory)
 	local_level_files.sort() # This will determine display order of the cards
@@ -108,13 +125,25 @@ func populate_campaign_level_cards(clear_previous: bool = false) -> void:
 		campaign_level_card_grid_container.add_child(new_level_card)
 		campaign_level_card_grid_container.move_child(new_level_card, campaign_level_card_grid_container.get_child_count() - 1)
 		new_level_card.set_level_card_info(level_data["level_name"], level_data["completion_rating"], false, file_name)
+		
+		level_cards[file_name] = [new_level_card, level_cards.size(), level_data["level_name"], level_data["completion_rating"], false, level_data["level_description"]]
+		# Format is level_id: [node, index, level_name, completion_rating, is_locked, level_description]
+		
 		level_data = {} # Clears the loaded file from RAM
 
+func update_rating_on_selected_level_card(new_level_rating: Array) -> void:
+	level_cards.get(selected_level_id)[0].update_level_card_rating(new_level_rating)
+	level_cards[selected_level_id][3] = new_level_rating
+
 func _on_back_pressed() -> void:
-	Global.world_scene.button_signal("main")
+	Global.world_scene.button_signal("main", "resume")
 	clear_load_from_local_selection()
 
 func _on_campaign_play_pressed() -> void:
+	if not FileAccess.file_exists(Global.local_campaign_levels_directory.path_join(selected_level_id)):
+		push_error("Selected level ID: " + selected_level_id + " not found")
+		return
+	await load_to_pre_loaded_level_info_dict(selected_level_id)
 	Global.world_scene.button_signal("populate_then_play")
 	clear_load_from_local_selection()
 
