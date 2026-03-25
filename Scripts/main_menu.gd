@@ -68,6 +68,9 @@ func _on_settings_pressed() -> void:
 func _on_build_pressed() -> void:
 	Global.world_scene.button_signal("build")
 
+func _on_wip_page_pressed() -> void:
+	Global.world_scene.button_signal("WIP_page")
+
 func _on_exit_pressed() -> void:
 	Global.world_scene.button_signal("exit")
 

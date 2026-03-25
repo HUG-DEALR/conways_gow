@@ -1,0 +1,150 @@
+[gd_scene load_steps=4 format=3 uid="uid://bdxrcf3c2r2wb"]
+
+[ext_resource type="Script" uid="uid://dwbb865tks8c2" path="res://Scripts/WIP_Page.gd" id="1_x6h7x"]
+[ext_resource type="StyleBox" uid="uid://bvp8auwdu5u7l" path="res://Resources/general_menu_stylebox.tres" id="2_ldm8r"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_78io8"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+bg_color = Color(0, 0, 0, 0.470588)
+
+[node name="WIP_Page" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("1_x6h7x")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -359.0
+offset_top = -257.5
+offset_right = 359.0
+offset_bottom = 257.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = ExtResource("2_ldm8r")
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="ScrollContainer" type="ScrollContainer" parent="PanelContainer/MarginContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_78io8")
+follow_focus = true
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="PanelContainer/MarginContainer/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(660, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "The following is a list of features coming to Conway's Game of War in future updates"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Sub_Title" type="Label" parent="PanelContainer/MarginContainer/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(660, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "Please be patient, there is only 1 (one) developer for this game and he's trying his best"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="HSeparator" type="HSeparator" parent="PanelContainer/MarginContainer/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Text Content" type="Label" parent="PanelContainer/MarginContainer/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(660, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "- Audio
+	- Noises for various actions and outcomes
+	- Music
+
+- More Campaign Levels
+
+- New Cell Types
+	- Static cell
+		- Starts as \"alive\" or \"dead\"
+		- Never changes, never moves
+	- Fuse cell
+		- Becomes \"dead\" after fuse number generations
+		- Copies itself to an adjacent cell if that cell is the only \"alive\" neighbour cell
+		- Otherwise behaves the same as other \"alive\" cells
+	- Carrier cell
+		- Contains a 3x3 area of other cells
+		- \"Opens\" when all its neighbours are \"dead\" cells
+		- Carried 3x3 area gets pasted onto self when it opens
+		- Can nest carrier cells
+		- Copies itself to an adjacent cell if that cell is the only \"alive\" neighbour cell
+		- Otherwise behaves the same as other \"alive\" cells
+	- Ally cell
+		- Recolour of \"alive\" cell
+		- To make level objectives more obvious
+	- Enemy cell
+		- Recelour of \"dead\" cell
+		- To make level objectives more obvious
+
+- Steam Release
+	- Steam Workshop integration for player made levels
+	- Achievements
+
+- More zone capabilities
+	- Zones can be enabled / disabled by logic structures
+	- Trigger zones can return population count"
+autowrap_mode = 3
+tab_stops = PackedFloat32Array(25, 25, 25)
+
+[node name="Back" type="Button" parent="."]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -27.0
+offset_bottom = 50.0
+grow_horizontal = 0
+size_flags_horizontal = 8
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 30
+text = "X"
+
+[node name="Label" type="Label" parent="."]
+custom_minimum_size = Vector2(0, 125)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -138.0
+offset_right = 138.0
+offset_bottom = 83.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 60
+text = "Future of CGOW"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[connection signal="pressed" from="Back" to="." method="_on_back_pressed"]

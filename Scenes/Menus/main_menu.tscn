@@ -104,6 +104,23 @@ entrance_rotation = 8.0
 entrance_size = Vector2(160, 50)
 metadata/_custom_type_script = "uid://bmgpsk2dcdkx8"
 
+[node name="WIP_Page" type="Button" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Roadmap"
+
+[node name="AnimatedControl" type="Node" parent="PanelContainer/VBoxContainer/WIP_Page" node_paths=PackedStringArray("wait_for")]
+script = ExtResource("1_28flt")
+enter_animation = true
+hover_position = Vector2(10, 0)
+hover_size = Vector2(160, 50)
+wait_for = NodePath("../../Build/AnimatedControl")
+entrance_transition = 7
+entrance_easing = 2
+entrance_rotation = 8.0
+entrance_size = Vector2(160, 50)
+metadata/_custom_type_script = "uid://bmgpsk2dcdkx8"
+
 [node name="Exit" type="Button" parent="PanelContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
@@ -114,7 +131,7 @@ script = ExtResource("1_28flt")
 enter_animation = true
 hover_position = Vector2(10, 0)
 hover_size = Vector2(160, 50)
-wait_for = NodePath("../../Build/AnimatedControl")
+wait_for = NodePath("../../WIP_Page/AnimatedControl")
 entrance_transition = 7
 entrance_easing = 2
 entrance_rotation = 8.0
@@ -143,5 +160,6 @@ vertical_alignment = 2
 [connection signal="pressed" from="PanelContainer/VBoxContainer/Levels" to="." method="_on_levels_pressed"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/Settings" to="." method="_on_settings_pressed"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/Build" to="." method="_on_build_pressed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/WIP_Page" to="." method="_on_wip_page_pressed"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/Exit" to="." method="_on_exit_pressed"]
 [connection signal="timeout" from="BackgroundResetTimer" to="." method="_on_background_reset_timer_timeout"]

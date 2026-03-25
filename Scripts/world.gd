@@ -25,6 +25,7 @@ signal hint_button_pressed
 	"Settings_menu": $CanvasLayer/Settings,
 	"Build_menu": $CanvasLayer/GUI_Build,
 	"Build_Esc_menu": $CanvasLayer/BuildEscMenu,
+	"WIP_Page": $CanvasLayer/WIP_Page,
 }
 
 const cell_size: float = 10.0
@@ -36,7 +37,7 @@ const generic_textbox_path: String = "res://Scenes/Props/hint_text_box.tscn"
 var current_cell_count: int
 var last_click_location: Vector2 = Vector2.ZERO
 var current_menu: Control
-var current_sub_menu: String = "main" # main levels settings build build_esc exit play play_esc
+var current_sub_menu: String = "main" # main levels settings build build_esc exit play play_esc WIP_page
 var menu_transition_tween: Tween
 var menus_active: bool = true
 var level_info_dict: Dictionary = {
@@ -96,6 +97,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		#		pass
 		#	"settings":
 		#		pass
+		#	"WIP_page":
+		#		pass
 			"build":
 				button_signal("build_esc")
 			"build_esc":
@@ -142,12 +145,12 @@ func populate_zones(can_build_zones: Dictionary, no_build_zones: Dictionary, tri
 	for zone in can_build_zones:
 		var new_zone: Node = generic_zone.instantiate()
 		add_child(new_zone)
-		if prevent_zone_editing:
-			new_zone.toggle_lock_state(true)
-		new_zone.visible = true
-		new_zone.set_zone_type("can build here")
 		var zone_info: Array = can_build_zones.get(zone)
 		new_zone.set_zone_options(zone_info[0], "", zone_info[2])
+		new_zone.visible = true
+		if prevent_zone_editing:
+			new_zone.toggle_lock_state(true)
+		new_zone.set_zone_type("can build here")
 		new_zone.set_rect(zone_info[1])
 		new_can_build_dict[new_zone] = can_build_zones[zone]
 	
@@ -155,12 +158,12 @@ func populate_zones(can_build_zones: Dictionary, no_build_zones: Dictionary, tri
 	for zone in no_build_zones:
 		var new_zone = generic_zone.instantiate()
 		add_child(new_zone)
-		if prevent_zone_editing:
-			new_zone.toggle_lock_state(true)
-		new_zone.visible = true
-		new_zone.set_zone_type("no build here")
 		var zone_info: Array = no_build_zones.get(zone)
 		new_zone.set_zone_options(zone_info[0], "", zone_info[2])
+		new_zone.visible = true
+		if prevent_zone_editing:
+			new_zone.toggle_lock_state(true)
+		new_zone.set_zone_type("no build here")
 		new_zone.set_rect(zone_info[1])
 		new_no_build_dict[new_zone] = no_build_zones[zone]
 	
@@ -168,12 +171,12 @@ func populate_zones(can_build_zones: Dictionary, no_build_zones: Dictionary, tri
 	for zone in trigger_zones:
 		var new_zone = generic_zone.instantiate()
 		add_child(new_zone)
-		if prevent_zone_editing:
-			new_zone.toggle_lock_state(true)
-		new_zone.visible = true
-		new_zone.set_zone_type("trigger")
 		var zone_info: Array = trigger_zones.get(zone)
 		new_zone.set_zone_options(zone_info[0], zone_info[3], zone_info[2]) # Set filter and set gate
+		new_zone.visible = true
+		if prevent_zone_editing:
+			new_zone.toggle_lock_state(true)
+		new_zone.set_zone_type("trigger")
 		new_zone.set_rect(zone_info[1])
 		
 		var trigger_id: String = zone_info[4]
@@ -531,6 +534,9 @@ func button_signal(singal_name: String, conditional: String = "") -> void:
 			current_sub_menu = "play_esc"
 			set_play_pause(false)
 			switch_to_menu("Play_Esc_menu")
+		"WIP_page":
+			current_sub_menu = "WIP_page"
+			switch_to_menu("WIP_Page")
 
 func hint_requested() -> void:
 	hint_button_pressed.emit()

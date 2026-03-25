@@ -25,6 +25,17 @@ func _ready() -> void:
 	tab_container.current_tab = 0
 	load_and_apply_settings_from_local()
 
+func apply_settings_in_config_dict(save_to_local: bool = true) -> void:
+	var resolution: Vector2i = settings_config_dictionary.get("resolution", Vector2i(1600, 900))
+	resolution.x = max(resolution.x, 960)
+	resolution.y = max(resolution.y, 540)
+	DisplayServer.window_set_size(resolution)
+	DisplayServer.window_set_mode(settings_config_dictionary.get("window_mode", DisplayServer.WINDOW_MODE_WINDOWED))
+	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, settings_config_dictionary.get("window_borderless_flag", false))
+	
+	if save_to_local:
+		save_settings_to_local()
+
 func set_gui_visible(set_to_visible: bool) -> void:
 	update_displayed_video_settings()
 	visible = set_to_visible
@@ -34,6 +45,7 @@ func save_settings_to_local() -> void:
 	Global.save_to_file(settings_config_dictionary, settings_config_file_path)
 
 func load_and_apply_settings_from_local() -> void:
+	# This function cannot use apply_settings_in_config_dict() as it uses settings_config_dictionary as a fallback
 	var loaded_data: Dictionary = {}
 	if FileAccess.file_exists(settings_config_file_path):
 		loaded_data = Global.load_from_file(settings_config_file_path) # in-built safety checks
@@ -58,7 +70,7 @@ func load_and_apply_settings_from_local() -> void:
 	update_displayed_video_settings()
 	save_settings_to_local()
 
-func show_confirm_clear_campaign_dialog():
+func show_confirm_clear_campaign_dialog() -> void:
 	var dialog: ConfirmationDialog = ConfirmationDialog.new()
 	dialog.dialog_text = "Are you sure you want to rest all campaign progress?" + "\n" + "This action cannot be undone"
 	
@@ -79,7 +91,7 @@ func show_confirm_clear_campaign_dialog():
 	add_child(dialog)
 	dialog.popup_centered()
 
-func show_confirm_clear_settings_config_dialog():
+func show_confirm_clear_settings_config_dialog() -> void:
 	var dialog: ConfirmationDialog = ConfirmationDialog.new()
 	dialog.dialog_text = ("Are you sure you want to delete your settings configuration?" +
 	"\n" + "This will reset your settings to default after you restart the game" +
@@ -198,29 +210,23 @@ func _on_apply_video_settings_pressed() -> void:
 	force_integer_resolution_in_text_field(y_resolution, false)
 	var resolution_width: int = max(int(x_resolution.text),960)
 	var resolution_height: int = max(int(y_resolution.text),540)
-	
-	DisplayServer.window_set_size(Vector2i(resolution_width, resolution_height))
 	settings_config_dictionary["resolution"] = Vector2i(resolution_width, resolution_height)
 	
 	match window_mode_options.selected:
 		0: # Windowed
-			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+			settings_config_dictionary["window_mode"] = DisplayServer.WINDOW_MODE_WINDOWED
 		1: # Borderless
-			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-			DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, true)
+			settings_config_dictionary["window_mode"] = DisplayServer.WINDOW_MODE_WINDOWED
 			settings_config_dictionary["window_borderless_flag"] = true
 		2: # Maximized
-			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MAXIMIZED)
+			settings_config_dictionary["window_mode"] = DisplayServer.WINDOW_MODE_MAXIMIZED
 		3: # Fullscreen
-			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+			settings_config_dictionary["window_mode"] = DisplayServer.WINDOW_MODE_FULLSCREEN
 	
-	settings_config_dictionary["window_mode"] = DisplayServer.window_get_mode()
-	
-	# Ensure borderless is OFF for other modes
 	if window_mode_options.selected != 1:
-		DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, false)
 		settings_config_dictionary["window_borderless_flag"] = false
 	
+	apply_settings_in_config_dict()
 	update_displayed_video_settings()
 	save_settings_to_local()
 

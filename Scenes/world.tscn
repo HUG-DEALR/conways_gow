@@ -1,10 +1,11 @@
-[gd_scene load_steps=15 format=3 uid="uid://43wu14oo2txe"]
+[gd_scene load_steps=16 format=3 uid="uid://43wu14oo2txe"]
 
 [ext_resource type="Script" uid="uid://b7wmx1vkun2bp" path="res://Scripts/world.gd" id="1_go701"]
 [ext_resource type="Script" uid="uid://c8v1d7jx6ajim" path="res://Scripts/Game_camera.gd" id="2_5a7ea"]
 [ext_resource type="PackedScene" uid="uid://fsodmskwkkkk" path="res://Scenes/Menus/main_menu.tscn" id="3_5a7ea"]
 [ext_resource type="PackedScene" uid="uid://bw10bjlpo0fwl" path="res://Scenes/Menus/GUI_Standard.tscn" id="3_5ukr8"]
 [ext_resource type="PackedScene" uid="uid://b1p7xbn61v5vb" path="res://Scenes/Menus/Sub_Menus/play_esc_menu.tscn" id="3_5v1tr"]
+[ext_resource type="PackedScene" uid="uid://bdxrcf3c2r2wb" path="res://Scenes/Menus/WIP_Page.tscn" id="3_7yui6"]
 [ext_resource type="PackedScene" uid="uid://ttqq5jk5ot6d" path="res://Scenes/Menus/outcome_overlay.tscn" id="3_k7acu"]
 [ext_resource type="PackedScene" uid="uid://hpbibvj47tnf" path="res://Scenes/Menus/levels_menu.tscn" id="4_8j60k"]
 [ext_resource type="PackedScene" uid="uid://bp8sew4hg4ws3" path="res://Scenes/Menus/settings.tscn" id="5_fo5ed"]
@@ -46,6 +47,9 @@ layer = 0
 [node name="outcome_overlay" parent="CanvasLayer" instance=ExtResource("3_k7acu")]
 visible = false
 
+[node name="WIP_Page" parent="CanvasLayer" instance=ExtResource("3_7yui6")]
+visible = false
+
 [node name="GUI_Standard" parent="CanvasLayer" instance=ExtResource("3_5ukr8")]
 visible = false
 
@@ -69,7 +73,6 @@ visible = false
 visible = false
 
 [node name="MainMenu" parent="CanvasLayer" instance=ExtResource("3_5a7ea")]
-mouse_filter = 1
 
 [node name="Generation_Timer" type="Timer" parent="."]
 wait_time = 0.1

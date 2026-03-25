@@ -200,6 +200,7 @@ func get_zone_info() -> Array:
 	return zone_info
 
 func set_zone_options(filter: String, logic_gate: String, show_behaviour_index: int = 0) -> void:
+	filter_type = filter.to_lower()
 	match filter:
 		"All":
 			filter_id = 0
@@ -346,9 +347,12 @@ func get_trigger_status() -> bool:
 func get_population_of_covered_cell_type(cell_type: String) -> int:
 	var active_cell_indexes: Array = get_covered_active_cells(Global.world_scene.level_info_dict["live_cells"].keys())
 	var count: int = 0
-	for cell_index in active_cell_indexes:
-		if Global.world_scene.get_cell_type(cell_index) == cell_type:
-			count += 1
+	if cell_type == "empty":
+		count = Global.world_scene.current_cell_count - active_cell_indexes.size()
+	else:
+		for cell_index in active_cell_indexes:
+			if Global.world_scene.get_cell_type(cell_index) == cell_type:
+				count += 1
 	return count
 
 func toggle_zone_menu_visible(make_visible: bool) -> void:
