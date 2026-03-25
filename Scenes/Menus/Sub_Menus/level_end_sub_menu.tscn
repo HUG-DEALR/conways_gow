@@ -67,5 +67,6 @@ tooltip_text = "Retry level"
 theme_override_font_sizes/font_size = 30
 text = "Retry"
 
+[connection signal="pressed" from="MarginContainer/PanelContainer/VBoxContainer/Next_Level" to="." method="_on_next_level_pressed"]
 [connection signal="pressed" from="MarginContainer/PanelContainer/VBoxContainer/Main_Menu" to="." method="_on_main_menu_pressed"]
 [connection signal="pressed" from="MarginContainer/PanelContainer/VBoxContainer/Retry" to="." method="_on_retry_pressed"]

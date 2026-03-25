@@ -57,3 +57,11 @@ func _on_main_menu_pressed() -> void:
 func _on_retry_pressed() -> void:
 	Global.world_scene.menus.get("GUI")._on_restart_pressed()
 	toggled_deployed(false, false)
+
+func _on_next_level_pressed() -> void:
+	var levels_menu: Control = Global.world_scene.menus.get("Levels_menu")
+	if levels_menu.select_next_level_id():
+		await levels_menu.load_to_pre_loaded_level_info_dict()
+		Global.world_scene.button_signal("populate_then_play")
+	else:
+		_on_main_menu_pressed()

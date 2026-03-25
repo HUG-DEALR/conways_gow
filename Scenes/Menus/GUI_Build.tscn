@@ -509,6 +509,7 @@ placeholder_text = "Width"
 alignment = 1
 max_length = 5
 virtual_keyboard_type = 2
+select_all_on_focus = true
 
 [node name="Grid_Height_Line_Edit" type="LineEdit" parent="Level_Settings_Root/VBoxContainer/Resize_Grid_HBoxContainer"]
 custom_minimum_size = Vector2(120, 50)
@@ -518,6 +519,7 @@ placeholder_text = "Height"
 alignment = 1
 max_length = 5
 virtual_keyboard_type = 2
+select_all_on_focus = true
 
 [node name="Player_Edit_Rights" type="HBoxContainer" parent="Level_Settings_Root/VBoxContainer"]
 layout_mode = 2

@@ -1,0 +1,659 @@
+[gd_scene load_steps=6 format=3 uid="uid://bu8otrym2b85g"]
+
+[ext_resource type="Script" uid="uid://blg6x1nmo88cw" path="res://Scripts/tutorial_overlay.gd" id="1_j0chr"]
+[ext_resource type="StyleBox" uid="uid://ctq3tqlemfqlc" path="res://Resources/live_cell_stylebox.tres" id="2_o1kab"]
+[ext_resource type="StyleBox" uid="uid://cpn1ybfva522o" path="res://Resources/dead_cell_stylebox.tres" id="3_rd53m"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0qrnx"]
+bg_color = Color(0, 0, 0, 0.196078)
+corner_radius_top_left = 25
+corner_radius_bottom_left = 25
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_aau5t"]
+bg_color = Color(0, 0, 0, 0.196078)
+corner_radius_top_right = 25
+corner_radius_bottom_right = 25
+
+[node name="Tutorial_Overlay" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("1_j0chr")
+
+[node name="Pages_Parent" type="Control" parent="."]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="Page_1" type="Control" parent="Pages_Parent"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="Label" type="Label" parent="Pages_Parent/Page_1"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -36.0
+offset_top = -11.5
+offset_right = 36.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+theme_override_font_sizes/font_size = 150
+text = "WELCOME TO..."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Page_2" type="Control" parent="Pages_Parent"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="Label" type="Label" parent="Pages_Parent/Page_2"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -36.0
+offset_top = -11.5
+offset_right = 36.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+theme_override_font_sizes/font_size = 150
+text = "CONWAY'S
+GAME OF WAR"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="Pages_Parent/Page_2"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -362.0
+offset_top = -109.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/margin_left = 25
+theme_override_constants/margin_top = 25
+theme_override_constants/margin_right = 25
+theme_override_constants/margin_bottom = 25
+
+[node name="Label2" type="Label" parent="Pages_Parent/Page_2/MarginContainer"]
+layout_mode = 2
+mouse_filter = 1
+theme_override_font_sizes/font_size = 20
+text = "A puzzle game by HUG-DEALER
+based on Conway's Game of Life"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Page_3" type="Control" parent="Pages_Parent"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="Pages_Parent/Page_3"]
+layout_mode = 1
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="Label" type="Label" parent="Pages_Parent/Page_3/MarginContainer"]
+layout_mode = 2
+mouse_filter = 1
+theme_override_font_sizes/font_size = 50
+text = "The game happens on a grid of cells"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label" type="Label" parent="Pages_Parent/Page_3"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -152.5
+offset_top = -34.5
+offset_right = 152.5
+offset_bottom = 34.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+theme_override_font_sizes/font_size = 50
+text = "Like this one"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MarginContainer2" type="MarginContainer" parent="Pages_Parent/Page_3"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -405.0
+offset_top = -169.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="Label" type="Label" parent="Pages_Parent/Page_3/MarginContainer2"]
+layout_mode = 2
+mouse_filter = 1
+theme_override_font_sizes/font_size = 50
+text = "Click to interact with it"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Page_4" type="Control" parent="Pages_Parent"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Pages_Parent/Page_4"]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 100
+alignment = 1
+
+[node name="Live_Cell_4" type="Panel" parent="Pages_Parent/Page_4/HBoxContainer"]
+custom_minimum_size = Vector2(400, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/panel = ExtResource("2_o1kab")
+
+[node name="Label" type="Label" parent="Pages_Parent/Page_4/HBoxContainer/Live_Cell_4"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -152.5
+offset_top = -34.5
+offset_right = 152.5
+offset_bottom = 34.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+theme_override_font_sizes/font_size = 50
+text = "This is a
+Live Cell"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Dead_Cell_4" type="Panel" parent="Pages_Parent/Page_4/HBoxContainer"]
+custom_minimum_size = Vector2(400, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/panel = ExtResource("3_rd53m")
+
+[node name="Label" type="Label" parent="Pages_Parent/Page_4/HBoxContainer/Dead_Cell_4"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -152.5
+offset_top = -34.5
+offset_right = 152.5
+offset_bottom = 34.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+theme_override_font_sizes/font_size = 50
+text = "This is a
+Dead Cell"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Page_5" type="Control" parent="Pages_Parent"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Pages_Parent/Page_5"]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 50
+alignment = 1
+
+[node name="Live_Cell_4" type="Panel" parent="Pages_Parent/Page_5/HBoxContainer"]
+custom_minimum_size = Vector2(400, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/panel = ExtResource("2_o1kab")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Pages_Parent/Page_5/HBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Label2" type="Label" parent="Pages_Parent/Page_5/HBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+mouse_filter = 1
+theme_override_font_sizes/font_size = 50
+text = "Live Cell Becomes
+Dead"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Label" type="Label" parent="Pages_Parent/Page_5/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 1
+theme_override_font_sizes/font_size = 150
+text = "⇨"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label3" type="Label" parent="Pages_Parent/Page_5/HBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+mouse_filter = 1
+theme_override_font_sizes/font_size = 50
+text = "If it has <2 or >3 live neighbours"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Dead_Cell_4" type="Panel" parent="Pages_Parent/Page_5/HBoxContainer"]
+custom_minimum_size = Vector2(400, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/panel = ExtResource("3_rd53m")
+
+[node name="Page_6" type="Control" parent="Pages_Parent"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Pages_Parent/Page_6"]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 50
+alignment = 1
+
+[node name="Live_Cell_4" type="Panel" parent="Pages_Parent/Page_6/HBoxContainer"]
+custom_minimum_size = Vector2(400, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/panel = ExtResource("2_o1kab")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Pages_Parent/Page_6/HBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Label2" type="Label" parent="Pages_Parent/Page_6/HBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+mouse_filter = 1
+theme_override_font_sizes/font_size = 50
+text = "Dead Cell Becomes Live"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Label" type="Label" parent="Pages_Parent/Page_6/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 1
+theme_override_font_sizes/font_size = 150
+text = "⇦"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label3" type="Label" parent="Pages_Parent/Page_6/HBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+mouse_filter = 1
+theme_override_font_sizes/font_size = 50
+text = "If it has
+3 live
+neighbours"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Dead_Cell_4" type="Panel" parent="Pages_Parent/Page_6/HBoxContainer"]
+custom_minimum_size = Vector2(400, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/panel = ExtResource("3_rd53m")
+
+[node name="Page_7" type="Control" parent="Pages_Parent"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="Pages_Parent/Page_7"]
+layout_mode = 1
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="Label" type="Label" parent="Pages_Parent/Page_7/MarginContainer"]
+layout_mode = 2
+mouse_filter = 1
+theme_override_font_sizes/font_size = 50
+text = "Try building something"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MarginContainer2" type="MarginContainer" parent="Pages_Parent/Page_7"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -405.0
+offset_top = -169.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Pages_Parent/Page_7/MarginContainer2"]
+layout_mode = 2
+theme_override_constants/separation = 15
+alignment = 1
+
+[node name="Label" type="Label" parent="Pages_Parent/Page_7/MarginContainer2/HBoxContainer"]
+layout_mode = 2
+mouse_filter = 1
+theme_override_font_sizes/font_size = 50
+text = "Then click"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Step_Generation_Button" type="Button" parent="Pages_Parent/Page_7/MarginContainer2/HBoxContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+tooltip_text = "Step 1 Generation"
+focus_mode = 1
+mouse_filter = 1
+theme_override_font_sizes/font_size = 30
+text = "▶"
+
+[node name="Label2" type="Label" parent="Pages_Parent/Page_7/MarginContainer2/HBoxContainer"]
+layout_mode = 2
+mouse_filter = 1
+theme_override_font_sizes/font_size = 50
+text = "to see how it works"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Page_8" type="Control" parent="Pages_Parent"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="Pages_Parent/Page_8"]
+layout_mode = 1
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="Label" type="Label" parent="Pages_Parent/Page_8/MarginContainer"]
+layout_mode = 2
+mouse_filter = 1
+theme_override_font_sizes/font_size = 50
+text = "Alternatively..."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MarginContainer2" type="MarginContainer" parent="Pages_Parent/Page_8"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -405.0
+offset_top = -169.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Pages_Parent/Page_8/MarginContainer2"]
+layout_mode = 2
+theme_override_constants/separation = 15
+alignment = 1
+
+[node name="Label" type="Label" parent="Pages_Parent/Page_8/MarginContainer2/HBoxContainer"]
+layout_mode = 2
+mouse_filter = 1
+theme_override_font_sizes/font_size = 50
+text = "Click"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Auto_Play_Generations_Button" type="Button" parent="Pages_Parent/Page_8/MarginContainer2/HBoxContainer"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+tooltip_text = "Auto Play Generations"
+focus_mode = 1
+mouse_filter = 1
+theme_override_font_sizes/font_size = 30
+text = "❯❯"
+
+[node name="Label2" type="Label" parent="Pages_Parent/Page_8/MarginContainer2/HBoxContainer"]
+layout_mode = 2
+mouse_filter = 1
+theme_override_font_sizes/font_size = 50
+text = "for auto play"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Page_9" type="Control" parent="Pages_Parent"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="Pages_Parent/Page_9"]
+layout_mode = 1
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="Label" type="Label" parent="Pages_Parent/Page_9/MarginContainer"]
+layout_mode = 2
+mouse_filter = 1
+theme_override_font_sizes/font_size = 50
+text = "You have finished the tutorial!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MarginContainer2" type="MarginContainer" parent="Pages_Parent/Page_9"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -405.0
+offset_top = -169.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="Label" type="Label" parent="Pages_Parent/Page_9/MarginContainer2"]
+layout_mode = 2
+mouse_filter = 1
+theme_override_font_sizes/font_size = 50
+text = "Proceed to level 1 when you're ready"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Next_Page_Button" type="Button" parent="."]
+custom_minimum_size = Vector2(75, 75)
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -34.0
+offset_top = -25.0
+offset_bottom = 25.0
+grow_horizontal = 0
+grow_vertical = 2
+tooltip_text = "Next Page"
+focus_mode = 0
+theme_override_font_sizes/font_size = 30
+theme_override_styles/normal = SubResource("StyleBoxFlat_0qrnx")
+text = "⮞"
+
+[node name="Previous_Page_Button" type="Button" parent="."]
+custom_minimum_size = Vector2(75, 75)
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -37.5
+offset_right = 75.0
+offset_bottom = 37.5
+grow_vertical = 2
+tooltip_text = "Previous Page"
+focus_mode = 0
+theme_override_font_sizes/font_size = 30
+theme_override_styles/normal = SubResource("StyleBoxFlat_aau5t")
+text = "⮜"
+
+[connection signal="pressed" from="Pages_Parent/Page_7/MarginContainer2/HBoxContainer/Step_Generation_Button" to="." method="_on_step_generation_button_pressed"]
+[connection signal="pressed" from="Pages_Parent/Page_8/MarginContainer2/HBoxContainer/Auto_Play_Generations_Button" to="." method="_on_auto_play_generations_button_pressed"]
+[connection signal="pressed" from="Next_Page_Button" to="." method="_on_next_page_button_pressed"]
+[connection signal="pressed" from="Previous_Page_Button" to="." method="_on_previous_page_button_pressed"]

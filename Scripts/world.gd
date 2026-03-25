@@ -26,6 +26,7 @@ signal hint_button_pressed
 	"Build_menu": $CanvasLayer/GUI_Build,
 	"Build_Esc_menu": $CanvasLayer/BuildEscMenu,
 	"WIP_Page": $CanvasLayer/WIP_Page,
+	"Tutorial": $CanvasLayer/Tutorial_Overlay
 }
 
 const cell_size: float = 10.0
@@ -37,9 +38,8 @@ const generic_textbox_path: String = "res://Scenes/Props/hint_text_box.tscn"
 var current_cell_count: int
 var last_click_location: Vector2 = Vector2.ZERO
 var current_menu: Control
-var current_sub_menu: String = "main" # main levels settings build build_esc exit play play_esc WIP_page
+var current_sub_menu: String = "main" # main levels settings build build_esc exit play play_esc WIP_page tutorial
 var menu_transition_tween: Tween
-var menus_active: bool = true
 var level_info_dict: Dictionary = {
 	"editable": true,
 	"grid_dimensions": Vector2i.ZERO,
@@ -80,8 +80,7 @@ func _ready():
 	RenderingServer.set_default_clear_color(Global.dead_colour)
 
 func _process(delta: float) -> void:
-	if menus_active:
-		rot_parent_menu_camera.rotation += delta * 0.1
+	rot_parent_menu_camera.rotation += delta * 0.1
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
@@ -110,6 +109,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				button_signal("play_esc")
 			"play_esc":
 				button_signal("play", "resume")
+		#	"tutorial":
+		#		pass
 			_: # Catch all
 				set_play_pause(false)
 				button_signal("main")
@@ -485,6 +486,7 @@ func button_signal(singal_name: String, conditional: String = "") -> void:
 			if not conditional == "resume":
 				clear_all_to_blank()
 			menu_camera.make_current()
+			set_process(true)
 			RenderingServer.set_default_clear_color(Global.dead_colour)
 			menus.get("Main_menu")._on_background_reset_timer_timeout()
 			set_play_pause(true)
@@ -506,8 +508,9 @@ func button_signal(singal_name: String, conditional: String = "") -> void:
 				game_camera.position = (cell_size + cell_margin) * level_info_dict["grid_dimensions"]/2.0
 				game_camera.zoom = Vector2.ONE * 2.0
 			switch_to_menu("Build_menu")
-			RenderingServer.set_default_clear_color(Color(0.2, 0.2, 0.2, 1.0))
+			RenderingServer.set_default_clear_color(Global.background_colour)
 			game_camera.make_current()
+			set_process(false)
 		"build_esc":
 			current_sub_menu = "build_esc"
 			set_play_pause(false)
@@ -527,8 +530,9 @@ func button_signal(singal_name: String, conditional: String = "") -> void:
 				game_camera.position = (cell_size + cell_margin) * level_info_dict["grid_dimensions"]/2.0
 				game_camera.zoom = Vector2.ONE * 2.0
 			switch_to_menu("GUI")
-			RenderingServer.set_default_clear_color(Color(0.2, 0.2, 0.2, 1.0))
+			RenderingServer.set_default_clear_color(Global.background_colour)
 			game_camera.make_current()
+			set_process(false)
 		"populate_then_play": # Only for when level data has been set to the pre_loaded_level_info_dict
 			full_populate_level(pre_loaded_level_info_dict, true)
 			button_signal("play")
@@ -539,6 +543,18 @@ func button_signal(singal_name: String, conditional: String = "") -> void:
 		"WIP_page":
 			current_sub_menu = "WIP_page"
 			switch_to_menu("WIP_Page")
+		"tutorial":
+			current_sub_menu = "tutorial"
+			set_play_pause(false)
+			clear_all_to_blank()
+			Global.reset_generation_to_0()
+			populate_cells(Vector2i(20,20), {}, true)
+			game_camera.position = (cell_size + cell_margin) * level_info_dict["grid_dimensions"]/2.0
+			game_camera.zoom = Vector2.ONE * 2.0
+			switch_to_menu("Tutorial")
+			RenderingServer.set_default_clear_color(Global.background_colour)
+			game_camera.make_current()
+			set_process(false)
 
 func hint_requested() -> void:
 	hint_button_pressed.emit()

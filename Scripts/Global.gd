@@ -1,14 +1,16 @@
 extends Node
 
 # To do list
+# Player can edit option
 # Make levels
-
-const read_only_level_default_source_directory: String = "res://level_defaults/"
-const local_campaign_levels_directory: String = "user://campaign_levels/"
 
 signal generations_reset_to_0
 signal build_saved
 
+const read_only_level_default_source_directory: String = "res://level_defaults/"
+const local_campaign_levels_directory: String = "user://campaign_levels/"
+
+var background_colour: Color = Color(0.2, 0.2, 0.2, 1.0)
 var alive_colour: Color = Color(0.0,0.5,0.7,1.0)
 var dead_colour: Color = Color(0.1,0.1,0.1,1.0)
 var enemy_colour: Color = Color(0.7,0.2,0.0,1.0)
