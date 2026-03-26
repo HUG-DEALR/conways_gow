@@ -11,12 +11,15 @@ func _ready() -> void:
 	Global.generations_reset_to_0.connect(toggled_deployed)
 
 func toggled_deployed(deploy: bool = false, is_victorious: bool = false) -> void:
+	if deploy == visible:
+		return
 	if intro_exit_tween:
 		intro_exit_tween.kill()
 	intro_exit_tween = get_tree().create_tween()
 	intro_exit_tween.pause()
 	intro_exit_tween.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_CUBIC)
 	if deploy:
+		Global.world_scene.level_start_info_card_sub_menu.toggled_deployed(false)
 		
 		if is_victorious:
 			var current_rating: Array = Global.world_scene.level_info_dict["current_rating"]

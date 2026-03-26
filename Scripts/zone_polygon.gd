@@ -501,6 +501,8 @@ func _on_generations_reset_to_0() -> void:
 			visible = true
 		elif behaviour_option.selected == 3: # Show on hint
 			visible = false
+	if gate_id == 2: # Population change of
+		previous_measured_population = get_population_of_covered_cell_type(filter_type)
 
 func _on_hint_button_pressed() -> void:
 	# Assumes that the "show on hint" option is selected

@@ -1,7 +1,6 @@
 extends Node
 
 # To do list
-# Player can edit option
 # Make levels
 
 signal generations_reset_to_0

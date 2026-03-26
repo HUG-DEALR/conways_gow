@@ -34,6 +34,7 @@ func set_logic_structure(structure_array: Array) -> void:
 		return
 	# format is [object_index, [selection_indexes], [child_A_info], [child_B_info]]
 	logic_gate.selected = structure_array[1][0]
+	_on_logic_gate_item_selected(logic_gate.selected)
 	signal_a_host.get_child(-1).replace_self_with_alternate(structure_array[2][0])
 	signal_b_host.get_child(-1).replace_self_with_alternate(structure_array[3][0])
 	await get_tree().process_frame

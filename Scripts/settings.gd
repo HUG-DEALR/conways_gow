@@ -7,6 +7,7 @@ extends Control
 @onready var window_mode_options: OptionButton = $PanelContainer/MarginContainer/TabContainer/Video/WindowMode/WindowMode_Options
 # Misc tab
 @onready var clear_campaign_levels_button: Button = $PanelContainer/MarginContainer/TabContainer/Misc/HBoxContainer/Clear_Levels
+@onready var mouse_coords_options: OptionButton = $PanelContainer/MarginContainer/TabContainer/Misc/Mouse_Coords/Mouse_Coords_Options
 # Dev tab
 @onready var dev_target_input: CodeEdit = $PanelContainer/MarginContainer/TabContainer/Dev/DEV_Target_Input
 @onready var dev_cmd_input: CodeEdit = $PanelContainer/MarginContainer/TabContainer/Dev/DEV_CMD_Input
@@ -19,6 +20,7 @@ var settings_config_dictionary: Dictionary = {
 	"resolution": Vector2i(1600, 900),
 	"window_mode": DisplayServer.WINDOW_MODE_WINDOWED,
 	"window_borderless_flag": false,
+	"mouse_coords_mode": 0, # 0=don't show, 1=show grid pos, 2=show raw pos
 }
 
 func _ready() -> void:
@@ -33,11 +35,13 @@ func apply_settings_in_config_dict(save_to_local: bool = true) -> void:
 	DisplayServer.window_set_mode(settings_config_dictionary.get("window_mode", DisplayServer.WINDOW_MODE_WINDOWED))
 	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, settings_config_dictionary.get("window_borderless_flag", false))
 	
+	Global.world_scene.menus.get("Build_menu").show_mouse_coords_mode = settings_config_dictionary["mouse_coords_mode"]
+	
 	if save_to_local:
 		save_settings_to_local()
 
 func set_gui_visible(set_to_visible: bool) -> void:
-	update_displayed_video_settings()
+	update_displayed_settings()
 	visible = set_to_visible
 	clear_campaign_levels_button.disabled = false
 
@@ -57,17 +61,19 @@ func load_and_apply_settings_from_local() -> void:
 		print(settings_config_file_path + " is invalid, reverting to default settings")
 	
 	var resolution: Vector2i = loaded_data.get("resolution", settings_config_dictionary["resolution"])
-	var window_mode: int = loaded_data.get("window_mode", settings_config_dictionary["window_mode"])
-	var is_borderless: bool = loaded_data.get("window_borderless_flag", settings_config_dictionary["window_borderless_flag"])
-	
 	resolution.x = max(resolution.x, 960)
 	resolution.y = max(resolution.y, 540)
 	DisplayServer.window_set_size(resolution)
 	
-	DisplayServer.window_set_mode(window_mode)
-	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, is_borderless)
+	DisplayServer.window_set_mode(loaded_data.get("window_mode", settings_config_dictionary["window_mode"]))
+	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, loaded_data.get("window_borderless_flag", settings_config_dictionary["window_borderless_flag"]))
 	
-	update_displayed_video_settings()
+	while not Global.world_scene:
+		await get_tree().process_frame
+	Global.world_scene.menus.get("Build_menu").show_mouse_coords_mode = loaded_data.get("mouse_coords_mode", settings_config_dictionary["mouse_coords_mode"])
+	settings_config_dictionary["mouse_coords_mode"] = Global.world_scene.menus.get("Build_menu").show_mouse_coords_mode
+	
+	update_displayed_settings()
 	save_settings_to_local()
 
 func show_confirm_clear_campaign_dialog() -> void:
@@ -188,7 +194,7 @@ func force_integer_resolution_in_text_field(field: LineEdit, is_x: bool) -> void
 	
 	field.text = filtered
 
-func update_displayed_video_settings() -> void:
+func update_displayed_settings() -> void:
 	var window_size: Vector2i = DisplayServer.window_get_size()
 	x_resolution.text = str(window_size.x)
 	y_resolution.text = str(window_size.y)
@@ -205,6 +211,8 @@ func update_displayed_video_settings() -> void:
 			window_mode_options.select(3) # Fullscreen
 		_: # Catch all
 			window_mode_options.select(0)
+	
+	mouse_coords_options.selected = settings_config_dictionary["mouse_coords_mode"]
 
 func _on_apply_video_settings_pressed() -> void:
 	force_integer_resolution_in_text_field(x_resolution, true)
@@ -227,8 +235,8 @@ func _on_apply_video_settings_pressed() -> void:
 	if window_mode_options.selected != 1:
 		settings_config_dictionary["window_borderless_flag"] = false
 	
-	apply_settings_in_config_dict()
-	update_displayed_video_settings()
+	apply_settings_in_config_dict(false)
+	update_displayed_settings()
 	save_settings_to_local()
 
 func _on_back_pressed() -> void:
@@ -267,3 +275,10 @@ func _on_x_video_resolution_focus_exited() -> void:
 
 func _on_clear_config_pressed() -> void:
 	show_confirm_clear_settings_config_dialog()
+
+func _on_apply_misc_pressed() -> void:
+	settings_config_dictionary["mouse_coords_mode"] = mouse_coords_options.selected
+	
+	apply_settings_in_config_dict(false)
+	update_displayed_settings()
+	save_settings_to_local()

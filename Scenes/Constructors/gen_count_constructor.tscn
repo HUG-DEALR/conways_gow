@@ -64,5 +64,6 @@ allow_greater = true
 allow_lesser = true
 alignment = 1
 custom_arrow_step = 1.0
+select_all_on_focus = true
 
 [connection signal="item_selected" from="HBoxContainer/Opperator" to="." method="_on_opperator_item_selected"]

@@ -25,6 +25,7 @@ func _ready() -> void:
 	await get_tree().process_frame
 	if Global.world_scene:
 		gui_parent.reparent(Global.world_scene.canvas_layer)
+		gui_parent.mouse_filter = Control.MOUSE_FILTER_PASS
 		gui_parent.global_position = get_viewport_rect().size * 0.5
 		Global.world_scene.update_or_add_hint_textbox_info(self)
 		Global.world_scene.connect("clear_textboxes_called", self_destruct)
@@ -40,7 +41,6 @@ func _input(event: InputEvent) -> void:
 			global_position = get_global_mouse_position() + drag_offset
 		elif resizing:
 			resize_display(-70.0 + (to_local(get_global_mouse_position()).x)/scale.x)
-		get_viewport().set_input_as_handled()
 	
 	elif event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_RIGHT and not event.pressed:

@@ -64,15 +64,13 @@ func toggle_expand_zoom_slider(set_to_expand: bool) -> void:
 		await zoom_slider_tween.finished
 		zoom_slider.visible = false
 
-func set_play_pause(set_to_play: bool) -> void:
+func set_play_pause_display(set_to_play: bool) -> void:
 	if set_to_play:
 		play_generations.text = "◼"
 		playing_generations = true
-		Global.world_scene.generation_timer.start(1.0 / speed_slider.value)
 	else:
 		play_generations.text = "❯❯"
 		playing_generations = false
-		Global.world_scene.generation_timer.stop()
 
 func set_generation_number(generation_num: int = Global.generation_number) -> void:
 	if generation_num > 0:
@@ -86,14 +84,14 @@ func _on_speed_slider_value_changed(value: float) -> void:
 func _on_step_generation_pressed() -> void:
 	Global.world_scene.iterate_generation()
 	set_generation_number(Global.generation_number)
-	set_play_pause(false)
+	Global.world_scene.set_play_pause(false)
 
 func _on_generation_itterated() -> void:
 	# connected by a function in _ready()
 	set_generation_number(Global.generation_number)
 
 func _on_play_generations_pressed() -> void:
-	set_play_pause(!playing_generations)
+	Global.world_scene.set_play_pause(!playing_generations, 1.0 / speed_slider.value)
 
 func _on_auto_play_container_mouse_entered() -> void:
 	mouse_over_speed_options = true
@@ -135,7 +133,7 @@ func _on_zoom_slider_value_changed(value: float) -> void:
 func _on_restart_pressed() -> void:
 	Global.world_scene.full_populate_level(Global.world_scene.pre_loaded_level_info_dict, true)
 	Global.reset_generation_to_0()
-	set_play_pause(false)
+	Global.world_scene.set_play_pause(false)
 
 func _on_hint_button_pressed() -> void:
 	Global.world_scene.hint_requested()

@@ -36,26 +36,32 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = ExtResource("2_ldm8r")
 
-[node name="MarginContainer" type="MarginContainer" parent="PanelContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/VBoxContainer"]
+custom_minimum_size = Vector2(700, 475)
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="ScrollContainer" type="ScrollContainer" parent="PanelContainer/MarginContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="PanelContainer/VBoxContainer/MarginContainer"]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_78io8")
 follow_focus = true
 horizontal_scroll_mode = 0
 vertical_scroll_mode = 4
 
-[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer/ScrollContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/MarginContainer/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
-[node name="Title" type="Label" parent="PanelContainer/MarginContainer/ScrollContainer/VBoxContainer"]
+[node name="Title" type="Label" parent="PanelContainer/VBoxContainer/MarginContainer/ScrollContainer/VBoxContainer"]
 custom_minimum_size = Vector2(660, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
@@ -64,7 +70,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
-[node name="Sub_Title" type="Label" parent="PanelContainer/MarginContainer/ScrollContainer/VBoxContainer"]
+[node name="Sub_Title" type="Label" parent="PanelContainer/VBoxContainer/MarginContainer/ScrollContainer/VBoxContainer"]
 custom_minimum_size = Vector2(660, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
@@ -73,10 +79,10 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
-[node name="HSeparator" type="HSeparator" parent="PanelContainer/MarginContainer/ScrollContainer/VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="PanelContainer/VBoxContainer/MarginContainer/ScrollContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Text Content" type="Label" parent="PanelContainer/MarginContainer/ScrollContainer/VBoxContainer"]
+[node name="Text Content" type="Label" parent="PanelContainer/VBoxContainer/MarginContainer/ScrollContainer/VBoxContainer"]
 custom_minimum_size = Vector2(660, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
@@ -84,7 +90,14 @@ text = "- Audio
 	- Noises for various actions and outcomes
 	- Music
 
+- Better build tools
+	- Filtered edit hand (filters what you interact with)
+	- Copy paste reigons
+	- Stamps of player made structures
+
 - More Campaign Levels
+	- Some levels may be beta-tester made
+	- Include the new cell types (more info below)
 
 - New Cell Types
 	- Static cell
@@ -119,6 +132,25 @@ text = "- Audio
 autowrap_mode = 3
 tab_stops = PackedFloat32Array(25, 25, 25)
 
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 50
+alignment = 1
+
+[node name="Feedback" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+tooltip_text = "Open the feedback form in your default internet browser"
+theme_override_font_sizes/font_size = 30
+text = "Feedback"
+
+[node name="Bug_Report" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(210, 0)
+layout_mode = 2
+tooltip_text = "Open the bug report form in your default internet browser"
+theme_override_font_sizes/font_size = 30
+text = "Report a Bug"
+
 [node name="Back" type="Button" parent="."]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 1
@@ -148,4 +180,6 @@ text = "Future of CGOW"
 horizontal_alignment = 1
 vertical_alignment = 2
 
+[connection signal="pressed" from="PanelContainer/VBoxContainer/HBoxContainer/Feedback" to="." method="_on_feedback_pressed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/HBoxContainer/Bug_Report" to="." method="_on_bug_report_pressed"]
 [connection signal="pressed" from="Back" to="." method="_on_back_pressed"]

@@ -1,0 +1,81 @@
+[gd_scene load_steps=3 format=3 uid="uid://cy84uiu383rb1"]
+
+[ext_resource type="Script" uid="uid://dal5ed7mkussg" path="res://Scripts/level_start_info_card_sub_menu.gd" id="1_04q1j"]
+[ext_resource type="StyleBox" uid="uid://bvp8auwdu5u7l" path="res://Resources/general_menu_stylebox.tres" id="2_0ycbf"]
+
+[node name="level_end_sub_menu" type="Control"]
+layout_mode = 3
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+grow_vertical = 0
+mouse_filter = 1
+script = ExtResource("1_04q1j")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -279.0
+offset_right = 340.0
+grow_vertical = 0
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="PanelContainer" type="PanelContainer" parent="MarginContainer"]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 1
+theme_override_styles/panel = ExtResource("2_0ycbf")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Level_Name" type="Label" parent="MarginContainer/PanelContainer/VBoxContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Level_Rating" type="Label" parent="MarginContainer/PanelContainer/VBoxContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/PanelContainer/VBoxContainer"]
+custom_minimum_size = Vector2(300, 300)
+layout_mode = 2
+follow_focus = true
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 4
+
+[node name="Level_Description" type="Label" parent="MarginContainer/PanelContainer/VBoxContainer/ScrollContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+theme_override_font_sizes/font_size = 25
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Close" type="Button" parent="MarginContainer/PanelContainer/VBoxContainer"]
+custom_minimum_size = Vector2(120, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 30
+text = "Close"
+
+[connection signal="pressed" from="MarginContainer/PanelContainer/VBoxContainer/Close" to="." method="_on_close_pressed"]

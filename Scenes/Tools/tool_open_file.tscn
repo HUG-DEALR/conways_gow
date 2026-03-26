@@ -1,0 +1,63 @@
+[gd_scene load_steps=3 format=3 uid="uid://4irxclkr7nx6"]
+
+[ext_resource type="Script" uid="uid://b2vwh57c3o68u" path="res://Scripts/Tool_Open_File.gd" id="1_1rb31"]
+[ext_resource type="StyleBox" uid="uid://bvp8auwdu5u7l" path="res://Resources/general_menu_stylebox.tres" id="2_88m1d"]
+
+[node name="Tool_Open_File" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_1rb31")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = ExtResource("2_88m1d")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
+layout_mode = 2
+
+[node name="TextEdit" type="TextEdit" parent="PanelContainer/VBoxContainer"]
+custom_minimum_size = Vector2(1000, 500)
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+wrap_mode = 1
+scroll_fit_content_width = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Load" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Load"
+
+[node name="Reset_Rating" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Reset Rating"
+
+[node name="Save" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Save"
+
+[connection signal="pressed" from="PanelContainer/VBoxContainer/HBoxContainer/Load" to="." method="load_dict"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/HBoxContainer/Reset_Rating" to="." method="reset_rating"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/HBoxContainer/Save" to="." method="save_dict"]

@@ -16,9 +16,10 @@ signal hint_button_pressed
 @onready var rot_parent_menu_camera: Node2D = $Rot_Parent
 @onready var canvas_layer: CanvasLayer = $CanvasLayer
 @onready var outcome_overlay: Control = $CanvasLayer/outcome_overlay
-@onready var level_end_sub_menu: Control = $CanvasLayer/level_end_sub_menu
+@onready var level_start_info_card_sub_menu: Control = $CanvasLayer/GUI_Standard/level_start_info_card_sub_menu
+@onready var level_end_sub_menu: Control = $CanvasLayer/GUI_Standard/level_end_sub_menu
 @onready var menus: Dictionary = { # Only for mutually exclusive menus
-	"GUI": $CanvasLayer/GUI_Standard,
+	"GUI": $CanvasLayer/GUI_Standard, # This was myopically named
 	"Play_Esc_menu": $CanvasLayer/PlayEscMenu,
 	"Main_menu": $CanvasLayer/MainMenu,
 	"Levels_menu": $CanvasLayer/Levels_Menu,
@@ -42,6 +43,7 @@ var current_sub_menu: String = "main" # main levels settings build build_esc exi
 var menu_transition_tween: Tween
 var level_info_dict: Dictionary = {
 	"editable": true,
+	"player_build_access": 0, # 0 = always, 1 = only at gen 0, 2 = never
 	"grid_dimensions": Vector2i.ZERO,
 	"live_cells": {}, # format is index: ["cell type", number of live neighbours]
 	"can_build_zones": {}, # format is node: ["filter", Rect2]
@@ -325,6 +327,15 @@ func get_cell_index_from_position(world_pos: Vector2) -> int: # Returns -1 on fa
 func handle_cell_clicked(cell_index: int) -> void:
 	if cell_index >= 0 and cell_index < current_cell_count:
 		
+		match level_info_dict["player_build_access"]:
+			0: # Always
+				pass
+			1: # Only at gen 0
+				if Global.generation_number > 0:
+					return
+			2: # Never
+				return
+		
 		if not is_index_buildable(cell_index):
 			return
 		
@@ -340,8 +351,10 @@ func clear_all_to_blank() -> void:
 	clear_level_logic()
 	clear_arrows()
 	clear_textboxes()
+	var pre_clear_grid_dimensions: Vector2i = level_info_dict["grid_dimensions"]
 	level_info_dict.clear()
 	print("Reset to default all " + str(repair_current_file_missing_parameters(level_info_dict)) + " level parameters")
+	resize_grid(pre_clear_grid_dimensions, {})
 
 func clear_grid() -> void:
 	var grid_size: int = grid_multimesh.instance_count
@@ -369,13 +382,15 @@ func get_cell_type(cell_index: int) -> String:
 		return "dead"
 
 func set_cell_type(cell_index: int, type: String) -> void:
-	match type:
-		"dead":
-			level_info_dict["live_cells"].erase(cell_index)
-			grid_multimesh.set_instance_color(cell_index, Global.dead_colour) # Grey
-		"alive":
-			level_info_dict["live_cells"][cell_index] = ["alive",0]
-			grid_multimesh.set_instance_color(cell_index, Global.alive_colour) # Black
+	if cell_index < grid_multimesh.instance_count:
+		if cell_index >= 0:
+			match type:
+				"dead":
+					level_info_dict["live_cells"].erase(cell_index)
+					grid_multimesh.set_instance_color(cell_index, Global.dead_colour) # Grey
+				"alive":
+					level_info_dict["live_cells"][cell_index] = ["alive",0]
+					grid_multimesh.set_instance_color(cell_index, Global.alive_colour) # Black	
 
 func index_to_grid_coords(cell_index: int) -> Vector2i:
 	var grid_width: int = level_info_dict["grid_dimensions"].x
@@ -437,11 +452,14 @@ func remove_hint_textbox_from_lists(textbox_node: Sprite2D) -> void:
 func update_or_add_hint_textbox_info(textbox_node: Sprite2D) -> void:
 	level_info_dict["hint_text_boxes"][textbox_node] = textbox_node.get_textbox_info()
 
-func set_play_pause(set_to_play: bool) -> void:
+func set_play_pause(set_to_play: bool, duration: float = generation_timer.wait_time) -> void:
 	if set_to_play:
-		generation_timer.start()
+		generation_timer.start(duration)
 	else:
 		generation_timer.stop()
+	
+	menus.get("Build_menu").set_play_pause_display(set_to_play)
+	menus.get("GUI").set_play_pause_display(set_to_play)
 
 # Menu functions
 func switch_to_menu(menu_name: String, instant_transition: bool = false) -> void:
@@ -502,9 +520,7 @@ func button_signal(singal_name: String, conditional: String = "") -> void:
 			if conditional == "resume":
 				pass
 			else:
-				clear_all_to_blank()
-				Global.reset_generation_to_0()
-				populate_cells(Vector2i(50,50), {}, true)
+				menus.get("Build_menu")._on_new_file_pressed()
 				game_camera.position = (cell_size + cell_margin) * level_info_dict["grid_dimensions"]/2.0
 				game_camera.zoom = Vector2.ONE * 2.0
 			switch_to_menu("Build_menu")
@@ -529,10 +545,12 @@ func button_signal(singal_name: String, conditional: String = "") -> void:
 				Global.reset_generation_to_0()
 				game_camera.position = (cell_size + cell_margin) * level_info_dict["grid_dimensions"]/2.0
 				game_camera.zoom = Vector2.ONE * 2.0
+				RenderingServer.set_default_clear_color(Global.background_colour)
+				game_camera.make_current()
+				set_process(false)
 			switch_to_menu("GUI")
-			RenderingServer.set_default_clear_color(Global.background_colour)
-			game_camera.make_current()
-			set_process(false)
+			level_start_info_card_sub_menu.set_start_level_info(level_info_dict["level_name"], level_info_dict["completion_rating"], level_info_dict["level_description"])
+			level_start_info_card_sub_menu.toggled_deployed(true)
 		"populate_then_play": # Only for when level data has been set to the pre_loaded_level_info_dict
 			full_populate_level(pre_loaded_level_info_dict, true)
 			button_signal("play")
@@ -623,6 +641,9 @@ func repair_current_file_missing_parameters(level_dict: Dictionary) -> int: # Re
 	
 	var repaired_parameters: int = 0
 	
+	if not level_dict.has("player_build_access"):
+		level_dict["player_build_access"] = 0
+		repaired_parameters += 1
 	if not level_dict.has("editable"):
 		level_dict["editable"] = true
 		repaired_parameters += 1

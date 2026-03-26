@@ -66,9 +66,10 @@ theme_override_constants/margin_bottom = 5
 custom_minimum_size = Vector2(400, 400)
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
-current_tab = 0
+current_tab = 2
 
 [node name="Video" type="VBoxContainer" parent="PanelContainer/MarginContainer/TabContainer"]
+visible = false
 layout_mode = 2
 theme_override_constants/separation = 10
 alignment = 1
@@ -170,13 +171,13 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Misc" type="VBoxContainer" parent="PanelContainer/MarginContainer/TabContainer"]
-visible = false
 layout_mode = 2
 theme_override_constants/separation = 10
 alignment = 1
 metadata/_tab_index = 2
 
 [node name="GridContainer" type="GridContainer" parent="PanelContainer/MarginContainer/TabContainer/Misc"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_constants/h_separation = -5
@@ -362,6 +363,26 @@ text = "Ally"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="Mouse_Coords" type="HBoxContainer" parent="PanelContainer/MarginContainer/TabContainer/Misc"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Mouse_Coords_Options" type="OptionButton" parent="PanelContainer/MarginContainer/TabContainer/Misc/Mouse_Coords"]
+layout_mode = 2
+tooltip_text = "Mouse coordinates display options
+Only affects the build menu"
+theme_override_font_sizes/font_size = 30
+alignment = 1
+selected = 0
+item_count = 3
+popup/item_0/text = "Don't show Mouse Coords"
+popup/item_0/id = 0
+popup/item_1/text = "Show Mouse Grid Position"
+popup/item_1/id = 1
+popup/item_2/text = "Show Mouse Raw Position"
+popup/item_2/id = 2
+
 [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/TabContainer/Misc"]
 layout_mode = 2
 theme_override_constants/separation = 10
@@ -372,7 +393,6 @@ custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 30
-disabled = true
 text = "Apply"
 
 [node name="Clear_Levels" type="Button" parent="PanelContainer/MarginContainer/TabContainer/Misc/HBoxContainer"]
@@ -489,6 +509,7 @@ vertical_alignment = 1
 [connection signal="focus_exited" from="PanelContainer/MarginContainer/TabContainer/Video/Resolution/xResolution" to="." method="_on_x_video_resolution_focus_exited"]
 [connection signal="focus_exited" from="PanelContainer/MarginContainer/TabContainer/Video/Resolution/yResolution" to="." method="_on_y_video_resolution_focus_exited"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/TabContainer/Video/HBoxContainer2/Apply_Video" to="." method="_on_apply_video_settings_pressed"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/TabContainer/Misc/HBoxContainer/Apply_Misc" to="." method="_on_apply_misc_pressed"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/TabContainer/Misc/HBoxContainer/Clear_Levels" to="." method="_on_clear_levels_pressed"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/TabContainer/Misc/HBoxContainer/Clear_Config" to="." method="_on_clear_config_pressed"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/TabContainer/Dev/Execute_Dev_Button" to="." method="_on_execute_dev_button_pressed"]

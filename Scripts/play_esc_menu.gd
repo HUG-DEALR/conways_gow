@@ -19,7 +19,7 @@ func _on_resume_pressed() -> void:
 	Global.world_scene.button_signal("play", "resume")
 
 func _on_return_to_main_pressed() -> void:
-	Global.world_scene.button_signal("main", "resume")
+	Global.world_scene.button_signal("main")
 
 func _on_visibility_changed() -> void:
 	set_gui_visible(visible)

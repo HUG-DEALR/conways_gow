@@ -5,21 +5,23 @@ extends Control
 @onready var play_generations: Button = $Right_GUI_Root/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations
 @onready var step_generation: Button = $Right_GUI_Root/VBoxContainer/Step_Generation
 @onready var generation_counter: Label = $Right_GUI_Root/VBoxContainer/Auto_Play_Container/VBoxContainer/Play_Generations/HBoxContainer/Generation_Counter
-@onready var restart: Button = $Right_GUI_Root/VBoxContainer/Restart
-@onready var file_name_label: Label = $Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window/File_name
 @onready var reset_options_container: HBoxContainer = $Right_GUI_Root/VBoxContainer/Restart/Reset_Options_Container
+@onready var restart: Button = $Right_GUI_Root/VBoxContainer/Restart
+@onready var reset_to_saved_button: Button = $Right_GUI_Root/VBoxContainer/Restart/Reset_Options_Container/Reset_To_Saved
+@onready var mouse_coords_display: Label = $Right_GUI_Root/VBoxContainer/Mouse_Coords_Parent/Mouse_Coords_Display
+@onready var logic_settings_root: PanelContainer = $Logic_Settings_Root
+@onready var logic_terms_vbox: VBoxContainer = $Logic_Settings_Root/VBoxContainer/ScrollContainer/VBoxContainer
 @onready var level_settings_root: PanelContainer = $Level_Settings_Root
 @onready var level_name_line_edit: LineEdit = $Level_Settings_Root/VBoxContainer/Level_Name_LineEdit
 @onready var level_description: TextEdit = $Level_Settings_Root/VBoxContainer/Text_Input_HBox/Description
 @onready var level_instructions: TextEdit = $Level_Settings_Root/VBoxContainer/Text_Input_HBox/Instructions
-@onready var logic_settings_root: PanelContainer = $Logic_Settings_Root
-@onready var logic_terms_vbox: VBoxContainer = $Logic_Settings_Root/VBoxContainer/ScrollContainer/VBoxContainer
 @onready var grid_width_line_edit: LineEdit = $Level_Settings_Root/VBoxContainer/Resize_Grid_HBoxContainer/Grid_Width_Line_Edit
 @onready var grid_height_line_edit: LineEdit = $Level_Settings_Root/VBoxContainer/Resize_Grid_HBoxContainer/Grid_Height_Line_Edit
+@onready var player_build_rights_option: OptionButton = $Level_Settings_Root/VBoxContainer/Player_Edit_Rights/Player_Build_Rights_Option
 @onready var add_item_panel: PanelContainer = $Left_GUI_Root/VBoxContainer/Add_Item/Add_item_window/Add_item_panel
 @onready var add_item_window: HBoxContainer = $Left_GUI_Root/VBoxContainer/Add_Item/Add_item_window
 @onready var file_options_window: HBoxContainer = $Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window
-@onready var reset_to_saved_button: Button = $Right_GUI_Root/VBoxContainer/Restart/Reset_Options_Container/Reset_To_Saved
+@onready var file_name_label: Label = $Left_GUI_Root/VBoxContainer/File_Options/File_Options_Window/File_name
 
 const generic_zone_path: String = "res://Scenes/Props/zone_polygon.tscn"
 const generic_hint_arrow_path: String = "res://Scenes/Props/hint_arrow.tscn"
@@ -37,7 +39,7 @@ var playing_generations: bool = false
 var mouse_over_speed_options: bool = false
 var mouse_over_zoom_options: bool = false
 var mouse_over_reset_options: bool = false
-#var active_directory: String = ""
+var show_mouse_coords_mode: int = 0 # 0=don't show, 1=show grid pos, 2=show raw pos
 var logic_terms: Dictionary = {} # Format is node: [String ( Outcome ) , String( eval_text )]
 var logic_structure: Dictionary = {} # format is arbitrary_index: [outcome_index, [object_index, [selection_indexes], [child_A_info], [child_B_info]]]
 
@@ -58,9 +60,23 @@ func _ready() -> void:
 	Global.world_scene.generation_itterated.connect(_on_generation_itterated)
 	Global.generations_reset_to_0.connect(set_generation_number)
 
+func _process(_delta: float) -> void:
+	# Process is enabled and disabled in set_gui_visible()
+	if show_mouse_coords_mode == 1: # show grid coords
+		mouse_coords_display.text = str(Global.world_scene.index_to_grid_coords(Global.world_scene.get_cell_index_from_position(Global.world_scene.get_global_mouse_position())))
+	elif show_mouse_coords_mode == 2: # show raw coords
+		mouse_coords_display.text = str(Global.world_scene.get_global_mouse_position())
+
 func set_gui_visible(set_to_visible: bool) -> void:
 	self.visible = set_to_visible
 	set_generation_number(Global.generation_number)
+	
+	if show_mouse_coords_mode == 0: # don't show
+		mouse_coords_display.visible = false
+		set_process(false)
+	else:
+		mouse_coords_display.visible = true
+		set_process(true)
 
 func toggle_expand_speed_slider(set_to_expand: bool) -> void:
 	if speed_slider_tween:
@@ -112,15 +128,13 @@ func toggle_expand_reset_options(set_to_expand: bool) -> void:
 		await reset_options_tween.finished
 		reset_options_container.visible = false
 
-func set_play_pause(set_to_play: bool) -> void:
+func set_play_pause_display(set_to_play: bool) -> void:
 	if set_to_play:
 		play_generations.text = "◼"
 		playing_generations = true
-		Global.world_scene.generation_timer.start(1.0 / speed_slider.value)
 	else:
 		play_generations.text = "❯❯"
 		playing_generations = false
-		Global.world_scene.generation_timer.stop()
 
 func set_generation_number(generation_num: int = Global.generation_number) -> void:
 	if generation_num > 0:
@@ -218,6 +232,7 @@ func update_level_settings_display() -> void:
 	grid_height_line_edit.text = str(grid_dimensions.y)
 	level_description.text = Global.world_scene.level_info_dict.get("level_description")
 	level_instructions.text = Global.world_scene.level_info_dict.get("level_instructions")
+	player_build_rights_option.selected = Global.world_scene.level_info_dict["player_build_access"]
 
 func create_and_set_logic_terms(logic_structures: Dictionary) -> void:
 	for structure_array in logic_structures.values():
@@ -244,14 +259,14 @@ func _on_speed_slider_value_changed(value: float) -> void:
 func _on_step_generation_pressed() -> void:
 	Global.world_scene.iterate_generation()
 	set_generation_number(Global.generation_number)
-	set_play_pause(false)
+	Global.world_scene.set_play_pause(false)
 
 func _on_generation_itterated() -> void:
 	# connected by a function in _ready()
 	set_generation_number(Global.generation_number)
 
 func _on_play_generations_pressed() -> void:
-	set_play_pause(!playing_generations)
+	Global.world_scene.set_play_pause(!playing_generations, 1.0 / speed_slider.value)
 
 func _on_auto_play_container_mouse_entered() -> void:
 	mouse_over_speed_options = true
@@ -317,7 +332,7 @@ func _on_new_file_pressed() -> void:
 	Global.world_scene.resize_grid(Vector2i(50,50), {})
 	Global.reset_generation_to_0()
 	set_generation_number(0)
-	set_play_pause(false)
+	Global.world_scene.set_play_pause(false)
 	file_name_label.text = "new_level.cgow"
 	file_name_label.tooltip_text = "Build name"
 	Global.world_scene.active_directory = ""
@@ -342,13 +357,13 @@ func _on_reset_to_clear_pressed() -> void:
 	Global.world_scene.clear_all_to_blank()
 	Global.reset_generation_to_0()
 	set_generation_number(0)
-	set_play_pause(false)
+	Global.world_scene.set_play_pause(false)
 
 func _on_reset_to_saved_pressed() -> void:
 	Global.world_scene.open_level_from_local(true)
 	Global.reset_generation_to_0()
 	set_generation_number(0)
-	set_play_pause(false)
+	Global.world_scene.set_play_pause(false)
 
 func _on_new_zone_button_pressed() -> void:
 	var new_zone: Node = load(generic_zone_path).instantiate()
@@ -387,6 +402,7 @@ func _on_apply_level_settings_pressed() -> void:
 		Global.world_scene.level_info_dict["level_name"] = level_name_line_edit.text
 	Global.world_scene.level_info_dict["level_description"] = level_description.text
 	Global.world_scene.level_info_dict["level_instructions"] = level_instructions.text
+	Global.world_scene.level_info_dict["player_build_access"] = player_build_rights_option.selected
 	toggle_expand_level_settings(false)
 
 func _on_logic_option_pressed() -> void:
