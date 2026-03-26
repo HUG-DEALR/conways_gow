@@ -1,5 +1,8 @@
 extends Node2D
 
+### The entirety of this project is exclusively the work of HUG-DEALR (alias: HUG-DEALER)
+### Please refer to the License on the git repository for usage rights
+
 signal generation_itterated
 signal clear_zones_called
 @warning_ignore("unused_signal") # Signal called by build menu
