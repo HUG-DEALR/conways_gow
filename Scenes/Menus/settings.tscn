@@ -66,9 +66,10 @@ theme_override_constants/margin_bottom = 5
 custom_minimum_size = Vector2(400, 400)
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
-current_tab = 0
+current_tab = 1
 
 [node name="Video" type="VBoxContainer" parent="PanelContainer/MarginContainer/TabContainer"]
+visible = false
 layout_mode = 2
 theme_override_constants/separation = 10
 alignment = 1
@@ -156,7 +157,6 @@ theme_override_font_sizes/font_size = 30
 text = "Apply"
 
 [node name="Audio" type="VBoxContainer" parent="PanelContainer/MarginContainer/TabContainer"]
-visible = false
 layout_mode = 2
 theme_override_constants/separation = 10
 alignment = 1

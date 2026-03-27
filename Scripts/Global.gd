@@ -124,7 +124,7 @@ func prompt_user_for_file_path(
 	return result
 
 func sync_default_levels() -> void:
-#	DirAccess.make_dir_recursive_absolute(local_campaign_levels_directory)
+	DirAccess.make_dir_recursive_absolute(local_campaign_levels_directory)
 #	var level_default_files: PackedStringArray = DirAccess.get_files_at(read_only_level_default_source_directory)
 	
 	for file_name in read_only_level_default_source_file_names_array: # for file_name in level_default_files

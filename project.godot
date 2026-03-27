@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="Conways Army"
+config/name="Conways Game of War"
 run/main_scene="uid://43wu14oo2txe"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 boot_splash/image="uid://t0uogkkinput"
@@ -23,6 +23,10 @@ buses/default_bus_layout="res://Resources/default_bus_layout.tres"
 [autoload]
 
 Global="*res://Scripts/Global.gd"
+
+[debug]
+
+file_logging/enable_file_logging=true
 
 [display]
 

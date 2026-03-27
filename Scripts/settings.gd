@@ -28,7 +28,7 @@ var settings_config_dictionary: Dictionary = {
 	"window_mode": DisplayServer.WINDOW_MODE_WINDOWED,
 	"window_borderless_flag": false,
 	"mouse_coords_mode": 1, # 0=don't show, 1=show grid pos, 2=show raw pos
-	"audio_bus_gains": [50, 50, 50], # Master, Music, UI
+	"audio_bus_gains": [50, 40, 60], # Master, Music, UI
 }
 
 func _ready() -> void:
@@ -89,13 +89,13 @@ func load_and_apply_settings_from_local() -> void:
 	settings_config_dictionary["window_borderless_flag"] = DisplayServer.window_get_flag(DisplayServer.WINDOW_FLAG_BORDERLESS)
 	settings_config_dictionary["mouse_coords_mode"] = Global.world_scene.menus.get("Build_menu").show_mouse_coords_mode
 	
-	AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("Master"), loaded_data.get("audio_bus_gains", settings_config_dictionary["audio_bus_gains"])[0]/100.0)
-	AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("Music"), loaded_data.get("audio_bus_gains", settings_config_dictionary["audio_bus_gains"])[1]/100.0)
-	AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("UI"), loaded_data.get("audio_bus_gains", settings_config_dictionary["audio_bus_gains"])[2]/100.0)
+	AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("Master"), loaded_data.get("audio_bus_gains", [75,50,50])[0]/100.0)
+	AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("Music"), loaded_data.get("audio_bus_gains", [75,50,50])[1]/100.0)
+	AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("UI"), loaded_data.get("audio_bus_gains", [75,50,50])[2]/100.0)
 	settings_config_dictionary["audio_bus_gains"] = [
-		AudioServer.get_bus_volume_linear(AudioServer.get_bus_index("Master")),
-		AudioServer.get_bus_volume_linear(AudioServer.get_bus_index("Music")),
-		AudioServer.get_bus_volume_linear(AudioServer.get_bus_index("UI"))
+		AudioServer.get_bus_volume_linear(AudioServer.get_bus_index("Master")) * 100.0,
+		AudioServer.get_bus_volume_linear(AudioServer.get_bus_index("Music")) * 100.0,
+		AudioServer.get_bus_volume_linear(AudioServer.get_bus_index("UI")) * 100.0
 		]
 	
 	update_displayed_settings()
@@ -243,6 +243,9 @@ func update_displayed_settings() -> void:
 	master_bus_h_slider.value = 100.0 * AudioServer.get_bus_volume_linear(AudioServer.get_bus_index("Master"))
 	music_bus_h_slider.value = 100.0 * AudioServer.get_bus_volume_linear(AudioServer.get_bus_index("Music"))
 	ui_bus_h_slider.value = 100.0 * AudioServer.get_bus_volume_linear(AudioServer.get_bus_index("UI"))
+	master_bus_gain.text = str(int(master_bus_h_slider.value))
+	music_bus_gain.text = str(int(music_bus_h_slider.value))
+	UI_bus_gain.text = str(int(ui_bus_h_slider.value))
 
 func _on_apply_video_settings_pressed() -> void:
 	force_integer_resolution_in_text_field(x_resolution, true)
@@ -314,19 +317,22 @@ func _on_apply_misc_pressed() -> void:
 	save_settings_to_local()
 
 func _on_master_bus_h_slider_value_changed(value: float) -> void:
-	master_bus_gain.text = str(int(value))
-	settings_config_dictionary["audio_bus_gains"][0] = value
-	AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("Master"), value/100.0)
+	if master_bus_h_slider.is_visible_in_tree():
+		master_bus_gain.text = str(int(value))
+		settings_config_dictionary["audio_bus_gains"][0] = value
+		AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("Master"), value/100.0)
 
 func _on_music_bus_h_slider_value_changed(value: float) -> void:
-	music_bus_gain.text = str(int(value))
-	settings_config_dictionary["audio_bus_gains"][1] = value
-	AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("Music"), value/100.0)
+	if music_bus_h_slider.is_visible_in_tree():
+		music_bus_gain.text = str(int(value))
+		settings_config_dictionary["audio_bus_gains"][1] = value
+		AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("Music"), value/100.0)
 
 func _on_ui_bus_h_slider_value_changed(value: float) -> void:
-	UI_bus_gain.text = str(int(value))
-	settings_config_dictionary["audio_bus_gains"][2] = value
-	AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("UI"), value/100.0)
+	if ui_bus_h_slider.is_visible_in_tree():
+		UI_bus_gain.text = str(int(value))
+		settings_config_dictionary["audio_bus_gains"][2] = value
+		AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("UI"), value/100.0)
 
 func _on_any_audio_bus_slider_drag_released(value_changed: bool) -> void:
 	# All audio sliders call this function on drag end
