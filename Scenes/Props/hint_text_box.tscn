@@ -168,6 +168,37 @@ popup/item_3/id = 3
 popup/item_4/text = "Delete"
 popup/item_4/id = 4
 
+[node name="scale_hbox" type="HBoxContainer" parent="GUI_Parent/PanelContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Label" type="Label" parent="GUI_Parent/PanelContainer/VBoxContainer/scale_hbox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "Textbox scale"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Scale_Label" type="Label" parent="GUI_Parent/PanelContainer/VBoxContainer/scale_hbox"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "0.5"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Scale_HSlider" type="HSlider" parent="GUI_Parent/PanelContainer/VBoxContainer"]
+visible = false
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+tooltip_text = "Textbox display scale slider"
+min_value = 0.1
+max_value = 3.0
+step = 0.1
+value = 0.5
+
 [node name="HBoxContainer" type="HBoxContainer" parent="GUI_Parent/PanelContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 10
@@ -189,5 +220,6 @@ text = "Cancel"
 [connection signal="button_down" from="GUI_Parent/Drag_Button" to="GUI_Parent" method="_on_drag_button_button_down"]
 [connection signal="button_up" from="GUI_Parent/Drag_Button" to="GUI_Parent" method="_on_drag_button_button_up"]
 [connection signal="text_changed" from="GUI_Parent/PanelContainer/VBoxContainer/Menu_Text" to="." method="_on_menu_text_text_changed"]
+[connection signal="value_changed" from="GUI_Parent/PanelContainer/VBoxContainer/Scale_HSlider" to="." method="_on_scale_h_slider_value_changed"]
 [connection signal="pressed" from="GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer/Apply" to="." method="_on_apply_pressed"]
 [connection signal="pressed" from="GUI_Parent/PanelContainer/VBoxContainer/HBoxContainer/Cancel" to="." method="_on_cancel_pressed"]

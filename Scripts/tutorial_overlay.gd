@@ -37,6 +37,7 @@ func transition_pages(target_page_index: int = current_page_index + 1, from_righ
 	new_page.visible = true
 	page_transition_tween.parallel().tween_property(new_page, "position", Vector2.ZERO, 0.5)
 	
+	Global.world_scene.play_audio_track(Global.world_scene.transition_woosh, "UI")
 	page_transition_tween.play()
 	await page_transition_tween.finished
 	current_page.visible = false

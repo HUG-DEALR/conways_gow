@@ -28,6 +28,7 @@ func toggled_deployed(deploy: bool = false) -> void:
 	intro_exit_tween = get_tree().create_tween()
 	intro_exit_tween.pause()
 	intro_exit_tween.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_CUBIC)
+	Global.world_scene.play_audio_track(Global.world_scene.transition_woosh, "UI")
 	if deploy:
 		Global.world_scene.level_end_sub_menu.toggled_deployed(false)
 		

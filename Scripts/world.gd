@@ -21,6 +21,8 @@ signal hint_button_pressed
 @onready var outcome_overlay: Control = $CanvasLayer/outcome_overlay
 @onready var level_start_info_card_sub_menu: Control = $CanvasLayer/GUI_Standard/level_start_info_card_sub_menu
 @onready var level_end_sub_menu: Control = $CanvasLayer/GUI_Standard/level_end_sub_menu
+@onready var UI_audio_player: AudioStreamPlayer = $UI_AudioStreamPlayer
+@onready var music_audio_player: AudioStreamPlayer = $Music_AudioStreamPlayer
 @onready var menus: Dictionary = { # Only for mutually exclusive menus
 	"GUI": $CanvasLayer/GUI_Standard, # This was myopically named
 	"Play_Esc_menu": $CanvasLayer/PlayEscMenu,
@@ -32,6 +34,15 @@ signal hint_button_pressed
 	"WIP_Page": $CanvasLayer/WIP_Page,
 	"Tutorial": $CanvasLayer/Tutorial_Overlay
 }
+
+@export_group("Audio Tracks")
+@export var UI_click: AudioStream
+@export var victory_fanfare: AudioStream
+@export var positive_ping: AudioStream
+@export var negative_ping: AudioStream
+@export var transition_woosh: AudioStream
+@export var music_track_1: AudioStream
+var music_tracks: Array = [music_track_1]
 
 const cell_size: float = 10.0
 const cell_margin: float = 0.0
@@ -83,6 +94,10 @@ func _ready():
 	
 	Global.sync_default_levels()
 	RenderingServer.set_default_clear_color(Global.dead_colour)
+	
+	play_music()
+	connect_buttons_to_click_audio(self)
+	get_tree().node_added.connect(_on_node_added)
 
 func _process(delta: float) -> void:
 	rot_parent_menu_camera.rotation += delta * 0.1
@@ -494,6 +509,7 @@ func switch_to_menu(menu_name: String, instant_transition: bool = false) -> void
 		menu_transition_tween.parallel().tween_property(new_menu, "position", Vector2.ZERO, 0.5)
 		
 		menu_transition_tween.play()
+		play_audio_track(transition_woosh, "UI")
 		menu_transition_tween.tween_callback(func():
 			current_menu.set_gui_visible(false)
 			current_menu = new_menu
@@ -579,6 +595,39 @@ func button_signal(singal_name: String, conditional: String = "") -> void:
 
 func hint_requested() -> void:
 	hint_button_pressed.emit()
+
+# Audio functions
+func connect_buttons_to_click_audio(target_node: Node) -> void:
+	for child in target_node.get_children():
+		if child is BaseButton:
+			child.pressed.connect(UI_play_click)
+		connect_buttons_to_click_audio(child)
+
+func _on_node_added(node: Node) -> void:
+	await node.ready
+	if node is BaseButton:
+		node.pressed.connect(UI_play_click)
+
+func UI_play_click() -> void:
+	UI_audio_player.stream = UI_click
+	UI_audio_player.play()
+
+func play_audio_track(target_track: AudioStream, audio_bus: String = "Master", delay: float = 0.0) -> void:
+	var audio_player: AudioStreamPlayer = AudioStreamPlayer.new()
+	add_child(audio_player)
+	audio_player.bus = audio_bus
+	audio_player.stream = target_track
+	audio_player.finished.connect(audio_player.queue_free)
+	if delay > 0.0:
+		await get_tree().create_timer(delay).timeout
+	audio_player.play()
+
+func play_music() -> void:
+#	music_audio_player.stream = music_tracks.pick_random()
+	music_audio_player.stream = music_track_1
+	music_audio_player.play()
+	await music_audio_player.finished
+	play_music()
 
 # File functions
 func open_level_from_local(skip_directory_prompt: bool = false, prevent_editing: bool = false, populate_level: bool = true) -> bool:

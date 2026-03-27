@@ -86,18 +86,7 @@ layout_mode = 2
 custom_minimum_size = Vector2(660, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-text = "- Audio
-	- Noises for various actions and outcomes
-	- Music
-
-- Better build tools
-	- Filtered edit hand (filters what you interact with)
-	- Copy paste reigons
-	- Stamps of player made structures
-
-- More Campaign Levels
-	- Some levels may be beta-tester made
-	- Include the new cell types (more info below)
+text = "In no particular order
 
 - New Cell Types
 	- Static cell
@@ -120,6 +109,19 @@ text = "- Audio
 	- Enemy cell
 		- Recelour of \"dead\" cell
 		- To make level objectives more obvious
+
+- Audio
+	- More noises for various actions and outcomes
+	- More music tracks
+
+- Better build tools
+	- Filtered edit hand (filters what you interact with)
+	- Copy paste reigons
+	- Stamps of player made structures
+
+- More Campaign Levels
+	- Some levels may be beta-tester made
+	- Include the new cell types (more info below)
 
 - Steam Release
 	- Steam Workshop integration for player made levels

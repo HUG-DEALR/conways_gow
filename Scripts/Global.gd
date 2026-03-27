@@ -1,6 +1,7 @@
 extends Node
 
 # To do list
+# Textboxes can scale
 # Make levels
 
 signal generations_reset_to_0

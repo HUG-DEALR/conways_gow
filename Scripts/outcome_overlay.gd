@@ -38,6 +38,7 @@ func toggled_deployed(deploy: bool) -> void:
 	intro_exit_tween = get_tree().create_tween()
 	intro_exit_tween.pause()
 	intro_exit_tween.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_CUBIC)
+	Global.world_scene.play_audio_track(Global.world_scene.transition_woosh, "UI")
 	if deploy:
 		intro_exit_tween.tween_property(panel_container, "position", Vector2(50.0, 1.5 * margin_container.size.y), 0.0)
 		intro_exit_tween.tween_property(panel_container, "position", Vector2(50.0, 50.0), 0.3)
@@ -60,16 +61,22 @@ func print_outcome(outcome: String, use_raw_input: bool = false) -> void:
 			var current_rating: Array = Global.world_scene.level_info_dict["current_rating"]
 			if current_rating[0]:
 				label.text = "★"
+				Global.world_scene.play_audio_track(Global.world_scene.positive_ping, "UI")
 			else:
 				label.text = "☆"
+				Global.world_scene.play_audio_track(Global.world_scene.negative_ping, "UI")
 			if current_rating[1]:
 				label.text += "★"
+				Global.world_scene.play_audio_track(Global.world_scene.positive_ping, "UI", 0.2)
 			else:
 				label.text += "☆"
+				Global.world_scene.play_audio_track(Global.world_scene.negative_ping, "UI", 0.2)
 			if current_rating[2]:
 				label.text += "★"
+				Global.world_scene.play_audio_track(Global.world_scene.positive_ping, "UI", 0.4)
 			else:
 				label.text += "☆"
+				Global.world_scene.play_audio_track(Global.world_scene.negative_ping, "UI", 0.4)
 		else:
 			match outcome:
 				"defeat":

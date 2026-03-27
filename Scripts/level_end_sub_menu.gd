@@ -37,9 +37,11 @@ func toggled_deployed(deploy: bool = false, is_victorious: bool = false) -> void
 			else:
 				rating_string += "☆"
 			
+			Global.world_scene.play_audio_track(Global.world_scene.victory_fanfare, "UI")
 			status_label.text = "VICTORY " + str(Global.world_scene.level_info_dict["outcome_generations"][0]) + "\n" + rating_string
 			next_level_button.disabled = false
 		else:
+			Global.world_scene.play_audio_track(Global.world_scene.negative_ping, "UI")
 			status_label.text = "DEFEAT " + str(Global.world_scene.level_info_dict["outcome_generations"][0])
 			next_level_button.disabled = true
 		

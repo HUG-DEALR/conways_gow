@@ -1,15 +1,21 @@
-[gd_scene load_steps=18 format=3 uid="uid://43wu14oo2txe"]
+[gd_scene load_steps=24 format=3 uid="uid://43wu14oo2txe"]
 
 [ext_resource type="Script" uid="uid://b7wmx1vkun2bp" path="res://Scripts/world.gd" id="1_go701"]
 [ext_resource type="Script" uid="uid://c8v1d7jx6ajim" path="res://Scripts/Game_camera.gd" id="2_5a7ea"]
+[ext_resource type="AudioStream" uid="uid://krdofoyqvegr" path="res://Audio/UI_Noises/UI_Click.mp3" id="2_kn0ld"]
 [ext_resource type="PackedScene" uid="uid://fsodmskwkkkk" path="res://Scenes/Menus/main_menu.tscn" id="3_5a7ea"]
 [ext_resource type="PackedScene" uid="uid://bw10bjlpo0fwl" path="res://Scenes/Menus/GUI_Standard.tscn" id="3_5ukr8"]
 [ext_resource type="PackedScene" uid="uid://b1p7xbn61v5vb" path="res://Scenes/Menus/Sub_Menus/play_esc_menu.tscn" id="3_5v1tr"]
 [ext_resource type="PackedScene" uid="uid://bdxrcf3c2r2wb" path="res://Scenes/Menus/WIP_Page.tscn" id="3_7yui6"]
+[ext_resource type="AudioStream" uid="uid://dfgkqafjd7o87" path="res://Audio/UI_Noises/trumpet_fanfare.mp3" id="3_axeuq"]
+[ext_resource type="AudioStream" uid="uid://cpd441wwdev7v" path="res://Audio/music/smooth_jazz_background_music.mp3" id="3_hgpy0"]
 [ext_resource type="PackedScene" uid="uid://ttqq5jk5ot6d" path="res://Scenes/Menus/outcome_overlay.tscn" id="3_k7acu"]
+[ext_resource type="AudioStream" uid="uid://dpkjxnb44a722" path="res://Audio/UI_Noises/positive_ping.mp3" id="4_1cojt"]
 [ext_resource type="PackedScene" uid="uid://hpbibvj47tnf" path="res://Scenes/Menus/levels_menu.tscn" id="4_8j60k"]
 [ext_resource type="PackedScene" uid="uid://bu8otrym2b85g" path="res://Scenes/Menus/tutorial_overlay.tscn" id="5_c5t2i"]
 [ext_resource type="PackedScene" uid="uid://bp8sew4hg4ws3" path="res://Scenes/Menus/settings.tscn" id="5_fo5ed"]
+[ext_resource type="AudioStream" uid="uid://d3v3wfrtxsx3x" path="res://Audio/UI_Noises/negative_ping.mp3" id="5_yq1aw"]
+[ext_resource type="AudioStream" uid="uid://d4bbkmh7mnqo5" path="res://Audio/UI_Noises/transition_woosh.mp3" id="6_1cojt"]
 [ext_resource type="PackedScene" uid="uid://c4nx7w8y2etm5" path="res://Scenes/Menus/Sub_Menus/level_end_sub_menu.tscn" id="6_ikia7"]
 [ext_resource type="PackedScene" uid="uid://8kbmirp7geg7" path="res://Scenes/Menus/GUI_Build.tscn" id="7_o06y3"]
 [ext_resource type="PackedScene" uid="uid://cy84uiu383rb1" path="res://Scenes/Menus/Sub_Menus/level_start_info_card_sub_menu.tscn" id="8_e0ngr"]
@@ -29,6 +35,12 @@ mesh = SubResource("QuadMesh_tlwt5")
 
 [node name="World" type="Node2D"]
 script = ExtResource("1_go701")
+UI_click = ExtResource("2_kn0ld")
+victory_fanfare = ExtResource("3_axeuq")
+positive_ping = ExtResource("4_1cojt")
+negative_ping = ExtResource("5_yq1aw")
+transition_woosh = ExtResource("6_1cojt")
+music_track_1 = ExtResource("3_hgpy0")
 
 [node name="Grid" type="MultiMeshInstance2D" parent="."]
 multimesh = SubResource("MultiMesh_aqk2v")
@@ -86,5 +98,11 @@ visible = false
 
 [node name="Generation_Timer" type="Timer" parent="."]
 wait_time = 0.1
+
+[node name="UI_AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+bus = &"UI"
+
+[node name="Music_AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+bus = &"Music"
 
 [connection signal="timeout" from="Generation_Timer" to="." method="_on_generation_timer_timeout"]

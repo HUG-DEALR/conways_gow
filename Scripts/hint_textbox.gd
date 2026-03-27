@@ -12,6 +12,10 @@ extends Sprite2D
 @onready var behaviour_option: OptionButton = $GUI_Parent/PanelContainer/VBoxContainer/Behaviour_Option
 @onready var display_text: TextEdit = $SubViewport/Control/PanelContainer/Display_Text
 @onready var menu_text: TextEdit = $GUI_Parent/PanelContainer/VBoxContainer/Menu_Text
+@onready var scale_h_slider: HSlider = $GUI_Parent/PanelContainer/VBoxContainer/Scale_HSlider
+@onready var scale_label: Label = $GUI_Parent/PanelContainer/VBoxContainer/scale_hbox/Scale_Label
+@onready var drag_button: Button = $GUI_Parent/Drag_Button
+@onready var menu_panel_container: PanelContainer = $GUI_Parent/PanelContainer
 
 var menu_tween: Tween
 var draggin_display: bool = false
@@ -19,6 +23,7 @@ var resizing: bool = false
 var drag_offset: Vector2 = Vector2.ZERO
 var pre_edit_display_text: String = ""
 var pre_edit_behaviour_option: int = 0
+var pre_edit_scale: float = 0.5
 
 func _ready() -> void:
 	gui_parent.visible = false
@@ -109,6 +114,8 @@ func toggle_menu_visible(set_to_expand: bool) -> void:
 	if set_to_expand:
 		pre_edit_display_text = display_text.text
 		pre_edit_behaviour_option = behaviour_option.selected
+		pre_edit_scale = scale.x
+		drag_button.size = Vector2.ONE * 50.0 + menu_panel_container.size
 #		update_menu_options()
 		menu_tween.tween_property(gui_parent, "scale", Vector2.ZERO, 0.0)
 		menu_tween.tween_property(gui_parent, "scale", Vector2.ONE, 0.3)
@@ -224,6 +231,7 @@ func _on_menu_text_text_changed() -> void:
 func _on_apply_pressed() -> void:
 	pre_edit_display_text = display_text.text
 	pre_edit_behaviour_option = behaviour_option.selected
+	pre_edit_scale = scale.x
 	toggle_menu_visible(false)
 	resize_display()
 	update_viewport_size()
@@ -233,6 +241,13 @@ func _on_apply_pressed() -> void:
 func _on_cancel_pressed() -> void:
 	display_text.text = pre_edit_display_text
 	behaviour_option.selected = pre_edit_behaviour_option
+	scale_label.text = str(pre_edit_scale)
+	scale_h_slider.value = pre_edit_scale
+	scale = Vector2.ONE * pre_edit_scale
 	toggle_menu_visible(false)
 	resize_display()
 	update_viewport_size()
+
+func _on_scale_h_slider_value_changed(value: float) -> void:
+	scale_label.text = str(value)
+	scale = Vector2.ONE * value

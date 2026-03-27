@@ -5,6 +5,13 @@ extends Control
 @onready var x_resolution: LineEdit = $PanelContainer/MarginContainer/TabContainer/Video/Resolution/xResolution
 @onready var y_resolution: LineEdit = $PanelContainer/MarginContainer/TabContainer/Video/Resolution/yResolution
 @onready var window_mode_options: OptionButton = $PanelContainer/MarginContainer/TabContainer/Video/WindowMode/WindowMode_Options
+# Audio tab
+@onready var master_bus_h_slider: HSlider = $PanelContainer/MarginContainer/TabContainer/Audio/Master_Bus/Master_Bus_HSlider
+@onready var music_bus_h_slider: HSlider = $PanelContainer/MarginContainer/TabContainer/Audio/Music_Bus/Music_Bus_HSlider
+@onready var ui_bus_h_slider: HSlider = $PanelContainer/MarginContainer/TabContainer/Audio/UI_Bus/UI_Bus_HSlider
+@onready var master_bus_gain: Label = $PanelContainer/MarginContainer/TabContainer/Audio/Master_Bus/Bus_Gain
+@onready var music_bus_gain: Label = $PanelContainer/MarginContainer/TabContainer/Audio/Music_Bus/Bus_Gain
+@onready var UI_bus_gain: Label = $PanelContainer/MarginContainer/TabContainer/Audio/UI_Bus/Bus_Gain
 # Misc tab
 @onready var clear_campaign_levels_button: Button = $PanelContainer/MarginContainer/TabContainer/Misc/HBoxContainer/Clear_Levels
 @onready var mouse_coords_options: OptionButton = $PanelContainer/MarginContainer/TabContainer/Misc/Mouse_Coords/Mouse_Coords_Options
@@ -21,6 +28,7 @@ var settings_config_dictionary: Dictionary = {
 	"window_mode": DisplayServer.WINDOW_MODE_WINDOWED,
 	"window_borderless_flag": false,
 	"mouse_coords_mode": 0, # 0=don't show, 1=show grid pos, 2=show raw pos
+	"audio_bus_gains": [50, 50, 50], # Master, Music, UI
 }
 
 func _ready() -> void:
@@ -36,6 +44,10 @@ func apply_settings_in_config_dict(save_to_local: bool = true) -> void:
 	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, settings_config_dictionary.get("window_borderless_flag", false))
 	
 	Global.world_scene.menus.get("Build_menu").show_mouse_coords_mode = settings_config_dictionary["mouse_coords_mode"]
+	
+	AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("Master"), settings_config_dictionary["audio_bus_gains"][0]/100.0)
+	AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("Music"), settings_config_dictionary["audio_bus_gains"][1]/100.0)
+	AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("UI"), settings_config_dictionary["audio_bus_gains"][2]/100.0)
 	
 	if save_to_local:
 		save_settings_to_local()
@@ -71,7 +83,20 @@ func load_and_apply_settings_from_local() -> void:
 	while not Global.world_scene:
 		await get_tree().process_frame
 	Global.world_scene.menus.get("Build_menu").show_mouse_coords_mode = loaded_data.get("mouse_coords_mode", settings_config_dictionary["mouse_coords_mode"])
+	
+	settings_config_dictionary["resolution"] = DisplayServer.window_get_size()
+	settings_config_dictionary["window_mode"] = DisplayServer.window_get_mode()
+	settings_config_dictionary["window_borderless_flag"] = DisplayServer.window_get_flag(DisplayServer.WINDOW_FLAG_BORDERLESS)
 	settings_config_dictionary["mouse_coords_mode"] = Global.world_scene.menus.get("Build_menu").show_mouse_coords_mode
+	
+	AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("Master"), loaded_data.get("audio_bus_gains", settings_config_dictionary["audio_bus_gains"])[0]/100.0)
+	AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("Music"), loaded_data.get("audio_bus_gains", settings_config_dictionary["audio_bus_gains"])[1]/100.0)
+	AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("UI"), loaded_data.get("audio_bus_gains", settings_config_dictionary["audio_bus_gains"])[2]/100.0)
+	settings_config_dictionary["audio_bus_gains"] = [
+		AudioServer.get_bus_volume_linear(AudioServer.get_bus_index("Master")),
+		AudioServer.get_bus_volume_linear(AudioServer.get_bus_index("Music")),
+		AudioServer.get_bus_volume_linear(AudioServer.get_bus_index("UI"))
+		]
 	
 	update_displayed_settings()
 	save_settings_to_local()
@@ -213,6 +238,10 @@ func update_displayed_settings() -> void:
 			window_mode_options.select(0)
 	
 	mouse_coords_options.selected = settings_config_dictionary["mouse_coords_mode"]
+	
+	master_bus_h_slider.value = 100.0 * AudioServer.get_bus_volume_linear(AudioServer.get_bus_index("Master"))
+	music_bus_h_slider.value = 100.0 * AudioServer.get_bus_volume_linear(AudioServer.get_bus_index("Music"))
+	ui_bus_h_slider.value = 100.0 * AudioServer.get_bus_volume_linear(AudioServer.get_bus_index("UI"))
 
 func _on_apply_video_settings_pressed() -> void:
 	force_integer_resolution_in_text_field(x_resolution, true)
@@ -282,3 +311,23 @@ func _on_apply_misc_pressed() -> void:
 	apply_settings_in_config_dict(false)
 	update_displayed_settings()
 	save_settings_to_local()
+
+func _on_master_bus_h_slider_value_changed(value: float) -> void:
+	master_bus_gain.text = str(int(value))
+	settings_config_dictionary["audio_bus_gains"][0] = value
+	AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("Master"), value/100.0)
+
+func _on_music_bus_h_slider_value_changed(value: float) -> void:
+	music_bus_gain.text = str(int(value))
+	settings_config_dictionary["audio_bus_gains"][1] = value
+	AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("Music"), value/100.0)
+
+func _on_ui_bus_h_slider_value_changed(value: float) -> void:
+	UI_bus_gain.text = str(int(value))
+	settings_config_dictionary["audio_bus_gains"][2] = value
+	AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("UI"), value/100.0)
+
+func _on_any_audio_bus_slider_drag_released(value_changed: bool) -> void:
+	# All audio sliders call this function on drag end
+	if value_changed:
+		save_settings_to_local()
