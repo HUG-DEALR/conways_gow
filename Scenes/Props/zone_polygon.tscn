@@ -205,12 +205,16 @@ popup/item_2/text = "Alive"
 popup/item_2/id = 2
 popup/item_3/text = "Target"
 popup/item_3/id = 3
+popup/item_3/disabled = true
 popup/item_4/text = "Hole"
 popup/item_4/id = 4
+popup/item_4/disabled = true
 popup/item_5/text = "Pole"
 popup/item_5/id = 5
+popup/item_5/disabled = true
 popup/item_6/text = "Ally"
 popup/item_6/id = 6
+popup/item_6/disabled = true
 
 [node name="No_Build_Here" type="ColorRect" parent="GUI_Parent/PanelContainer/VBoxContainer/TabContainer"]
 visible = false
@@ -275,12 +279,16 @@ popup/item_2/text = "Alive"
 popup/item_2/id = 2
 popup/item_3/text = "Target"
 popup/item_3/id = 3
+popup/item_3/disabled = true
 popup/item_4/text = "Hole"
 popup/item_4/id = 4
+popup/item_4/disabled = true
 popup/item_5/text = "Pole"
 popup/item_5/id = 5
+popup/item_5/disabled = true
 popup/item_6/text = "Ally"
 popup/item_6/id = 6
+popup/item_6/disabled = true
 
 [node name="Trigger" type="ColorRect" parent="GUI_Parent/PanelContainer/VBoxContainer/TabContainer"]
 custom_minimum_size = Vector2(100, 100)
@@ -356,12 +364,16 @@ popup/item_2/text = "Alive"
 popup/item_2/id = 2
 popup/item_3/text = "Target"
 popup/item_3/id = 3
+popup/item_3/disabled = true
 popup/item_4/text = "Hole"
 popup/item_4/id = 4
+popup/item_4/disabled = true
 popup/item_5/text = "Pole"
 popup/item_5/id = 5
+popup/item_5/disabled = true
 popup/item_6/text = "Ally"
 popup/item_6/id = 6
+popup/item_6/disabled = true
 
 [node name="Trigger_ID_label" type="Label" parent="GUI_Parent/PanelContainer/VBoxContainer/TabContainer/Trigger/VBoxContainer"]
 custom_minimum_size = Vector2(450, 0)

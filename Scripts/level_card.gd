@@ -4,6 +4,11 @@ extends PanelContainer
 @onready var level_rating_label: Label = $MarginContainer/VBoxContainer/Rating
 @onready var lock_symbol: Label = $Lock
 
+func _ready() -> void:
+	while not Global.world_scene:
+		await get_tree().process_frame
+	self.focus_entered.connect(Global.world_scene.UI_play_click)
+
 func set_level_card_info(level_name: String, level_rating: Array, is_locked: bool, level_ID: String) -> void:
 	level_name_label.text = level_name
 	lock_symbol.visible = is_locked

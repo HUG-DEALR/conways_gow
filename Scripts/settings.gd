@@ -27,7 +27,7 @@ var settings_config_dictionary: Dictionary = {
 	"resolution": Vector2i(1600, 900),
 	"window_mode": DisplayServer.WINDOW_MODE_WINDOWED,
 	"window_borderless_flag": false,
-	"mouse_coords_mode": 0, # 0=don't show, 1=show grid pos, 2=show raw pos
+	"mouse_coords_mode": 1, # 0=don't show, 1=show grid pos, 2=show raw pos
 	"audio_bus_gains": [50, 50, 50], # Master, Music, UI
 }
 
@@ -100,6 +100,7 @@ func load_and_apply_settings_from_local() -> void:
 	
 	update_displayed_settings()
 	save_settings_to_local()
+	Global.world_scene.play_music() # This is here to make sure volume settings get applied before music starts
 
 func show_confirm_clear_campaign_dialog() -> void:
 	var dialog: ConfirmationDialog = ConfirmationDialog.new()
@@ -168,7 +169,7 @@ func reset_campaign_levels() -> void:
 		if not directory_access.current_is_dir():
 			if file_name.get_extension() == "cgow":
 				var full_path: String = Global.local_campaign_levels_directory.path_join(file_name)
-				var error = DirAccess.remove_absolute(full_path)
+				var error: Error = DirAccess.remove_absolute(full_path)
 				if error != OK:
 					push_error("Failed to delete file: " + full_path)
 				else:

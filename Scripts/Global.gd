@@ -8,6 +8,16 @@ signal generations_reset_to_0
 signal build_saved
 
 const read_only_level_default_source_directory: String = "res://level_defaults/"
+const read_only_level_default_source_file_names_array: PackedStringArray = [
+	"CampaignLevel_0000_Sandbox.cgow",
+	"CampaignLevel_0001_BuildToLast.cgow",
+	"CampaignLevel_0002_TheGlider.cgow",
+	"CampaignLevel_0003_BuildYourOwn.cgow",
+	"CampaignLevel_0004_LongShot.cgow",
+	"CampaignLevel_0005_Surrounded.cgow",
+	"CampaignLevel_0006_UnderAttack.cgow",
+	"CampaignLevel_0007_TheWaller.cgow",
+]
 const local_campaign_levels_directory: String = "user://campaign_levels/"
 
 var background_colour: Color = Color(0.2, 0.2, 0.2, 1.0)
@@ -114,17 +124,17 @@ func prompt_user_for_file_path(
 	return result
 
 func sync_default_levels() -> void:
-	DirAccess.make_dir_recursive_absolute(local_campaign_levels_directory)
+#	DirAccess.make_dir_recursive_absolute(local_campaign_levels_directory)
+#	var level_default_files: PackedStringArray = DirAccess.get_files_at(read_only_level_default_source_directory)
 	
-	var level_default_files: PackedStringArray = DirAccess.get_files_at(read_only_level_default_source_directory)
-	for file_name in level_default_files:
+	for file_name in read_only_level_default_source_file_names_array: # for file_name in level_default_files
 		if not file_name.ends_with(".cgow"):
 			continue
 		
-		var target_path: String = local_campaign_levels_directory + file_name
+		var target_path: String = local_campaign_levels_directory.path_join(file_name)
 		if FileAccess.file_exists(target_path):
 			continue # Skip if user already has the file
-		var source_path: String = read_only_level_default_source_directory + file_name
+		var source_path: String = read_only_level_default_source_directory.path_join(file_name)
 		
 		var source_file: FileAccess = FileAccess.open(source_path, FileAccess.READ)
 		if source_file == null:

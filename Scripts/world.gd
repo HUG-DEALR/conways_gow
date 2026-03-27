@@ -95,7 +95,6 @@ func _ready():
 	Global.sync_default_levels()
 	RenderingServer.set_default_clear_color(Global.dead_colour)
 	
-	play_music()
 	connect_buttons_to_click_audio(self)
 	get_tree().node_added.connect(_on_node_added)
 
@@ -601,14 +600,18 @@ func connect_buttons_to_click_audio(target_node: Node) -> void:
 	for child in target_node.get_children():
 		if child is BaseButton:
 			child.pressed.connect(UI_play_click)
+		elif child is TabContainer:
+			child.tab_clicked.connect(UI_play_click)
 		connect_buttons_to_click_audio(child)
 
 func _on_node_added(node: Node) -> void:
 	await node.ready
 	if node is BaseButton:
 		node.pressed.connect(UI_play_click)
+	elif node is TabContainer:
+		node.tab_clicked.connect(UI_play_click)
 
-func UI_play_click() -> void:
+func UI_play_click(_ignored_input: Variant = null) -> void:
 	UI_audio_player.stream = UI_click
 	UI_audio_player.play()
 
