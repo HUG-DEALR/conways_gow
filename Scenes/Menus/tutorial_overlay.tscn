@@ -469,7 +469,7 @@ alignment = 1
 layout_mode = 2
 mouse_filter = 1
 theme_override_font_sizes/font_size = 50
-text = "Then click"
+text = "Then click here:"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -544,7 +544,7 @@ alignment = 1
 layout_mode = 2
 mouse_filter = 1
 theme_override_font_sizes/font_size = 50
-text = "Click"
+text = "Click here:"
 horizontal_alignment = 1
 vertical_alignment = 1
 
