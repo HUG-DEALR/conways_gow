@@ -4,6 +4,7 @@ extends Node
 # Textboxes can scale
 # Make levels
 
+signal steam_connection_established
 signal generations_reset_to_0
 signal build_saved
 
@@ -20,6 +21,9 @@ const read_only_level_default_source_file_names_array: PackedStringArray = [
 ]
 const local_campaign_levels_directory: String = "user://campaign_levels/"
 
+const SteamAPPID: int = 480 # placeholder ID
+var is_steam_connected: bool = false
+
 var background_colour: Color = Color(0.2, 0.2, 0.2, 1.0)
 var alive_colour: Color = Color(0.0,0.5,0.7,1.0)
 var dead_colour: Color = Color(0.1,0.1,0.1,1.0)
@@ -33,6 +37,14 @@ var menu_camera: Camera2D
 var game_camera: Camera2D
 
 var generation_number: int = 0
+
+func _ready() -> void:
+	is_steam_connected = Steam.steamInit(SteamAPPID)
+	if is_steam_connected:
+		print("Connected to Steam as: " + Steam.getPersonaName())
+		steam_connection_established.emit()
+	else:
+		print("Connection to Steam failed")
 
 func save_to_file(data_to_save: Dictionary, file_path: String) -> void:
 	print("Saving to " + file_path)

@@ -57,9 +57,10 @@ custom_minimum_size = Vector2(920, 540)
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 tab_alignment = 1
-current_tab = 0
+current_tab = 1
 
 [node name="Campaign_Levels" type="HBoxContainer" parent="PanelContainer/MarginContainer/TabContainer"]
+visible = false
 layout_mode = 2
 alignment = 1
 metadata/_tab_index = 0
@@ -203,7 +204,6 @@ modulate = Color(1, 1, 1, 0)
 layout_mode = 2
 
 [node name="Steam_Workshop" type="HBoxContainer" parent="PanelContainer/MarginContainer/TabContainer"]
-visible = false
 layout_mode = 2
 alignment = 1
 metadata/_tab_index = 1
