@@ -15,7 +15,7 @@ size = Vector2(20, 140)
 size = Vector2(100, 20)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_batc1"]
-size = Vector2(100, 140)
+size = Vector2(100, 100)
 
 [node name="Sprite2D" type="Sprite2D"]
 scale = Vector2(0.5, 0.5)
@@ -169,7 +169,6 @@ popup/item_4/text = "Delete"
 popup/item_4/id = 4
 
 [node name="scale_hbox" type="HBoxContainer" parent="GUI_Parent/PanelContainer/VBoxContainer"]
-visible = false
 layout_mode = 2
 theme_override_constants/separation = 10
 alignment = 1
@@ -190,7 +189,6 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Scale_HSlider" type="HSlider" parent="GUI_Parent/PanelContainer/VBoxContainer"]
-visible = false
 custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 tooltip_text = "Textbox display scale slider"

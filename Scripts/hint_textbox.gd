@@ -45,7 +45,8 @@ func _input(event: InputEvent) -> void:
 		if draggin_display:
 			global_position = get_global_mouse_position() + drag_offset
 		elif resizing:
-			resize_display(-70.0 + (to_local(get_global_mouse_position()).x)/scale.x)
+		#	resize_display(-70.0 + (to_local(get_global_mouse_position()).x)/scale.x)
+			resize_display(texture.get_size().x/2.0 + to_local(get_global_mouse_position()).x - 120.0)
 	
 	elif event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_RIGHT and not event.pressed:
@@ -94,7 +95,7 @@ func resize_display(target_width: float = display_text.size.x) -> void:
 	right_border_collision_shape_2d.shape.size.y = panel_container.size.y + 50.0
 	bottom_border_collision_shape_2d.position.y = (panel_container.size.y + 30.0) * 0.5
 	top_border_collision_shape_2d.position.y = -1.0 * bottom_border_collision_shape_2d.position.y
-	center_collision_shape_2d.shape.size.y = right_border_collision_shape_2d.shape.size.y
+	center_collision_shape_2d.shape.size.y = right_border_collision_shape_2d.shape.size.y - 2.0*top_border_collision_shape_2d.shape.size.y
 	
 	update_viewport_size()
 	Global.world_scene.update_or_add_hint_textbox_info(self)
@@ -140,8 +141,8 @@ func self_destruct() -> void:
 	self.queue_free()
 
 func get_textbox_info() -> Array:
-	# Format is [position, width, behaviour index, text]
-	return [global_position, display_text.size.x, behaviour_option.selected, menu_text.text]
+	# Format is [position, width, behaviour index, text , scale]
+	return [global_position, display_text.size.x, behaviour_option.selected, menu_text.text, scale.x]
 
 func set_textbox_info(textbox_info: Array) -> void:
 	global_position = textbox_info[0]
@@ -152,6 +153,15 @@ func set_textbox_info(textbox_info: Array) -> void:
 	pre_edit_display_text = textbox_info[3]
 	display_text.text = pre_edit_display_text
 	menu_text.text = pre_edit_display_text
+	
+	if textbox_info.size() >= 5:
+		var target_scale: float = 0.1 * round(textbox_info[4] * 10.0)
+		_on_scale_h_slider_value_changed(target_scale)
+		scale_h_slider.value = target_scale
+	else:
+		_on_scale_h_slider_value_changed(0.5)
+		Global.world_scene.update_or_add_hint_textbox_info(self)
+		scale_h_slider.value = 0.5
 
 func configure_hide_show_behaviour() -> void:
 	# This is a suboptimal logic structure, but given the small scale, it is preferable
